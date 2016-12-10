@@ -1,0 +1,77 @@
+﻿@model HouseholdBudgeter.Models.BankAccount
+
+@{
+    ViewBag.Title = "Details";
+}
+
+@Styles.Render("~/Content/css")
+@Styles.Render("~/Template/css")
+@Scripts.Render("~/bundles/modernizr")
+<!-- Page Content -->
+<div id="page-wrapper">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-lg-12">
+                <h1 class="page-header"></h1>
+                <div>
+                    <h4>BankAccount</h4>
+                    <hr />
+                    <dl class="dl-horizontal">
+                        <dt>
+                            @Html.DisplayNameFor(model => model.Household.Name)
+                        </dt>
+
+                        <dd>
+                            @Html.DisplayFor(model => model.Household.Name)
+                        </dd>
+
+                        <dt>
+                            @Html.DisplayNameFor(model => model.Name)
+                        </dt>
+
+                        <dd>
+                            @Html.DisplayFor(model => model.Name)
+                        </dd>
+
+                        <dt>
+                            @Html.DisplayNameFor(model => model.Date)
+                        </dt>
+
+                        <dd>
+                            @Html.DisplayFor(model => model.Date)
+                        </dd>
+
+                        <dt>
+                            @Html.DisplayNameFor(model => model.Amount)
+                        </dt>
+
+                        <dd>
+                            @Html.DisplayFor(model => model.Amount)
+                        </dd>
+
+                        <dt>
+                            @Html.DisplayNameFor(model => model.ReconcileAmount)
+                        </dt>
+
+                        <dd>
+                            @Html.DisplayFor(model => model.ReconcileAmount)
+                        </dd>
+
+                    </dl>
+                </div>
+                <p>
+                    @Html.ActionLink("Edit", "Edit", new { id = Model.Id }) |
+                    @Html.ActionLink("Back to List", "Index")
+                </p>
+
+            </div>
+            <!-- /.col-lg-12 -->
+        </div>
+        <!-- /.row -->
+    </div>
+    <!-- /.container-fluid -->
+</div>
+@Scripts.Render("~/bundles/jquery")
+@Scripts.Render("~/bundles/bootstrap")
+@Scripts.Render("~/Template/bootstrap")
+
