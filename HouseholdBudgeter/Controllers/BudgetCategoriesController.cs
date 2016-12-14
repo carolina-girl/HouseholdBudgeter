@@ -7,6 +7,7 @@ using System.Net;
 using System.Web;
 using System.Web.Mvc;
 using HouseholdBudgeter.Models;
+using HouseholdBudgeter.Helpers;
 
 namespace HouseholdBudgeter.Controllers
 {
@@ -50,6 +51,11 @@ namespace HouseholdBudgeter.Controllers
         {
             if (ModelState.IsValid)
             {
+                //ViewBag.AccountId = Id;
+                var householdId = User.Identity.GetHouseholdId();
+                var household = db.Household.Find(householdId);
+                //var categories = household.Budgets.Select(b => b.BudgetCategory).Distinct().ToList();
+                //ViewBag.BudgetCategories = category;
                 db.BudgetCategory.Add(budgetCategory);
                 db.SaveChanges();
                 return RedirectToAction("Index");
@@ -111,7 +117,7 @@ namespace HouseholdBudgeter.Controllers
         {
             var category = db.BudgetCategory.Find(Id);
             var item = db.BudgetItem.Find(Id);
-            UpdateBudgetAmount(false, item.Amount, item.Frequency, item.BudgetId);
+            //UpdateBudgetAmount(false, item.Amount, item.Frequency, item.BudgetId);
             BudgetCategory budgetCategory = db.BudgetCategory.Find(Id);
             db.BudgetCategory.Remove(budgetCategory);
             db.SaveChanges();

@@ -6,8 +6,8 @@ namespace HouseholdBudgeter.Models
     public class ExternalLoginConfirmationViewModel
     {
         [Required]
-        [Display(Name = "Email")]
-        public string Email { get; set; }
+        [Display(Name = "EmailAddress")]
+        public string EmailAddress { get; set; }
     }
 
     public class ExternalLoginListViewModel
@@ -42,16 +42,18 @@ namespace HouseholdBudgeter.Models
     public class ForgotViewModel
     {
         [Required]
-        [Display(Name = "Email")]
-        public string Email { get; set; }
+        [Display(Name = "EmailAddress")]
+        public string EmailAddress { get; set; }
     }
 
     public class LoginViewModel
     {
+        public string Name { get; set; }
+
         [Required]
-        [Display(Name = "Email")]
+        [Display(Name = "EmailAddress")]
         [EmailAddress]
-        public string Email { get; set; }
+        public string EmailAddress { get; set; }
 
         [Required]
         [DataType(DataType.Password)]
@@ -60,14 +62,28 @@ namespace HouseholdBudgeter.Models
 
         [Display(Name = "Remember me?")]
         public bool RememberMe { get; set; }
+
     }
 
     public class RegisterViewModel
     {
+
+
+        [Display(Name = "First Name")]
+        public string FirstName { get; set; }
+
+
+        [Display(Name = "Last Name")]
+        public string LastName { get; set; }
+
+
+        [Display(Name = "Mobile Phone")]
+        public string MobilePhone { get; set; }
+
         [Required]
         [EmailAddress]
-        [Display(Name = "Email")]
-        public string Email { get; set; }
+        [Display(Name = "EmailAddress")]
+        public string EmailAddress { get; set; }
 
         [Required]
         [StringLength(100, ErrorMessage = "The {0} must be at least {2} characters long.", MinimumLength = 6)]
@@ -85,8 +101,23 @@ namespace HouseholdBudgeter.Models
     {
         [Required]
         [EmailAddress]
-        [Display(Name = "Email")]
-        public string Email { get; set; }
+        [Display(Name = "First Name")]
+        public string FirstName { get; set; }
+
+        [Required]
+        [EmailAddress]
+        [Display(Name = "Last Name")]
+        public string LastName { get; set; }
+
+        [Required]
+        [EmailAddress]
+        [Display(Name = "Mobile Phone")]
+        public string MobilePhone { get; set; }
+
+        [Required]
+        [EmailAddress]
+        [Display(Name = "EmailAddress")]
+        public string EmailAddress { get; set; }
 
         [Required]
         [StringLength(100, ErrorMessage = "The {0} must be at least {2} characters long.", MinimumLength = 6)]
@@ -106,8 +137,8 @@ namespace HouseholdBudgeter.Models
     {
         [Required]
         [EmailAddress]
-        [Display(Name = "Email")]
-        public string Email { get; set; }
+        [Display(Name = "EmailAddress")]
+        public string EmailAddress { get; set; }
     }
 
     public class UserProfileViewModel
@@ -123,6 +154,11 @@ namespace HouseholdBudgeter.Models
 
         [Display(Name = "Mobile Phone")]
         public string MobilePhone { get; set; }
+
+        public int? HouseholdId { get; set; }
+        public string HouseholdName { get; set; }
+
+        public bool HasPassword { get; set; }
     }
 
 }

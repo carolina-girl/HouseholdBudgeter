@@ -2,22 +2,22 @@
 @{
     ViewBag.Title = "Index";
 }
-@Styles.Render("~/Content/css")
-@Styles.Render("~/Template/css")
-@Scripts.Render("~/bundles/modernizr")
+
 <!-- Page Content -->
 <div id="page-wrapper">
     <div class="container-fluid">
         <div class="row">
             <div class="col-lg-12">
-                <h1 class="page-header"></h1>
+                <h3 class="page-header">Bank Accounts</h3>
+               
                 <p>
-                    @Html.ActionLink("Create New", "Create")
+                    @Html.ActionLink("Create New Bank Account", "Create")
                 </p>
                 <table class="table">
+                   
                     <tr>
                         <th>
-                            @Html.DisplayNameFor(model => model.Household.Name)
+                            @Html.DisplayNameFor(model => model.Household)
                         </th>
                         <th>
                             @Html.DisplayNameFor(model => model.Name)
@@ -55,7 +55,9 @@
                             <td>
                                 @Html.ActionLink("Edit", "Edit", new { id = item.Id }) |
                                 @Html.ActionLink("Details", "Details", new { id = item.Id }) |
-                                @Html.ActionLink("Delete", "Delete", new { id = item.Id })
+                                @Html.ActionLink("Delete", "Delete", new { id = item.Id }) |
+                                @Html.ActionLink("Transactions", "Index", "Transactions", new { id = item.Id }, null)
+
                             </td>
                         </tr>
                     }
@@ -68,9 +70,7 @@
     </div>
     <!-- /.container-fluid -->
 </div>
-@Scripts.Render("~/bundles/jquery")
-@Scripts.Render("~/bundles/bootstrap")
-@Scripts.Render("~/Template/bootstrap")
+
 
 
 

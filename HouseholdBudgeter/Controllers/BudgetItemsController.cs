@@ -7,6 +7,7 @@ using System.Net;
 using System.Web;
 using System.Web.Mvc;
 using HouseholdBudgeter.Models;
+using HouseholdBudgeter.Helpers;
 
 namespace HouseholdBudgeter.Controllers
 {
@@ -70,33 +71,33 @@ namespace HouseholdBudgeter.Controllers
             if (ModelState.IsValid)
             {
                 var householdId = User.Identity.GetHouseholdId();
-                var budget = db.Budgets.FirstOrDefault(b => b.HouseholdId == householdId);
+                var budget = db.Budget.FirstOrDefault(b => b.HouseholdId == householdId);
                 var item = new BudgetItem();
-                item.Created = DateTimeOffset.Now;
+                item.Date = DateTimeOffset.Now;
                 item.Frequency = Frequency;
                 item.Amount = Amount;
-                db.BudgetItems.Add(item);
+                db.BudgetItem.Add(item);
                 budget.BudgetItems.Add(item);
 
-                BudgetCategory category = new BudgetCategory();
-                var budgetCategories = from i in budget.BudgetItems
-                                       from c in db.BudgetCategories
-                                       where i.BudgetCategoryId == c.Id
-                                       select c;
-                if (budgetCategories.Any(b => b.Name.Standardize() == CategoryName.Standardize()))
-                {
-                    TempData["Error"] = "Category already exists. Please enter a different category name.";
-                    return RedirectToAction("Index");
-                }
-                else
-                {
-                    category.Name = CategoryName;
-                }
-                category.BudgetItem = item;
-                db.BudgetCategories.Add(category);
-                db.SaveChanges();
-                UpdateBudgetAmount(true, Amount, Frequency, budget.Id);
-                item.BudgetCategoryId = category.Id;
+                //BudgetCategory category = new BudgetCategory();
+                //var budgetCategories = from i in budget.BudgetItems
+                //                       from c in db.BudgetCategory
+                //                       where i.BudgetCategoryId == c.Id
+                //                       select c;
+                //if (budgetCategories.Any(b => b.Category.Standardize() == CategoryName.Standardize()))
+                //{
+                //    TempData["Error"] = "Category already exists. Please enter a different category name.";
+                //    return RedirectToAction("Index");
+                //}
+                //else
+                //{
+                //    category.Category = CategoryName;
+                //}
+                //category.BudgetItems = item;
+                //db.BudgetCategory.Add(category);
+                //db.SaveChanges();
+                //UpdateBudgetAmount(true, Amount, Frequency, budget.Id);
+                //item.BudgetCategoryId = category.Id;
                 db.Entry(item).State = EntityState.Modified;
                 db.SaveChanges();
 
@@ -132,46 +133,48 @@ namespace HouseholdBudgeter.Controllers
             if (ModelState.IsValid)
             {
                 var householdId = User.Identity.GetHouseholdId();
-                var budget = db.Budgets.FirstOrDefault(b => b.HouseholdId == householdId);
-                var oldItem = db.BudgetItems.AsNoTracking().FirstOrDefault(m => m.Id == item.Id);
-                item.Modified = DateTimeOffset.Now;
+                var budget = db.Budget.FirstOrDefault(b => b.HouseholdId == householdId);
+                var oldItem = db.BudgetItem.AsNoTracking().FirstOrDefault(m => m.Id == budgetItem.Id);
+                budgetItem.Date = DateTimeOffset.Now;
 
-                budget.Amount -= oldItem.Amount * oldItem.Frequency / 12;
-                budget.Amount += item.Amount * item.Frequency / 12;
+                budgetItem.Amount -= oldItem.Amount * oldItem.Frequency / 12;
+                budgetItem.Amount += budgetItem.Amount * budgetItem.Frequency / 12;
                 budget.Household = budget.Household;
+          
 
-                db.BudgetItems.Attach(item);
-                db.Entry(item).Property("Amount").IsModified = true;
-                db.Entry(item).Property("Frequency").IsModified = true;
-                db.Entry(item).Property("Modified").IsModified = true;
-                db.Budgets.Attach(budget);
+                db.BudgetItem.Attach(budgetItem);
+                db.Entry(budgetItem).Property("Amount").IsModified = true;
+                db.Entry(budgetItem).Property("Frequency").IsModified = true;
+                db.Entry(budgetItem).Property("Date").IsModified = true;
                 db.Entry(budget).Property("Amount").IsModified = true;
-                db.SaveChanges();
-
-                var category = db.BudgetCategories.Find(oldItem.BudgetCategory.Id);
-                var oldCategoryName = oldItem.BudgetCategory.Name;
-                if (oldCategoryName != CategoryName)
-                {
-                    var budgetCategories = from i in budget.BudgetItems
-                                           from c in db.BudgetCategories
-                                           where i.BudgetCategoryId == c.Id
-                                           select c;
-                    if (budgetCategories.Any(b => b.Name.Standardize() == CategoryName.Standardize()))
-                    {
-                        TempData["EditError"] = "That category already exists. Please enter a different category name.";
-                        TempData["Id"] = item.Id;
-                        return RedirectToAction("Index");
-                    }
-                }
-                else
-                {
-                    category.Name = CategoryName;
-                }
-                category.Name = CategoryName;
-                db.BudgetCategories.Attach(category);
-                db.Entry(category).Property("Name").IsModified = true;
+                db.Budget.Attach(budget);
                 db.Entry(budgetItem).State = EntityState.Modified;
                 db.SaveChanges();
+
+                //var newCategory = db.BudgetCategory.Find(oldItem.BudgetCategoryId);
+                //var oldCategoryName = oldItem.Catagory.Category;
+                //if (oldCategoryName != newCategory)
+                //{
+                //    var budgetCategories = from i in budget.BudgetItems
+                //                           from c in db.BudgetCategory
+                //                           where i.BudgetCategoryId == c.Id
+                //                           select c;
+                //    if (budgetCategories.Any(b => b.Category.Standardize() == newCategory.Standardize()))
+                //    {
+                //        TempData["EditError"] = "That category already exists. Please enter a different category name.";
+                //        TempData["Id"] = budgetItem.Id;
+                //        return RedirectToAction("Index");
+                //    }
+                //}
+                //else
+                //{
+                //    newCategory.Category = Category;
+                //}
+                //newCategory.Category = Category;
+                //db.BudgetCategory.Attach(newCategory);
+                //db.Entry(newCategory).Property("Name").IsModified = true;
+                //db.Entry(budgetItem).State = EntityState.Modified;
+                //db.SaveChanges();
                 return RedirectToAction("Index");
             }
             ViewBag.BudgetId = new SelectList(db.Budget, "Id", "Name", budgetItem.BudgetId);
@@ -197,9 +200,10 @@ namespace HouseholdBudgeter.Controllers
         // POST: BudgetItems/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
-        public ActionResult DeleteConfirmed(int id)
+        public ActionResult DeleteConfirmed(int Id)
         {
-            BudgetItem budgetItem = db.BudgetItem.Find(id);
+     
+            BudgetItem budgetItem = db.BudgetItem.Find(Id);
             db.BudgetItem.Remove(budgetItem);
             db.SaveChanges();
             return RedirectToAction("Index");
@@ -207,8 +211,12 @@ namespace HouseholdBudgeter.Controllers
 
         //POST: Edit Budget Amount
         [HttpPost]
-        public ActionResult EditBudgetAmount()
+        public ActionResult EditBudgetAmount(int Id)
         {
+            var category = db.BudgetCategory.Find(Id);
+            var item = db.BudgetItem.Find(Id);
+            //EditBudgetAmount(false, item.Amount, item.Frequency, item.BudgetId);
+            BudgetCategory budgetCategory = db.BudgetCategory.Find(Id);
             return RedirectToAction("Index");
         }
 

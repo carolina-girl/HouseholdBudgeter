@@ -20,6 +20,14 @@ namespace HouseholdBudgeter.Models
         public virtual Household Household { get; set; }
 
 
+        public ApplicationUser()
+        {
+            this.Transactions = new HashSet<Transaction>();
+        }
+
+        public virtual ICollection<Transaction> Transactions { get; set; }
+
+
         public async Task<ClaimsIdentity> GenerateUserIdentityAsync(UserManager<ApplicationUser> manager)
 {
     // Note the authenticationType must match the one defined in CookieAuthenticationOptions.AuthenticationType

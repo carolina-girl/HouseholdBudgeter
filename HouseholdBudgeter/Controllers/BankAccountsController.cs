@@ -7,6 +7,7 @@ using System.Net;
 using System.Web;
 using System.Web.Mvc;
 using HouseholdBudgeter.Models;
+using HouseholdBudgeter.Helpers;
 
 namespace HouseholdBudgeter.Controllers
 {
@@ -57,11 +58,11 @@ namespace HouseholdBudgeter.Controllers
                 bankAccount.Amount = 0;
                 bankAccount.ReconcileAmount = 0;
                 bankAccount.Date = DateTimeOffset.Now;
-                account.IsReconciled = false;
-                db.Accounts.Add(account);
+                //bankAccount.ReconcileAmount = false;
+                db.BankAccount.Add(bankAccount);
                 db.SaveChanges();
-                //var householdId = User.Identity.GetHouseholdId();
-                // var household = db.Household.Find(householdId);            
+                var householdId = User.Identity.GetHouseholdId();
+                var household = db.Household.Find(householdId);            
                 db.BankAccount.Add(bankAccount);
                 db.SaveChanges();
                 return RedirectToAction("Index");

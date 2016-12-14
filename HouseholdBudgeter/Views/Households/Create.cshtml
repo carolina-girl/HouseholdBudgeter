@@ -4,9 +4,7 @@
     ViewBag.Title = "Create";
 }
 
-@Styles.Render("~/Content/css")
-@Styles.Render("~/Template/css")
-@Scripts.Render("~/bundles/modernizr")
+
 <!-- Page Content -->
 @Html.HiddenFor(model => model.Users)
 @Html.HiddenFor(model => model.BudgetId)
@@ -20,7 +18,7 @@
                     @Html.AntiForgeryToken()
 
                     <div class="form-horizontal">
-                        <h4> Create A Household</h4>
+                        <h4>Create A Household</h4>
                         <hr />
                         @Html.ValidationSummary(true, "", new { @class = "text-danger" })
                         @*<div class="form-group">
@@ -78,7 +76,7 @@
                         </div>
                     </div>
                 }
-                < div class="col-md-offset-1 col-md-5 content">
+                <div class="col-md-offset-1 col-md-5 content">
                 <h3>Join Household</h3>
                 <p>If you've received an e-mail to join a household, enter your invitation code here.</p>
                 <p class="text-danger">@ViewBag.Message</p>
@@ -109,10 +107,9 @@
         </div>
         <!-- /.row -->
     </div>
+    </div>
  
-@Scripts.Render("~/bundles/jquery")
-@Scripts.Render("~/bundles/bootstrap")
-@Scripts.Render("~/Template/bootstrap")
+
 
 
 

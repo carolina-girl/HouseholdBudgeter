@@ -16,9 +16,9 @@ namespace HouseholdBudgeter.Helpers
 
         public enum TransactionType
         {
-            [Display(Name = "Expense")]
+            //[Display(Name = "Expense")]
             Expense,
-            [Display(Name = "Income")]
+            //[Display(Name = "Income")]
             Income
         }
         //Send invitation

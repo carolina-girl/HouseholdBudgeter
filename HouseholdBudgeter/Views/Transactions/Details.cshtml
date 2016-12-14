@@ -4,15 +4,15 @@
     ViewBag.Title = "Details";
 }
 
-@Styles.Render("~/Content/css")
-@Styles.Render("~/Template/css")
-@Scripts.Render("~/bundles/modernizr")
+
 <!-- Page Content -->
 <div id="page-wrapper">
     <div class="container-fluid">
         <div class="row">
             <div class="col-lg-12">
                 <h1 class="page-header"></h1>
+                @Html.HiddenFor(model => model.CategoryId)
+                @Html.HiddenFor(model => model.AccountId)
                 <div>
                     <h4>Transaction</h4>
                     <hr />
@@ -25,21 +25,21 @@
                             @Html.DisplayFor(model => model.User.FirstName)
                         </dd>
 
-                        <dt>
+                        @*<dt>
                             @Html.DisplayNameFor(model => model.CategoryId)
                         </dt>
 
                         <dd>
                             @Html.DisplayFor(model => model.CategoryId)
-                        </dd>
+                        </dd>*@
 
-                        <dt>
+                        @*<dt>
                             @Html.DisplayNameFor(model => model.AccountId)
                         </dt>
 
                         <dd>
                             @Html.DisplayFor(model => model.AccountId)
-                        </dd>
+                        </dd>*@
 
                         <dt>
                             @Html.DisplayNameFor(model => model.Date)
@@ -119,8 +119,6 @@
     </div>
     <!-- /.container-fluid -->
 </div>
-@Scripts.Render("~/bundles/jquery")
-@Scripts.Render("~/bundles/bootstrap")
-@Scripts.Render("~/Template/bootstrap")
+
 
 

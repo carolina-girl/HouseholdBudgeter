@@ -101,37 +101,33 @@ namespace HouseholdBudgeter.Controllers
             return View(household);
         }
 
-        // GET: Households/LeaveHousehold/5
-        public ActionResult LeaveHousehold(int? id)
-        {
-            if (id == null)
-            {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            }
-            Household household = db.Household.Find(id);
-            if (household == null)
-            {
-                return HttpNotFound();
-            }
-            return View(household);
-        }
 
-        //POST: Households/LeaveHousehold/5
-        [AuthorizeHouseholdRequired]
-        public async Task<ActionResult> LeaveHousehold()
+
+        // POST: Household/LeaveHousehold/5
+        [HttpPost]
+        public async Task<ActionResult> LeaveHousehold(bool? confirmLeaveHousehold)
         {
             var userId = User.Identity.GetUserId();
             var user = db.Users.Find(userId);
             var householdId = User.Identity.GetHouseholdId();
             var household = db.Household.Find(householdId);
-            household.Users.Remove(user);
-            db.SaveChanges();
-            await ControllerContext.HttpContext.RefreshAuthentication(user);
-            return RedirectToAction("Dashboard", "Home");
+
+            if (confirmLeaveHousehold != null && household.Users.Contains(user))
+            {
+                household.Users.Remove(user);
+                db.SaveChanges();
+                await ControllerContext.HttpContext.RefreshAuthentication(user);
+                return RedirectToAction("Dashboard", "Home");
         }
 
-        // GET: Households/Delete/5
-        public ActionResult Delete(int? id)
+        TempData["Error"] = "Please confirm you want to leave this household.";
+            return RedirectToAction("Dashboard");
+        }
+    
+
+
+// GET: Households/Delete/5
+public ActionResult Delete(int? id)
         {
             if (id == null)
             {

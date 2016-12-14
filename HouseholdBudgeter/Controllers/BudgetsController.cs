@@ -7,6 +7,7 @@ using System.Net;
 using System.Web;
 using System.Web.Mvc;
 using HouseholdBudgeter.Models;
+using HouseholdBudgeter.Helpers;
 
 namespace HouseholdBudgeter.Controllers
 {
@@ -18,23 +19,23 @@ namespace HouseholdBudgeter.Controllers
         public ActionResult Index()
         {
             var householdId = User.Identity.GetHouseholdId();
-            var household = db.Households.Find(householdId);
-            var model = household.Budget;
+            var household = db.Household.Find(householdId);
+            var model = household.Budgets;
             var budget = db.Budget.Include(b => b.Household);
             return View(budget.ToList());
         }
 
         //Helper function: Update account balance
-        public bool UpdateBudgetAmount(bool AddAmount, decimal Amount, int Frequency, int? BudgetId)
-        {
-            var budget = db.Budgets.Find(BudgetId);
-            budget.Amount = (AddAmount) ? budget.Amount + Amount * Frequency / 12 : budget.Amount - Amount * Frequency / 12;
-            budget.Household = budget.Household;
-            db.Entry(budget).State = EntityState.Modified;
-            db.SaveChangesWithErrors();
+        //public bool UpdateBudgetAmount(bool AddAmount, decimal Amount, int Frequency, int? BudgetId)
+        //{
+        //    var budget = db.Budget.Find(BudgetId);
+        //    BudgetItem.Amount = (AddAmount) ? budget.Amount + Amount * Frequency / 12 : budget.Amount - Amount * Frequency / 12;
+        //    budget.Household = budget.Household;
+        //    db.Entry(budget).State = EntityState.Modified;
+        //    db.SaveChangesWithErrors();
 
-            return true;
-        }
+        //    return true;
+        //}
 
         // GET: Budgets/Details/5
         public ActionResult Details(int? id)

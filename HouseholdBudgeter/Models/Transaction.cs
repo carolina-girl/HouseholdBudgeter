@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
+using static HouseholdBudgeter.Helpers.HouseholdHelper;
 
 namespace HouseholdBudgeter.Models
 {
@@ -23,7 +24,7 @@ namespace HouseholdBudgeter.Models
         public bool IsReconciled { get; set; }
         public virtual BankAccount BankAccount { get; set; }
         public virtual BudgetCategory BudgetCategory { get; set; }
-        public virtual Type TransactionType { get; set; }
+        public virtual TransactionType TransactionType { get; set; }
         public virtual  ApplicationUser User { get; set; }
 
     }

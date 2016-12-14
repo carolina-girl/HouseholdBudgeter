@@ -9,13 +9,13 @@ using System.Web.Mvc;
 using HouseholdBudgeter.Models;
 using System.Threading.Tasks;
 using Microsoft.AspNet.Identity;
+using HouseholdBudgeter.Helpers;
 
 namespace HouseholdBudgeter.Controllers
 {
     public class HouseholdInvitationsController : Controller
     {
         private ApplicationDbContext db = new ApplicationDbContext();
-        private Guid invitecode;
 
         // GET: HouseholdInvitations
         public ActionResult Index()
@@ -51,27 +51,32 @@ namespace HouseholdBudgeter.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create([Bind(Include = "Id,HouseholdId,Date,Email,Expired,IsAccepted,Invitecode")] HouseholdInvitations householdInvitation)
-        {
-            if (ModelState.IsValid)
-            {
-                var invite = db.HouseholdInvitation.FirstOrDefault(i => i.Invitecode == invitecode);
-                var userId = User.Identity.GetUserId();
+        public async Task<ActionResult> Create([Bind(Include = "Id,HouseholdId,Date,Expired,IsAccepted,Invitecode")] HouseholdInvitations householdInvitation, string Email)
+           { 
+            if (!string.IsNullOrWhiteSpace(Email))
+               {
+                int? householdId = User.Identity.GetHouseholdId();
+                string userId = User.Identity.GetUserId();
                 var user = db.Users.Find(userId);
-                if (invite != null && invite.Expired == false)
-                {
-                    invite.Expired = true;
-                    db.HouseholdInvitation.Attach(invite);
-                    db.Entry(invite).Property("Expired").IsModified = true;
-                    db.SaveChanges();
-                    var household = db.Household.Find(invite.HouseholdId);
-                    db.SaveChanges();
-                    return RedirectToAction("Index");
-                }
-            }
+                HouseholdInvitations invitation = new HouseholdInvitations();
+                invitation.Invitecode = Guid.NewGuid();
+                invitation.Email = invitation.Email;
+                invitation.HouseholdId = invitation.HouseholdId;
+                db.HouseholdInvitation.Add(invitation);
+                db.SaveChanges();
 
-                ViewBag.HouseholdId = new SelectList(db.Household, "Id", "Name", householdInvitation.HouseholdId);
-                return View(householdInvitation);
+                var svc = new EmailService();
+                var msg = new IdentityMessage();
+                msg.Destination = invitation.Email;
+                msg.Subject = user.FirstName + "" + user.LastName + " has invited you to join their Money Manager household.";
+                msg.Body = user.FirstName + "" + user.LastName + " has invited you to join their household in the Money Manager! To join, go to budgeter.azurewebsites.net and enter the following invitation code: " + invitation.Invitecode;
+                await svc.SendAsync(msg);
+                TempData["Message"] = "Your invitation has been sent!";
+            
+            return RedirectToAction("InvitationSent", "HouseholdInvitations");
+              }
+        ViewBag.HouseholdId = new SelectList(db.Household, "Id", "Name", householdInvitation.HouseholdId);
+                return View();
             }
         
 

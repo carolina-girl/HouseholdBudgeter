@@ -12,12 +12,14 @@ using HouseholdBudgeter.Models;
 using System.Web.Profile;
 using System.Reflection.Emit;
 using System.Web.UI.WebControls;
+using System.Data.Entity;
 
 namespace HouseholdBudgeter.Controllers
 {
     [Authorize]
     public class AccountController : Controller
     {
+        private ApplicationDbContext db = new ApplicationDbContext();
         private ApplicationSignInManager _signInManager;
         private ApplicationUserManager _userManager;
 
@@ -60,7 +62,7 @@ namespace HouseholdBudgeter.Controllers
         [AllowAnonymous]
         public ActionResult Login(string returnUrl)
         {
-            //ViewBag.ReturnUrl = returnUrl;
+            ViewBag.ReturnUrl = returnUrl;
             return View();
         }
 
@@ -78,7 +80,7 @@ namespace HouseholdBudgeter.Controllers
 
             // This doesn't count login failures towards account lockout
             // To enable password failures to trigger account lockout, change to shouldLockout: true
-            var result = await SignInManager.PasswordSignInAsync(model.Email, model.Password, model.RememberMe, shouldLockout: false);
+            var result = await SignInManager.PasswordSignInAsync(model.EmailAddress, model.Password, model.RememberMe, shouldLockout: false);
             switch (result)
             {
                 case SignInStatus.Success:
@@ -155,7 +157,7 @@ namespace HouseholdBudgeter.Controllers
         {
             if (ModelState.IsValid)
             {
-                var user = new ApplicationUser { UserName = model.Email, Email = model.Email };
+                var user = new ApplicationUser { UserName = model.EmailAddress, Email = model.EmailAddress };
                 var result = await UserManager.CreateAsync(user, model.Password);
                 if (result.Succeeded)
                 {
@@ -167,7 +169,7 @@ namespace HouseholdBudgeter.Controllers
                      var callbackUrl = Url.Action("ConfirmEmail", "Account", new { userId = user.Id, code = code }, protocol: Request.Url.Scheme);
                      await UserManager.SendEmailAsync(user.Id, "Confirm your account", "Please confirm your account by clicking <a href=\"" + callbackUrl + "\">here</a>");
 
-                    return RedirectToAction("Create", "Household");
+                    return RedirectToAction("Create", "Households");
                 }
                 AddErrors(result);
             }
@@ -201,7 +203,7 @@ namespace HouseholdBudgeter.Controllers
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> ResendEmailConfirmation(ForgotPasswordViewModel model)
         {
-            var user = await UserManager.FindByNameAsync(model.Email);
+            var user = await UserManager.FindByNameAsync(model.EmailAddress);
 
             if (user != null)
             {
@@ -237,7 +239,7 @@ namespace HouseholdBudgeter.Controllers
         {
             if (ModelState.IsValid)
             {
-                var user = await UserManager.FindByNameAsync(model.Email);
+                var user = await UserManager.FindByNameAsync(model.EmailAddress);
                 if (user == null) /*!(await UserManager.IsEmailConfirmedAsync(user.Id)))*/
                 {
                     // Don't reveal that the user does not exist or is not confirmed
@@ -283,7 +285,7 @@ namespace HouseholdBudgeter.Controllers
             {
                 return View(model);
             }
-            var user = await UserManager.FindByNameAsync(model.Email);
+            var user = await UserManager.FindByNameAsync(model.EmailAddress);
             if (user == null)
             {
                 // Don't reveal that the user does not exist
@@ -378,7 +380,7 @@ namespace HouseholdBudgeter.Controllers
                     // If the user does not have an account, then prompt the user to create an account
                     ViewBag.ReturnUrl = returnUrl;
                     ViewBag.LoginProvider = loginInfo.Login.LoginProvider;
-                    return View("ExternalLoginConfirmation", new ExternalLoginConfirmationViewModel { Email = loginInfo.Email });
+                    return View("ExternalLoginConfirmation", new ExternalLoginConfirmationViewModel { EmailAddress = loginInfo.Email });
             }
         }
 
@@ -402,7 +404,7 @@ namespace HouseholdBudgeter.Controllers
                 {
                     return View("ExternalLoginFailure");
                 }
-                var user = new ApplicationUser { UserName = model.Email, Email = model.Email };
+                var user = new ApplicationUser { UserName = model.EmailAddress, Email = model.EmailAddress };
                 var result = await UserManager.CreateAsync(user);
                 if (result.Succeeded)
                 {
@@ -427,54 +429,50 @@ namespace HouseholdBudgeter.Controllers
         public ActionResult LogOff()
         {
             AuthenticationManager.SignOut(DefaultAuthenticationTypes.ApplicationCookie);
-            return RedirectToAction("Index", "Home");
+            return RedirectToAction("Login", "Account");
         }
 
 
-        // GET: /Account/UserProfile
-        [AllowAnonymous]
+        // GET: User Profile
         public ActionResult UserProfile()
         {
-            ApplicationUser User = new ApplicationUser();
-            //ApplicationUser user = User.Find(TempData["UserId"]);
-            if (User == null)
+            var userId = User.Identity.GetUserId();
+            //could retrieve name based on UserId
+            var user = UserManager.FindById(userId);
+            var FirstName = user.FirstName;
+            var LastName = user.LastName;
+            var EmailAddress = user.EmailAddress;
+            var MobilePhone = user.MobilePhone;
+            var model = new UserProfileViewModel
             {
-                return RedirectToAction("Dashboard", "Home");
-            }
-            UserProfileViewModel model = new UserProfileViewModel();
-            model.FirstName = User.FirstName;
-            model.LastName = User.LastName;
-            model.EmailAddress = User.EmailAddress;
-            model.MobilePhone = User.MobilePhone;
+                FirstName = FirstName,
+                LastName = LastName,
+                EmailAddress = EmailAddress,
+                MobilePhone = MobilePhone,
+                //HasPassword = HasPassword()
+            };
             return View(model);
         }
 
-        //POST: /Account/UserProfile
+
+
         [HttpPost]
         public async Task<ActionResult> UserProfile(UserProfileViewModel model)
         {
-            if (ModelState.IsValid)
+            if (!ModelState.IsValid)
             {
-                ApplicationUser User = new ApplicationUser();
-                User = new ApplicationUser { UserName = model.EmailAddress, Email = model.EmailAddress };
-                var result = await UserManager.CreateAsync(User, model.EmailAddress);
-                if (result.Succeeded)
-                {
-                    await SignInManager.SignInAsync(User, isPersistent: false, rememberBrowser: false);
-
-                    // For more information on how to enable account confirmation and password reset please visit http://go.microsoft.com/fwlink/?LinkID=320771
-                    // Send an email with this link
-                    string code = await UserManager.GenerateEmailConfirmationTokenAsync(User.Id);
-                    var callbackUrl = Url.Action("ConfirmEmail", "Account", new { userId = User.Id, code = code }, protocol: Request.Url.Scheme);
-                    await UserManager.SendEmailAsync(User.Id, "Confirm your account", "Please confirm your account by clicking <a href=\"" + callbackUrl + "\">here</a>");
-
-                    return RedirectToAction("Dashboard", "Home");
-                }
-                AddErrors(result);
+                return View(model);
             }
+            // Find the user, update the fields with the new ones
+            ApplicationUser user = UserManager.FindById(User.Identity.GetUserId());
+            user.FirstName = model.FirstName;
+            user.LastName = model.LastName;
+            user.EmailAddress = model.EmailAddress;
+            user.UserName = model.EmailAddress;
 
-            // If we got this far, something failed, redisplay form
-            return View(model);
+            IdentityResult result = await UserManager.UpdateAsync(user);
+
+            return RedirectToAction("Index");
         }
 
 
