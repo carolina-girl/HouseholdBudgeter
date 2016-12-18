@@ -1,124 +1,141 @@
 ﻿@model HouseholdBudgeter.Models.Transaction
-
+@{var OriginalBalance = Model.Balance - Model.ReconcileAmount;}
 @{
     ViewBag.Title = "Details";
 }
 
+<link href="//cdn.datatables.net/1.10.12/css/jquery.dataTables.min.css" rel="stylesheet" />
+@Html.HiddenFor(model => model.CategoryId)
+@Html.HiddenFor(model => model.AccountId)
+<div>
+    <h4>Transaction</h4>
+    <hr />
+    <dl class="dl-horizontal">
+        <dt>
+            @Html.DisplayNameFor(model => model.User.FirstName)
+        </dt>
 
-<!-- Page Content -->
-<div id="page-wrapper">
-    <div class="container-fluid">
-        <div class="row">
-            <div class="col-lg-12">
-                <h1 class="page-header"></h1>
-                @Html.HiddenFor(model => model.CategoryId)
-                @Html.HiddenFor(model => model.AccountId)
-                <div>
-                    <h4>Transaction</h4>
-                    <hr />
-                    <dl class="dl-horizontal">
-                        <dt>
-                            @Html.DisplayNameFor(model => model.User.FirstName)
-                        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.User.FirstName)
+        </dd>
 
-                        <dd>
-                            @Html.DisplayFor(model => model.User.FirstName)
-                        </dd>
+        @*<dt>
+                @Html.DisplayNameFor(model => model.CategoryId)
+            </dt>
 
-                        @*<dt>
-                            @Html.DisplayNameFor(model => model.CategoryId)
-                        </dt>
+            <dd>
+                @Html.DisplayFor(model => model.CategoryId)
+            </dd>*@
 
-                        <dd>
-                            @Html.DisplayFor(model => model.CategoryId)
-                        </dd>*@
+        @*<dt>
+                @Html.DisplayNameFor(model => model.AccountId)
+            </dt>
 
-                        @*<dt>
-                            @Html.DisplayNameFor(model => model.AccountId)
-                        </dt>
+            <dd>
+                @Html.DisplayFor(model => model.AccountId)
+            </dd>*@
 
-                        <dd>
-                            @Html.DisplayFor(model => model.AccountId)
-                        </dd>*@
+        <dt>
+            @Html.DisplayNameFor(model => model.Date)
+        </dt>
 
-                        <dt>
-                            @Html.DisplayNameFor(model => model.Date)
-                        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.Date)
+        </dd>
 
-                        <dd>
-                            @Html.DisplayFor(model => model.Date)
-                        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.ReconcileDate)
+        </dt>
 
-                        <dt>
-                            @Html.DisplayNameFor(model => model.ReconcileDate)
-                        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.ReconcileDate)
+        </dd>
 
-                        <dd>
-                            @Html.DisplayFor(model => model.ReconcileDate)
-                        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.Description)
+        </dt>
 
-                        <dt>
-                            @Html.DisplayNameFor(model => model.Description)
-                        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.Description)
+        </dd>
 
-                        <dd>
-                            @Html.DisplayFor(model => model.Description)
-                        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.Name)
+        </dt>
 
-                        <dt>
-                            @Html.DisplayNameFor(model => model.Name)
-                        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.Name)
+        </dd>
 
-                        <dd>
-                            @Html.DisplayFor(model => model.Name)
-                        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.Amount)
+        </dt>
 
-                        <dt>
-                            @Html.DisplayNameFor(model => model.Amount)
-                        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.Amount)
+        </dd>
 
-                        <dd>
-                            @Html.DisplayFor(model => model.Amount)
-                        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.ReconcileAmount)
+        </dt>
 
-                        <dt>
-                            @Html.DisplayNameFor(model => model.ReconcileAmount)
-                        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.ReconcileAmount)
+        </dd>
 
-                        <dd>
-                            @Html.DisplayFor(model => model.ReconcileAmount)
-                        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.IsExpense)
+        </dt>
 
-                        <dt>
-                            @Html.DisplayNameFor(model => model.IsExpense)
-                        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.IsExpense)
+        </dd>
 
-                        <dd>
-                            @Html.DisplayFor(model => model.IsExpense)
-                        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.IsReconciled)
+        </dt>
 
-                        <dt>
-                            @Html.DisplayNameFor(model => model.IsReconciled)
-                        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.IsReconciled)
+        </dd>
 
-                        <dd>
-                            @Html.DisplayFor(model => model.IsReconciled)
-                        </dd>
-
-                    </dl>
-                </div>
-                <p>
-                    @Html.ActionLink("Edit", "Edit", new { id = Model.Id }) |
-                    @Html.ActionLink("Back to List", "Index")
-                </p>
-
-            </div>
-            <!-- /.col-lg-12 -->
-        </div>
-        <!-- /.row -->
-    </div>
-    <!-- /.container-fluid -->
+    </dl>
 </div>
+<p>
+    @Html.ActionLink("Edit", "Edit", new { id = Model.Id }) |
+    @Html.ActionLink("Back to List", "Index")
+</p>
+ 
 
+@section Scripts {
+    <script type="text/javascript" language="javascript" src="//cdn.datatables.net/1.10.11/js/jquery.dataTables.min.js"></script>
+    <script src="~/Scripts/LoadPartials.js"></script>
+    <script src="~/Scripts/jquery.maskMoney.js"></script>
+    <script>
+        $(document).ready(function () {
+            $(document).on('change', '#TransactionType', function () {
+                $("div#categories").toggle();
+            });
+
+            $('#action').load('@Url.Action("_AddTransaction", "Transactions", new { id = Model.UserId })', function () {
+                $('#Amount').maskMoney();
+            });
+
+            $('.table').DataTable({
+                "order": [[1, "desc"]],
+                "columns": [
+                  null,
+                  null,
+                  null,
+                  null,
+                  null,
+                  null,
+                  { "orderable": false }
+                ]
+            });
+
+        });
+    </script>
+    }
 
 

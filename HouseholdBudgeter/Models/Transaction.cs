@@ -8,15 +8,15 @@ using static HouseholdBudgeter.Helpers.HouseholdHelper;
 namespace HouseholdBudgeter.Models
 {
     public class Transaction
-    { 
+    {
         public int Id { get; set; }
-        public int CategoryId { get; set; }
+        public string UserId { get; set; }
+        public int? CategoryId { get; set; }
         public int AccountId { get; set; }
         public DateTimeOffset Date { get; set; }
         public DateTimeOffset? ReconcileDate { get; set; }
         public string Description { get; set; }
         public string Name { get; set; }
-        public string UserId { get; set; }
         public decimal Amount { get; set; }
         public decimal Balance { get; set; }
         public decimal ReconcileAmount { get; set; }
@@ -26,6 +26,11 @@ namespace HouseholdBudgeter.Models
         public virtual BudgetCategory BudgetCategory { get; set; }
         public virtual TransactionType TransactionType { get; set; }
         public virtual  ApplicationUser User { get; set; }
-
+        public bool IsDeleted { get; internal set; }
+        public bool IsVoid { get; internal set; }
+        public DateTime DateSpent { get; internal set; }
+        public string Type { get; internal set; }
+        public object[] EnteredById { get; internal set; }
+        public string SpentById { get; internal set; }
     }
 }

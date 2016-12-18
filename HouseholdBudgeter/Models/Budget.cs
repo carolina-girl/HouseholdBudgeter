@@ -14,6 +14,7 @@ namespace HouseholdBudgeter.Models
         public int Id { get; set; }
         public int HouseholdId { get; set; }
         public string Name { get; set; }
+        public decimal Amount { get; set; }
         public virtual Household Household {get;set;}
         public virtual ICollection<BudgetItem> BudgetItems { get; set; }
 

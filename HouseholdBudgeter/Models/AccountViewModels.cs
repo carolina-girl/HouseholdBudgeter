@@ -99,20 +99,20 @@ namespace HouseholdBudgeter.Models
 
     public class ResetPasswordViewModel
     {
-        [Required]
-        [EmailAddress]
-        [Display(Name = "First Name")]
-        public string FirstName { get; set; }
+        //[Required]
+        //[EmailAddress]
+        //[Display(Name = "First Name")]
+        //public string FirstName { get; set; }
 
-        [Required]
-        [EmailAddress]
-        [Display(Name = "Last Name")]
-        public string LastName { get; set; }
+        //[Required]
+        //[EmailAddress]
+        //[Display(Name = "Last Name")]
+        //public string LastName { get; set; }
 
-        [Required]
-        [EmailAddress]
-        [Display(Name = "Mobile Phone")]
-        public string MobilePhone { get; set; }
+        //[Required]
+        //[EmailAddress]
+        //[Display(Name = "Mobile Phone")]
+        //public string MobilePhone { get; set; }
 
         [Required]
         [EmailAddress]

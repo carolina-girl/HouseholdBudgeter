@@ -13,6 +13,7 @@ namespace HouseholdBudgeter.Models
     {
         public string FirstName { get; set; }
         public string LastName { get; set; }
+        public string FullName { get { return FirstName + " " + LastName; } }
         public string EmailAddress { get; set; }
         public string MobilePhone { get; set; }
         public string TheEmailConfirmed { get; set; }
@@ -57,6 +58,6 @@ namespace HouseholdBudgeter.Models
         public DbSet<Household> Household { get; set; }
         public DbSet<HouseholdInvitations> HouseholdInvitation { get; set; }
         public DbSet<Transaction> Transactions { get; set; }
-
+        public IEnumerable ApplicationUsers { get; internal set; }
     }
 }

@@ -11,6 +11,8 @@ using System.Threading.Tasks;
 using HouseholdBudgeter.Helpers;
 using static HouseholdBudgeter.Helpers.AuthorizeHousehold;
 using Microsoft.AspNet.Identity;
+using Microsoft.AspNet.Identity.EntityFramework;
+using System.Security.Policy;
 
 namespace HouseholdBudgeter.Controllers
 {
@@ -21,18 +23,18 @@ namespace HouseholdBudgeter.Controllers
         // GET: Households
         public ActionResult Index()
         {
-      
+
             return View(db.Household.ToList());
         }
 
         // GET: Households/Details/5
-        public ActionResult Details(int? id)
+        public ActionResult Details(int? Id)
         {
-            if (id == null)
+            if (Id == null)
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            Household household = db.Household.Find(id);
+            Household household = db.Household.Find(Id);
             if (household == null)
             {
                 return HttpNotFound();
@@ -55,29 +57,45 @@ namespace HouseholdBudgeter.Controllers
         {
             if (ModelState.IsValid)
             {
-                household.Date = DateTimeOffset.Now;
+                //Create household
+                household.Date = System.DateTimeOffset.Now;
                 db.Household.Add(household);
                 db.SaveChanges();
+                //Add user to household
                 var userId = User.Identity.GetUserId();
                 var user = db.Users.Find(userId);
                 var thisHousehold = db.Household.Find(household.Id);
                 thisHousehold.Users.Add(user);
-                db.Household.Add(household);
-                db.SaveChanges();
+                ////Create budget for household
+                //Budget budget = new Budget();
+                //budget.Created = System.DateTimeOffset.Now;
+                //budget.Amount = 0;
+                //budget.HouseholdId = thisHousehold.Id;
+                //budget.Household = thisHousehold;
+                //db.Budgets.Add(budget);
+                ////Update household to include budget
+                //thisHousehold.Budget = budget;
+                //thisHousehold.BudgetId = budget.Id;
+                //db.Households.Attach(thisHousehold);
+                //db.Entry(thisHousehold).Property("BudgetId").IsModified = true;
+                //db.SaveChanges();
+                ////Refresh cookies to add new household Id
+                //await ControllerContext.HttpContext.RefreshAuthentication(user);
                 return RedirectToAction("Index");
             }
 
-            return View(household);
+            return View();
         }
 
+
         // GET: Households/Edit/5
-        public ActionResult Edit(int? id)
+        public ActionResult Edit(int? Id)
         {
-            if (id == null)
+            if (Id == null)
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            Household household = db.Household.Find(id);
+            Household household = db.Household.Find(Id);
             if (household == null)
             {
                 return HttpNotFound();
@@ -103,7 +121,7 @@ namespace HouseholdBudgeter.Controllers
 
 
 
-        // POST: Household/LeaveHousehold/5
+        // POST: Households/LeaveHousehold/5
         [HttpPost]
         public async Task<ActionResult> LeaveHousehold(bool? confirmLeaveHousehold)
         {
@@ -116,24 +134,26 @@ namespace HouseholdBudgeter.Controllers
             {
                 household.Users.Remove(user);
                 db.SaveChanges();
-                await ControllerContext.HttpContext.RefreshAuthentication(user);
+                //await ControllerContext.HttpContext.RefreshAuthentication(user);
                 return RedirectToAction("Dashboard", "Home");
-        }
+            }
 
-        TempData["Error"] = "Please confirm you want to leave this household.";
-            return RedirectToAction("Dashboard");
+            TempData["Error"] = "Please confirm you want to leave this household.";
+            return RedirectToAction("Dashboard", "Home");
         }
     
 
 
+
+
 // GET: Households/Delete/5
-public ActionResult Delete(int? id)
+public ActionResult Delete(int? Id)
         {
-            if (id == null)
+            if (Id == null)
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            Household household = db.Household.Find(id);
+            Household household = db.Household.Find(Id);
             if (household == null)
             {
                 return HttpNotFound();
@@ -144,9 +164,9 @@ public ActionResult Delete(int? id)
         // POST: Households/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
-        public ActionResult DeleteConfirmed(int id)
+        public ActionResult DeleteConfirmed(int Id)
         {
-            Household household = db.Household.Find(id);
+            Household household = db.Household.Find(Id);
             db.Household.Remove(household);
             db.SaveChanges();
             return RedirectToAction("Index");
@@ -163,3 +183,4 @@ public ActionResult Delete(int? id)
         }
     }
 }
+

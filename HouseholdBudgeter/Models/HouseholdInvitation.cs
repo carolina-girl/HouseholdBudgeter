@@ -12,7 +12,7 @@ namespace HouseholdBudgeter.Models
         this.Users = new HashSet<ApplicationUser>();
        }
         public int Id { get; set; }
-        public int HouseholdId { get; set; }
+        public int? HouseholdId { get; set; }
         public DateTimeOffset Date { get; set; }
         public Guid Invitecode { get; set; }
         public string Email { get; set; }

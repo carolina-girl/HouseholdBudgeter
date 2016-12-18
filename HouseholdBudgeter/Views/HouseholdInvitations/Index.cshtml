@@ -5,20 +5,13 @@
 }
 
 
-<!-- Page Content -->
-<div id="page-wrapper">
-    <div class="container-fluid">
-        <div class="row">
-            <div class="col-lg-12">
-                <h1 class="page-header"></h1>
-
                 <p>
                     @Html.ActionLink("Create New", "Create")
                 </p>
                 <table class="table">
                     <tr>
                         <th>
-                            @Html.DisplayNameFor(model => model.Household.Name)
+                            @Html.DisplayNameFor(model => model.Household)
                         </th>
                         <th>
                             @Html.DisplayNameFor(model => model.Date)
@@ -42,7 +35,7 @@
                     {
                         <tr>
                             <td>
-                                @Html.DisplayFor(modelItem => item.Household.Name)
+                                @Html.DisplayFor(modelItem => item.Household)
                             </td>
                             <td>
                                 @Html.DisplayFor(modelItem => item.Date)
@@ -68,13 +61,6 @@
                     }
 
                 </table>
-            </div>
-            <!-- /.col-lg-12 -->
-        </div>
-        <!-- /.row -->
-    </div>
-    <!-- /.container-fluid -->
-</div>
 
 
 

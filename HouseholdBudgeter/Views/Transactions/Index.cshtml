@@ -4,16 +4,6 @@
     ViewBag.Title = "Index";
 }
 
-
-<!-- Page Content -->
-<div id="page-wrapper">
-    <div class="container-fluid">
-        @*@Html.HiddenFor(model => model.CategoryId)
-        @Html.HiddenFor(model => model.AccountId)*@
-
-        <div class="row">
-            <div class="col-lg-12">
- 
                 <h3 class="page-header">Account Transactions</h3>
                 <p>
                     @Html.ActionLink("Create New Transaction", "Create") |
@@ -21,22 +11,22 @@
                 </p>
                 <table class="table">
                     <tr>
-                        @*<th>
-                            @Html.DisplayNameFor(model => model.User.FirstName)
-                        </th>*@
-
                         <th>
+                                @Html.DisplayNameFor(model => model.User.FullName)
+                            </th>
+
+                        @*<th>
                             @Html.DisplayNameFor(model => model.CategoryId)
                         </th>
                         <th>
                             @Html.DisplayNameFor(model => model.AccountId)
-                        </th>
+                        </th>*@
                         <th>
                             @Html.DisplayNameFor(model => model.Date)
                         </th>
-                        <th>
+                        @*<th>
                             @Html.DisplayNameFor(model => model.ReconcileDate)
-                        </th>
+                        </th>*@
                         <th>
                             @Html.DisplayNameFor(model => model.Description)
                         </th>
@@ -61,21 +51,21 @@
                     @foreach (var item in Model)
                     {
                         <tr>
-                            @*<td>
-                                @Html.DisplayFor(modelItem => item.User.FirstName)
-                            </td>*@
                             <td>
+                                    @Html.DisplayFor(modelItem => item.User.FullName)
+                                </td>
+                            @*<td>
                                 @Html.DisplayFor(modelItem => item.CategoryId)
                             </td>
                             <td>
                                 @Html.DisplayFor(modelItem => item.AccountId)
-                            </td>
+                            </td>*@
                             <td>
                                 @Html.DisplayFor(modelItem => item.Date)
                             </td>
-                            <td>
+                            @*<td>
                                 @Html.DisplayFor(modelItem => item.ReconcileDate)
-                            </td>
+                            </td>*@
                             <td>
                                 @Html.DisplayFor(modelItem => item.Description)
                             </td>
@@ -97,20 +87,12 @@
                             <td>
                                 @Html.ActionLink("Edit", "Edit", new { id = item.Id }) |
                                 @Html.ActionLink("Details", "Details", new { id = item.Id }) |
-                                @Html.ActionLink("Void", "Void", new { id = item.Id })
+                                @Html.ActionLink("Void", "Delete", new { id = item.Id })
                             </td>
                         </tr>
                     }
 
                 </table>
-
-            </div>
-            <!-- /.col-lg-12 -->
-        </div>
-        <!-- /.row -->
-    </div>
-    <!-- /.container-fluid -->
-</div>
 
 
 

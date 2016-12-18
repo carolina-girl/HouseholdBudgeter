@@ -24,6 +24,40 @@ namespace HouseholdBudgeter.Controllers
             return View(invitation.ToList());
         }
 
+        // GET: HouseholdInvitations/JoinHousehold
+        public ActionResult JoinHousehold()
+        {
+            return View();
+        }
+
+        // POST: HouseholdInvitations/JoinHousehold
+        [HttpPost]
+        public async Task<ActionResult> JoinHousehold(Guid? inviteCode)
+        {
+            var invite = db.HouseholdInvitation.FirstOrDefault(i => i.Invitecode == inviteCode);
+            var userId = User.Identity.GetUserId();
+            var user = db.Users.Find(userId);
+            if (invite != null && invite.Expired == false)
+            {
+                invite.Expired = true;
+                db.HouseholdInvitation.Attach(invite);
+                db.Entry(invite).Property("Expired").IsModified = true;
+                db.SaveChanges();
+                var household = db.Household.Find(invite.HouseholdId);
+                if (household != null)
+                {
+                    household.Users.Add(user);
+                    db.SaveChanges();
+                    //await ControllerContext.HttpContext.RefreshAuthentication(user);
+                    return RedirectToAction("Details", "Household");
+                }
+            }
+            ViewBag.Message = "That invitation is invalid or has expired.";
+            return View();
+        }
+
+
+
         // GET: HouseholdInvitations/Details/5
         public ActionResult Details(int? id)
         {
@@ -51,35 +85,39 @@ namespace HouseholdBudgeter.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<ActionResult> Create([Bind(Include = "Id,HouseholdId,Date,Expired,IsAccepted,Invitecode")] HouseholdInvitations householdInvitation, string Email)
-           { 
-            if (!string.IsNullOrWhiteSpace(Email))
-               {
+        public ActionResult Create([Bind(Include = "Id,HouseholdId,Date,Expired,IsAccepted,Invitecode")] HouseholdInvitations householdInvitation, string Email)
+        {
+
+            return View();
+        }
+
+        // POST: HouseholdInvitations/InviteUser/5
+        [HttpPost]
+        public async Task<ActionResult> InviteUser(string inviteEmail)
+        {
+            if (!string.IsNullOrWhiteSpace(inviteEmail))
+            {
                 int? householdId = User.Identity.GetHouseholdId();
                 string userId = User.Identity.GetUserId();
                 var user = db.Users.Find(userId);
                 HouseholdInvitations invitation = new HouseholdInvitations();
                 invitation.Invitecode = Guid.NewGuid();
-                invitation.Email = invitation.Email;
-                invitation.HouseholdId = invitation.HouseholdId;
+                invitation.Email = inviteEmail;
+                invitation.HouseholdId = householdId;
                 db.HouseholdInvitation.Add(invitation);
                 db.SaveChanges();
 
                 var svc = new EmailService();
                 var msg = new IdentityMessage();
-                msg.Destination = invitation.Email;
-                msg.Subject = user.FirstName + "" + user.LastName + " has invited you to join their Money Manager household.";
-                msg.Body = user.FirstName + "" + user.LastName + " has invited you to join their household in the Money Manager! To join, go to budgeter.azurewebsites.net and enter the following invitation code: " + invitation.Invitecode;
+                msg.Destination = inviteEmail;
+                msg.Subject = user.FullName + " has invited you to join the Money Manager";
+                msg.Body = user.FullName + " has invited you to join their household in the Money Manager using the following invitation code: " + invitation.Invitecode;
                 await svc.SendAsync(msg);
                 TempData["Message"] = "Your invitation has been sent!";
-            
-            return RedirectToAction("InvitationSent", "HouseholdInvitations");
-              }
-        ViewBag.HouseholdId = new SelectList(db.Household, "Id", "Name", householdInvitation.HouseholdId);
-                return View();
             }
-        
 
+            return RedirectToAction("Index");
+        }
 
 
         // GET: HouseholdInvitations/Edit/5

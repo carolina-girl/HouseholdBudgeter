@@ -22,6 +22,19 @@ namespace HouseholdBudgeter.Controllers
             return View(budgetItem.ToList());
         }
 
+        // GET: Add BudgetItems
+        public ActionResult _AddBudgetItems(int? Id)
+        {
+            try
+            {
+                return PartialView();
+            }
+            catch
+            {
+                return PartialView("_Error");
+            }
+        }
+
         // GET: BudgetItems/Details/5
         public ActionResult Details(int? id)
         {
@@ -64,163 +77,108 @@ namespace HouseholdBudgeter.Controllers
             return View(budgetItem);
         }
 
-        //POST: Add Budget Item
+
+
+
+        // GET: Edit BudgetItem
+        public ActionResult _EditBudgetItem(int? id)
+        {
+            try
+            {
+                var model = db.BudgetItem.Find(id);
+                return PartialView(model);
+            }
+            catch
+            {
+                return PartialView("_Error");
+            }
+        }
+
+        //POST: Edit Budget Item
         [HttpPost]
-        public ActionResult AddBudgetItem(int Frequency, decimal Amount, string CategoryName)
+        public ActionResult EditBudgetItem([Bind(Include = "Id, BudgetId, Created, Amount, Frequency, BudgetCategory.Id")] BudgetItem item, string CategoryName)
         {
             if (ModelState.IsValid)
             {
                 var householdId = User.Identity.GetHouseholdId();
                 var budget = db.Budget.FirstOrDefault(b => b.HouseholdId == householdId);
-                var item = new BudgetItem();
+                var oldItem = db.BudgetItem.AsNoTracking().FirstOrDefault(m => m.Id == item.Id);
                 item.Date = DateTimeOffset.Now;
-                item.Frequency = Frequency;
-                item.Amount = Amount;
-                db.BudgetItem.Add(item);
-                budget.BudgetItems.Add(item);
 
-                //BudgetCategory category = new BudgetCategory();
-                //var budgetCategories = from i in budget.BudgetItems
-                //                       from c in db.BudgetCategory
-                //                       where i.BudgetCategoryId == c.Id
-                //                       select c;
-                //if (budgetCategories.Any(b => b.Category.Standardize() == CategoryName.Standardize()))
-                //{
-                //    TempData["Error"] = "Category already exists. Please enter a different category name.";
-                //    return RedirectToAction("Index");
-                //}
-                //else
-                //{
-                //    category.Category = CategoryName;
-                //}
-                //category.BudgetItems = item;
-                //db.BudgetCategory.Add(category);
-                //db.SaveChanges();
-                //UpdateBudgetAmount(true, Amount, Frequency, budget.Id);
-                //item.BudgetCategoryId = category.Id;
-                db.Entry(item).State = EntityState.Modified;
+                budget.Amount -= oldItem.Amount * oldItem.Frequency / 12;
+                budget.Amount += item.Amount * item.Frequency / 12;
+                budget.Household = budget.Household;
+
+                db.BudgetItem.Attach(item);
+                db.Entry(item).Property("Amount").IsModified = true;
+                db.Entry(item).Property("Frequency").IsModified = true;
+                db.Entry(item).Property("Modified").IsModified = true;
+                db.Budget.Attach(budget);
+                db.Entry(budget).Property("Amount").IsModified = true;
                 db.SaveChanges();
 
+                var category = db.BudgetCategory.Find(oldItem.BudgetCategory.Id);
+                var oldCategoryName = oldItem.BudgetCategory.Name;
+                if (oldCategoryName != CategoryName)
+                {
+                    var budgetCategories = from i in budget.BudgetItems
+                                           from c in db.BudgetCategory
+                                           where i.BudgetCategoryId == c.Id
+                                           select c;
+                    if (budgetCategories.Any(b => b.Name.Standardize() == CategoryName.Standardize()))
+                    {
+                        TempData["EditError"] = "That category already exists. Please enter a different category name.";
+                        TempData["Id"] = item.Id;
+                        return RedirectToAction("Index");
+                    }
+                }
+                else
+                {
+                    category.Name = CategoryName;
+                }
+                category.Name = CategoryName;
+                db.BudgetCategory.Attach(category);
+                db.Entry(category).Property("Name").IsModified = true;
+                db.SaveChanges();
             }
             return RedirectToAction("Index");
         }
 
-
-        // GET: BudgetItems/Edit/5
-        public ActionResult Edit(int? id)
+        // GET: Edit BudgetItem
+        public ActionResult _DeleteBudgetItem(int? Id)
         {
-            if (id == null)
+            try
             {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+                var model = db.BudgetItem.Find(Id);
+                return PartialView(model);
             }
-            BudgetItem budgetItem = db.BudgetItem.Find(id);
-            if (budgetItem == null)
+            catch
             {
-                return HttpNotFound();
+                return PartialView("_Error");
             }
-            ViewBag.BudgetId = new SelectList(db.Budget, "Id", "Name", budgetItem.BudgetId);
-            ViewBag.BudgetCategoryId = new SelectList(db.BudgetCategory, "Id", "Category", budgetItem.BudgetCategoryId);
-            return View(budgetItem);
         }
 
-        // POST: BudgetItems/Edit/5
-        // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
-        // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
+        //POST: Transaction/DeleteTransaction
         [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Edit([Bind(Include = "Id,BudgetCategoryId,BudgetId,Frequency,Date,Amount,Name")] BudgetItem budgetItem)
+        public ActionResult DeleteBudgetItem(int Id)
         {
-            if (ModelState.IsValid)
-            {
-                var householdId = User.Identity.GetHouseholdId();
-                var budget = db.Budget.FirstOrDefault(b => b.HouseholdId == householdId);
-                var oldItem = db.BudgetItem.AsNoTracking().FirstOrDefault(m => m.Id == budgetItem.Id);
-                budgetItem.Date = DateTimeOffset.Now;
-
-                budgetItem.Amount -= oldItem.Amount * oldItem.Frequency / 12;
-                budgetItem.Amount += budgetItem.Amount * budgetItem.Frequency / 12;
-                budget.Household = budget.Household;
-          
-
-                db.BudgetItem.Attach(budgetItem);
-                db.Entry(budgetItem).Property("Amount").IsModified = true;
-                db.Entry(budgetItem).Property("Frequency").IsModified = true;
-                db.Entry(budgetItem).Property("Date").IsModified = true;
-                db.Entry(budget).Property("Amount").IsModified = true;
-                db.Budget.Attach(budget);
-                db.Entry(budgetItem).State = EntityState.Modified;
-                db.SaveChanges();
-
-                //var newCategory = db.BudgetCategory.Find(oldItem.BudgetCategoryId);
-                //var oldCategoryName = oldItem.Catagory.Category;
-                //if (oldCategoryName != newCategory)
-                //{
-                //    var budgetCategories = from i in budget.BudgetItems
-                //                           from c in db.BudgetCategory
-                //                           where i.BudgetCategoryId == c.Id
-                //                           select c;
-                //    if (budgetCategories.Any(b => b.Category.Standardize() == newCategory.Standardize()))
-                //    {
-                //        TempData["EditError"] = "That category already exists. Please enter a different category name.";
-                //        TempData["Id"] = budgetItem.Id;
-                //        return RedirectToAction("Index");
-                //    }
-                //}
-                //else
-                //{
-                //    newCategory.Category = Category;
-                //}
-                //newCategory.Category = Category;
-                //db.BudgetCategory.Attach(newCategory);
-                //db.Entry(newCategory).Property("Name").IsModified = true;
-                //db.Entry(budgetItem).State = EntityState.Modified;
-                //db.SaveChanges();
-                return RedirectToAction("Index");
-            }
-            ViewBag.BudgetId = new SelectList(db.Budget, "Id", "Name", budgetItem.BudgetId);
-            ViewBag.BudgetCategoryId = new SelectList(db.BudgetCategory, "Id", "Category", budgetItem.BudgetCategoryId);
-            return View(budgetItem);
-        }
-
-        // GET: BudgetItems/Delete/5
-        public ActionResult Delete(int? id)
-        {
-            if (id == null)
-            {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            }
-            BudgetItem budgetItem = db.BudgetItem.Find(id);
-            if (budgetItem == null)
-            {
-                return HttpNotFound();
-            }
-            return View(budgetItem);
-        }
-
-        // POST: BudgetItems/Delete/5
-        [HttpPost, ActionName("Delete")]
-        [ValidateAntiForgeryToken]
-        public ActionResult DeleteConfirmed(int Id)
-        {
-     
-            BudgetItem budgetItem = db.BudgetItem.Find(Id);
-            db.BudgetItem.Remove(budgetItem);
+            var category = db.BudgetCategory.Find(Id);
+            var item = db.BudgetItem.Find(Id);
+            //UpdateBudgetAmount(false, item.Amount, item.Frequency, item.BudgetId);
+            db.BudgetCategory.Remove(category);
+            db.BudgetItem.Remove(item);
             db.SaveChanges();
             return RedirectToAction("Index");
         }
 
         //POST: Edit Budget Amount
         [HttpPost]
-        public ActionResult EditBudgetAmount(int Id)
+        public ActionResult EditBudgetAmount()
         {
-            var category = db.BudgetCategory.Find(Id);
-            var item = db.BudgetItem.Find(Id);
-            //EditBudgetAmount(false, item.Amount, item.Frequency, item.BudgetId);
-            BudgetCategory budgetCategory = db.BudgetCategory.Find(Id);
             return RedirectToAction("Index");
         }
-
-        protected override void Dispose(bool disposing)
+    
+protected override void Dispose(bool disposing)
         {
             if (disposing)
             {

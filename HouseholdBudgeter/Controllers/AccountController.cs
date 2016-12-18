@@ -157,7 +157,7 @@ namespace HouseholdBudgeter.Controllers
         {
             if (ModelState.IsValid)
             {
-                var user = new ApplicationUser { UserName = model.EmailAddress, Email = model.EmailAddress };
+                var user = new ApplicationUser { UserName = model.EmailAddress, Email = model.EmailAddress, FirstName = model.FirstName, LastName = model.LastName, MobilePhone = model.MobilePhone };
                 var result = await UserManager.CreateAsync(user, model.Password);
                 if (result.Succeeded)
                 {
@@ -437,7 +437,6 @@ namespace HouseholdBudgeter.Controllers
         public ActionResult UserProfile()
         {
             var userId = User.Identity.GetUserId();
-            //could retrieve name based on UserId
             var user = UserManager.FindById(userId);
             var FirstName = user.FirstName;
             var LastName = user.LastName;
@@ -449,12 +448,9 @@ namespace HouseholdBudgeter.Controllers
                 LastName = LastName,
                 EmailAddress = EmailAddress,
                 MobilePhone = MobilePhone,
-                //HasPassword = HasPassword()
             };
             return View(model);
         }
-
-
 
         [HttpPost]
         public async Task<ActionResult> UserProfile(UserProfileViewModel model)
@@ -469,10 +465,11 @@ namespace HouseholdBudgeter.Controllers
             user.LastName = model.LastName;
             user.EmailAddress = model.EmailAddress;
             user.UserName = model.EmailAddress;
+            user.MobilePhone = model.MobilePhone;
 
             IdentityResult result = await UserManager.UpdateAsync(user);
 
-            return RedirectToAction("Index");
+            return RedirectToAction("Dashboard", "Home");
         }
 
 

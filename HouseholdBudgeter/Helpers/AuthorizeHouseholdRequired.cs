@@ -1,4 +1,5 @@
-﻿using HouseholdBudgeter.Models;
+﻿using HouseholdBudgeter.Helpers;
+using HouseholdBudgeter.Models;
 using Microsoft.AspNet.Identity.Owin;
 using System;
 using System.Collections.Generic;
@@ -22,7 +23,7 @@ namespace HouseholdBudgeter.Helpers
                 {
                     return false;
                 }
-                    return httpContext.User.Identity.IsInHousehold();
+                    return httpContext.User.Identity.IsInHousehould();
                 }
 
                 protected override void HandleUnauthorizedRequest(AuthorizationContext filterContext)

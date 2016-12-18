@@ -4,21 +4,29 @@
 }
 
 <!-- Page Content -->
-<div id="page-wrapper">
-    <div class="container-fluid">
-        <div class="row">
-            <div class="col-lg-12">
+@*@Html.HiddenFor(model => model.HouseholdId)*@
                 <h3 class="page-header">Bank Accounts</h3>
-               
+                    @using (Html.BeginForm("AddAccount", "BankAccount"))
+                    {
+                        @Html.AntiForgeryToken()
+                        <div class="form-horizontal">
+                            @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+                            <div class="form-group">
+                                <div class="col-md-6">
+                                    <input type="text" placeholder="BankAccount Name" name="BankAccountName" class="form-control" />
+                                </div>
+                            </div>
+                        </div>
+                    }
                 <p>
-                    @Html.ActionLink("Create New Bank Account", "Create")
+                    @Html.ActionLink("New Account", "Create")
                 </p>
                 <table class="table">
                    
                     <tr>
-                        <th>
+                        @*<th>
                             @Html.DisplayNameFor(model => model.Household)
-                        </th>
+                        </th>*@
                         <th>
                             @Html.DisplayNameFor(model => model.Name)
                         </th>
@@ -37,9 +45,9 @@
                     @foreach (var item in Model)
                     {
                         <tr>
-                            <td>
-                                @Html.DisplayFor(modelItem => item.Household.Name)
-                            </td>
+                            @*<td>
+                                @Html.DisplayFor(modelItem => item.Household)
+                            </td>*@
                             <td>
                                 @Html.DisplayFor(modelItem => item.Name)
                             </td>
@@ -63,13 +71,6 @@
                     }
                 </table>
 
-            </div>
-            <!-- /.col-lg-12 -->
-        </div>
-        <!-- /.row -->
-    </div>
-    <!-- /.container-fluid -->
-</div>
 
 
 

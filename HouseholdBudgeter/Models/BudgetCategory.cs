@@ -16,5 +16,6 @@ namespace HouseholdBudgeter.Models
         public string Category { get; set; }
         public virtual ICollection<Transaction> Transactions {get;set;}
         public virtual ICollection<BudgetItem> BudgetItems { get; set; }
+        public string Name { get; internal set; }
     }
 }
