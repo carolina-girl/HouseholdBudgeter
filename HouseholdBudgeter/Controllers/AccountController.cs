@@ -16,7 +16,7 @@ using System.Data.Entity;
 
 namespace HouseholdBudgeter.Controllers
 {
-    [Authorize]
+    //[Authorize]
     public class AccountController : Controller
     {
         private ApplicationDbContext db = new ApplicationDbContext();
@@ -80,12 +80,12 @@ namespace HouseholdBudgeter.Controllers
 
             // This doesn't count login failures towards account lockout
             // To enable password failures to trigger account lockout, change to shouldLockout: true
-            var result = await SignInManager.PasswordSignInAsync(model.EmailAddress, model.Password, model.RememberMe, shouldLockout: false);
+            var result = await SignInManager.PasswordSignInAsync(model.Email, model.Password, model.RememberMe, shouldLockout: false);
             switch (result)
             {
                 case SignInStatus.Success:
-                    //return RedirectToLocal(returnUrl);
-                    return RedirectToAction("Dashboard", "Home");
+                    return RedirectToLocal(returnUrl);
+                    //return RedirectToAction("Dashboard", "Home");
                 case SignInStatus.LockedOut:
                     return View("Lockout");
                 case SignInStatus.RequiresVerification:
@@ -94,6 +94,39 @@ namespace HouseholdBudgeter.Controllers
                 default:
                     ModelState.AddModelError("", "Invalid login attempt.");
                     return View(model);
+            }
+        }
+
+        // POST: /Account/Login - DEMO ADMIN
+        [HttpPost]
+        [AllowAnonymous]
+        [ValidateAntiForgeryToken]
+        public async Task<ActionResult> DemoLogin(LoginViewModel model, string returnUrl)
+        {
+            //var login = new ApplicationDbContext().DemoLogins.FirstOrDefault(l => l.UserName == model.Email);
+
+            model.Password = new ApplicationDbContext().DemoLogins.FirstOrDefault(l => l.UserName == model.Email).Password;
+            model.RememberMe = false;
+            //if (!ModelState.IsValid)
+            //{
+            //    return View(model);
+            //}
+
+            // This doesn't count login failures towards account lockout
+            // To enable password failures to trigger account lockout, change to shouldLockout: true
+            var result = await SignInManager.PasswordSignInAsync(model.Email, model.Password, model.RememberMe, shouldLockout: false);
+            switch (result)
+            {
+                case SignInStatus.Success:
+                    return RedirectToAction("Dashboard", "Home");
+                case SignInStatus.LockedOut:
+                    return View("Lockout");
+                case SignInStatus.RequiresVerification:
+                    return RedirectToAction("SendCode", new { ReturnUrl = returnUrl, RememberMe = model.RememberMe });
+                case SignInStatus.Failure:
+                default:
+                    ModelState.AddModelError("", "Invalid login attempt.");
+                    return View("Login");
             }
         }
 
@@ -157,7 +190,7 @@ namespace HouseholdBudgeter.Controllers
         {
             if (ModelState.IsValid)
             {
-                var user = new ApplicationUser { UserName = model.EmailAddress, Email = model.EmailAddress, FirstName = model.FirstName, LastName = model.LastName, MobilePhone = model.MobilePhone };
+                var user = new ApplicationUser { UserName = model.Email, Email = model.Email, FirstName = model.FirstName, LastName = model.LastName, PhoneNumber = model.Phone };
                 var result = await UserManager.CreateAsync(user, model.Password);
                 if (result.Succeeded)
                 {
@@ -203,7 +236,7 @@ namespace HouseholdBudgeter.Controllers
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> ResendEmailConfirmation(ForgotPasswordViewModel model)
         {
-            var user = await UserManager.FindByNameAsync(model.EmailAddress);
+            var user = await UserManager.FindByNameAsync(model.Email);
 
             if (user != null)
             {
@@ -239,7 +272,7 @@ namespace HouseholdBudgeter.Controllers
         {
             if (ModelState.IsValid)
             {
-                var user = await UserManager.FindByNameAsync(model.EmailAddress);
+                var user = await UserManager.FindByNameAsync(model.Email);
                 if (user == null) /*!(await UserManager.IsEmailConfirmedAsync(user.Id)))*/
                 {
                     // Don't reveal that the user does not exist or is not confirmed
@@ -285,7 +318,7 @@ namespace HouseholdBudgeter.Controllers
             {
                 return View(model);
             }
-            var user = await UserManager.FindByNameAsync(model.EmailAddress);
+            var user = await UserManager.FindByNameAsync(model.Email);
             if (user == null)
             {
                 // Don't reveal that the user does not exist
@@ -380,7 +413,7 @@ namespace HouseholdBudgeter.Controllers
                     // If the user does not have an account, then prompt the user to create an account
                     ViewBag.ReturnUrl = returnUrl;
                     ViewBag.LoginProvider = loginInfo.Login.LoginProvider;
-                    return View("ExternalLoginConfirmation", new ExternalLoginConfirmationViewModel { EmailAddress = loginInfo.Email });
+                    return View("ExternalLoginConfirmation", new ExternalLoginConfirmationViewModel { Email = loginInfo.Email });
             }
         }
 
@@ -404,7 +437,7 @@ namespace HouseholdBudgeter.Controllers
                 {
                     return View("ExternalLoginFailure");
                 }
-                var user = new ApplicationUser { UserName = model.EmailAddress, Email = model.EmailAddress };
+                var user = new ApplicationUser { UserName = model.Email, Email = model.Email };
                 var result = await UserManager.CreateAsync(user);
                 if (result.Succeeded)
                 {
@@ -440,14 +473,14 @@ namespace HouseholdBudgeter.Controllers
             var user = UserManager.FindById(userId);
             var FirstName = user.FirstName;
             var LastName = user.LastName;
-            var EmailAddress = user.EmailAddress;
-            var MobilePhone = user.MobilePhone;
+            var Email = user.Email;
+            var Phone = user.PhoneNumber;
             var model = new UserProfileViewModel
             {
                 FirstName = FirstName,
                 LastName = LastName,
-                EmailAddress = EmailAddress,
-                MobilePhone = MobilePhone,
+                Email = Email,
+                Phone = Phone,
             };
             return View(model);
         }
@@ -463,9 +496,9 @@ namespace HouseholdBudgeter.Controllers
             ApplicationUser user = UserManager.FindById(User.Identity.GetUserId());
             user.FirstName = model.FirstName;
             user.LastName = model.LastName;
-            user.EmailAddress = model.EmailAddress;
-            user.UserName = model.EmailAddress;
-            user.MobilePhone = model.MobilePhone;
+            user.Email = model.Email;
+            user.UserName = model.Email;
+            user.PhoneNumber = model.Phone;
 
             IdentityResult result = await UserManager.UpdateAsync(user);
 

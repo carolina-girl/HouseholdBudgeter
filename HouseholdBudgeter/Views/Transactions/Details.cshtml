@@ -1,16 +1,25 @@
-﻿@model HouseholdBudgeter.Models.Transaction
-@{var OriginalBalance = Model.Balance - Model.ReconcileAmount;}
+﻿
+@model HouseholdBudgeter.Models.Transaction
+
 @{
     ViewBag.Title = "Details";
 }
 
-<link href="//cdn.datatables.net/1.10.12/css/jquery.dataTables.min.css" rel="stylesheet" />
-@Html.HiddenFor(model => model.CategoryId)
-@Html.HiddenFor(model => model.AccountId)
+
+<h2>Details</h2>
+
 <div>
     <h4>Transaction</h4>
     <hr />
     <dl class="dl-horizontal">
+        <dt>
+            @Html.DisplayNameFor(model => model.Category.Name)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Category.Name)
+        </dd>
+
         <dt>
             @Html.DisplayNameFor(model => model.User.FirstName)
         </dt>
@@ -19,36 +28,12 @@
             @Html.DisplayFor(model => model.User.FirstName)
         </dd>
 
-        @*<dt>
-                @Html.DisplayNameFor(model => model.CategoryId)
-            </dt>
-
-            <dd>
-                @Html.DisplayFor(model => model.CategoryId)
-            </dd>*@
-
-        @*<dt>
-                @Html.DisplayNameFor(model => model.AccountId)
-            </dt>
-
-            <dd>
-                @Html.DisplayFor(model => model.AccountId)
-            </dd>*@
-
         <dt>
-            @Html.DisplayNameFor(model => model.Date)
+            @Html.DisplayNameFor(model => model.AccountId)
         </dt>
 
         <dd>
-            @Html.DisplayFor(model => model.Date)
-        </dd>
-
-        <dt>
-            @Html.DisplayNameFor(model => model.ReconcileDate)
-        </dt>
-
-        <dd>
-            @Html.DisplayFor(model => model.ReconcileDate)
+            @Html.DisplayFor(model => model.AccountId)
         </dd>
 
         <dt>
@@ -60,11 +45,19 @@
         </dd>
 
         <dt>
-            @Html.DisplayNameFor(model => model.Name)
+            @Html.DisplayNameFor(model => model.Date)
         </dt>
 
         <dd>
-            @Html.DisplayFor(model => model.Name)
+            @Html.DisplayFor(model => model.Date)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Types)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Types)
         </dd>
 
         <dt>
@@ -76,27 +69,19 @@
         </dd>
 
         <dt>
-            @Html.DisplayNameFor(model => model.ReconcileAmount)
+            @Html.DisplayNameFor(model => model.ReconciledAmount)
         </dt>
 
         <dd>
-            @Html.DisplayFor(model => model.ReconcileAmount)
+            @Html.DisplayFor(model => model.ReconciledAmount)
         </dd>
 
         <dt>
-            @Html.DisplayNameFor(model => model.IsExpense)
+            @Html.DisplayNameFor(model => model.Reconciled)
         </dt>
 
         <dd>
-            @Html.DisplayFor(model => model.IsExpense)
-        </dd>
-
-        <dt>
-            @Html.DisplayNameFor(model => model.IsReconciled)
-        </dt>
-
-        <dd>
-            @Html.DisplayFor(model => model.IsReconciled)
+            @Html.DisplayFor(model => model.Reconciled)
         </dd>
 
     </dl>
@@ -105,37 +90,6 @@
     @Html.ActionLink("Edit", "Edit", new { id = Model.Id }) |
     @Html.ActionLink("Back to List", "Index")
 </p>
- 
 
-@section Scripts {
-    <script type="text/javascript" language="javascript" src="//cdn.datatables.net/1.10.11/js/jquery.dataTables.min.js"></script>
-    <script src="~/Scripts/LoadPartials.js"></script>
-    <script src="~/Scripts/jquery.maskMoney.js"></script>
-    <script>
-        $(document).ready(function () {
-            $(document).on('change', '#TransactionType', function () {
-                $("div#categories").toggle();
-            });
-
-            $('#action').load('@Url.Action("_AddTransaction", "Transactions", new { id = Model.UserId })', function () {
-                $('#Amount').maskMoney();
-            });
-
-            $('.table').DataTable({
-                "order": [[1, "desc"]],
-                "columns": [
-                  null,
-                  null,
-                  null,
-                  null,
-                  null,
-                  null,
-                  { "orderable": false }
-                ]
-            });
-
-        });
-    </script>
-    }
 
 

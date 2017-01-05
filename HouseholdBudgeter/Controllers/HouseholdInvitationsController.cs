@@ -10,74 +10,56 @@ using HouseholdBudgeter.Models;
 using System.Threading.Tasks;
 using Microsoft.AspNet.Identity;
 using HouseholdBudgeter.Helpers;
+using System.Net.Mail;
+using System.Net.Mime;
 
 namespace HouseholdBudgeter.Controllers
 {
+    [Authorize]
     public class HouseholdInvitationsController : Controller
     {
         private ApplicationDbContext db = new ApplicationDbContext();
 
         // GET: HouseholdInvitations
+        [Authorize]
         public ActionResult Index()
         {
-            var invitation = db.HouseholdInvitation.Include(h => h.Household);
-            return View(invitation.ToList());
+            var user = db.Users.Find(User.Identity.GetUserId());
+
+            var invitations = db.Invitations.Include(i => i.Households).Where(u => user.HouseholdId == u.HouseholdId).ToList();
+
+            Household household = db.Households.Find(user.HouseholdId);
+            if (household == null)
+            {
+                return RedirectToAction("Create", "Households");
+            }
+
+            return View(invitations);
         }
 
-        // GET: HouseholdInvitations/JoinHousehold
-        public ActionResult JoinHousehold()
+        public PartialViewResult _CreateInv()
         {
-            return View();
-        }
+            var user = db.Users.Find(User.Identity.GetUserId());
 
-        // POST: HouseholdInvitations/JoinHousehold
-        [HttpPost]
-        public async Task<ActionResult> JoinHousehold(Guid? inviteCode)
-        {
-            var invite = db.HouseholdInvitation.FirstOrDefault(i => i.Invitecode == inviteCode);
-            var userId = User.Identity.GetUserId();
-            var user = db.Users.Find(userId);
-            if (invite != null && invite.Expired == false)
-            {
-                invite.Expired = true;
-                db.HouseholdInvitation.Attach(invite);
-                db.Entry(invite).Property("Expired").IsModified = true;
-                db.SaveChanges();
-                var household = db.Household.Find(invite.HouseholdId);
-                if (household != null)
-                {
-                    household.Users.Add(user);
-                    db.SaveChanges();
-                    //await ControllerContext.HttpContext.RefreshAuthentication(user);
-                    return RedirectToAction("Details", "Household");
-                }
-            }
-            ViewBag.Message = "That invitation is invalid or has expired.";
-            return View();
-        }
+            var userHousehold = db.Households.AsNoTracking().Where(u => user.HouseholdId == u.Id).ToList();
 
+            ViewBag.HouseholdId = new SelectList(userHousehold, "Id", "Name");
 
-
-        // GET: HouseholdInvitations/Details/5
-        public ActionResult Details(int? id)
-        {
-            if (id == null)
-            {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            }
-            HouseholdInvitations householdInvitation = db.HouseholdInvitation.Find(id);
-            if (householdInvitation == null)
-            {
-                return HttpNotFound();
-            }
-            return View(householdInvitation);
+            return PartialView();
         }
 
         // GET: HouseholdInvitations/Create
-        public ActionResult Create()
+        [HttpGet]
+        [Authorize]
+        public PartialViewResult Create()
         {
-            ViewBag.HouseholdId = new SelectList(db.Household, "Id", "Name");
-            return View();
+            var user = db.Users.Find(User.Identity.GetUserId());
+
+            var userHousehold = db.Households.AsNoTracking().Where(u => user.HouseholdId == u.Id).ToList();
+
+            ViewBag.HouseholdId = new SelectList(userHousehold, "Id", "Name");
+
+            return PartialView();
         }
 
         // POST: HouseholdInvitations/Create
@@ -85,96 +67,114 @@ namespace HouseholdBudgeter.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create([Bind(Include = "Id,HouseholdId,Date,Expired,IsAccepted,Invitecode")] HouseholdInvitations householdInvitation, string Email)
-        {
-
-            return View();
-        }
-
-        // POST: HouseholdInvitations/InviteUser/5
-        [HttpPost]
-        public async Task<ActionResult> InviteUser(string inviteEmail)
-        {
-            if (!string.IsNullOrWhiteSpace(inviteEmail))
-            {
-                int? householdId = User.Identity.GetHouseholdId();
-                string userId = User.Identity.GetUserId();
-                var user = db.Users.Find(userId);
-                HouseholdInvitations invitation = new HouseholdInvitations();
-                invitation.Invitecode = Guid.NewGuid();
-                invitation.Email = inviteEmail;
-                invitation.HouseholdId = householdId;
-                db.HouseholdInvitation.Add(invitation);
-                db.SaveChanges();
-
-                var svc = new EmailService();
-                var msg = new IdentityMessage();
-                msg.Destination = inviteEmail;
-                msg.Subject = user.FullName + " has invited you to join the Money Manager";
-                msg.Body = user.FullName + " has invited you to join their household in the Money Manager using the following invitation code: " + invitation.Invitecode;
-                await svc.SendAsync(msg);
-                TempData["Message"] = "Your invitation has been sent!";
-            }
-
-            return RedirectToAction("Index");
-        }
-
-
-        // GET: HouseholdInvitations/Edit/5
-        public ActionResult Edit(int? id)
-        {
-            if (id == null)
-            {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            }
-            HouseholdInvitations householdInvitation = db.HouseholdInvitation.Find(id);
-            if (householdInvitation == null)
-            {
-                return HttpNotFound();
-            }
-            ViewBag.HouseholdId = new SelectList(db.Household, "Id", "Name", householdInvitation.HouseholdId);
-            return View(householdInvitation);
-        }
-
-        // POST: HouseholdInvitations/Edit/5
-        // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
-        // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Edit([Bind(Include = "Id,HouseholdId,Date,Invitecode,Email,Expired,IsAccepted")] HouseholdInvitations householdInvitation)
+        [Authorize]
+        public async Task<ActionResult> Create([Bind(Include = "Id,HouseholdId,JoinCode,ToEmail,Joined")] HouseholdInvitation invitation)
         {
             if (ModelState.IsValid)
             {
-                db.Entry(householdInvitation).State = EntityState.Modified;
-                db.SaveChanges();
-                return RedirectToAction("Index");
+                var user = db.Users.Find(User.Identity.GetUserId());
+                var existingUser = db.Users.Where(u => u.Email == invitation.ToEmail).FirstOrDefault();
+                Household household = db.Households.Find(user.HouseholdId);
+
+                invitation.JoinCode = Guid.NewGuid();
+                invitation.HouseholdId = household.Id;
+                db.Invitations.Add(invitation);
+                await db.SaveChangesAsync();
+                try
+                {
+                    //Build Email Message
+                    MailMessage inviteMessasge = new MailMessage();
+                    inviteMessasge.To.Add(new MailAddress(invitation.ToEmail, invitation.ToEmail));
+                    inviteMessasge.From = new MailAddress(user.Email, "zxiong1008-budget Household Invitation");
+                    inviteMessasge.Subject = "Household-Budget: Invitation to Join a Household";
+
+                    //if receiving user is registered, send join code
+                    if (existingUser != null)
+                    {
+                        var callbackUrlForExistingUser = Url.Action("JoinHousehold", "Account", new { inviteHouseholdId = invitation.HouseholdId }, protocol: Request.Url.Scheme);
+
+                        string bodytext = String.Concat("<p>I would like to invite you to join my household <mark>", household.Name,
+                                    "</mark> in the Household-Budget app budgeting system", "</p> <p><a href='"
+                                    , callbackUrlForExistingUser, "'>Join the household application</a></p>");
+                        inviteMessasge.AlternateViews.Add(AlternateView.CreateAlternateViewFromString(bodytext, null, MediaTypeNames.Text.Html));
+
+                    }
+                    //if receiving user is not registered, register user and send join code
+                    else
+                    {
+                        var callbackUrl = Url.Action("RegisterToJoinHousehold", "Account", new { inviteHouseholdId = invitation.HouseholdId, invitationId = invitation.Id, guid = invitation.JoinCode }, protocol: Request.Url.Scheme);
+
+                        string html = String.Concat("<p>I would like to invite you to join my household <mark>", household.Name,
+                                        "</mark> in the Household-Budget app budgeting system.</p> <p><a href='", callbackUrl, "'>Join Now</a></p>",
+                                        "Thank you for your time, <p>", user.FirstName, " ", user.LastName, "</p>"
+                                    );
+
+
+                        inviteMessasge.AlternateViews.Add(AlternateView.CreateAlternateViewFromString(html, null, MediaTypeNames.Text.Html));
+                    }
+                    //Initialise SmtpClient and send
+                    SmtpClient smtpClient = new SmtpClient("smtp.sendgrid.net", Convert.ToInt32(587));
+                    var SendGridCredentials = db.SendGridCredentials.First();
+                    NetworkCredential credentials = new NetworkCredential(SendGridCredentials.UserName, SendGridCredentials.Password);
+                    smtpClient.Credentials = credentials;
+                    smtpClient.Send(inviteMessasge);
+
+
+                    return RedirectToAction("Index", "Invitations");
+
+                }
+                catch (Exception ex)
+                {
+                    ViewBag.Exception = ex.Message;
+                    return View(invitation);
+                }
             }
-            ViewBag.HouseholdId = new SelectList(db.Household, "Id", "Name", householdInvitation.HouseholdId);
-            return View(householdInvitation);
+            ViewBag.HouseholdId = new SelectList(db.Households, "Id", "Name", invitation.HouseholdId);
+            return View(invitation);
         }
 
-        // GET: HouseholdInvitations/Delete/5
+
+
+        // GET:HouseholdInvitations/Delete/5
+        [Authorize]
         public ActionResult Delete(int? id)
         {
+            var user = db.Users.Find(User.Identity.GetUserId());
+            HouseholdInvitation invitation = db.Invitations.FirstOrDefault(x => x.Id == id);
+            Household household = db.Households.FirstOrDefault(x => x.Id == invitation.HouseholdId);
+
+            if (!household.Members.Contains(user))
+            {
+                return RedirectToAction("Unauthorized", "Error");
+            }
             if (id == null)
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            HouseholdInvitations householdInvitation = db.HouseholdInvitation.Find(id);
-            if (householdInvitation == null)
+            //Invitation invitation = db.Invitations.Find(id);
+            if (invitation == null)
             {
                 return HttpNotFound();
             }
-            return View(householdInvitation);
+            return View(invitation);
         }
 
         // POST: HouseholdInvitations/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
+        [Authorize]
         public ActionResult DeleteConfirmed(int id)
         {
-            HouseholdInvitations householdInvitation = db.HouseholdInvitation.Find(id);
-            db.HouseholdInvitation.Remove(householdInvitation);
+            var user = db.Users.Find(User.Identity.GetUserId());
+           HouseholdInvitation invitation = db.Invitations.FirstOrDefault(x => x.Id == id);
+            Household household = db.Households.FirstOrDefault(x => x.Id == invitation.HouseholdId);
+
+            if (!household.Members.Contains(user))
+            {
+                return RedirectToAction("Unauthorized", "Error");
+            }
+           //HouseholdInvitation invitation = db.HouseholdInvitations.Find(id);
+            db.Invitations.Remove(invitation);
             db.SaveChanges();
             return RedirectToAction("Index");
         }

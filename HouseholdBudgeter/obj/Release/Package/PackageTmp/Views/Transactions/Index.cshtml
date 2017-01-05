@@ -4,26 +4,17 @@
     ViewBag.Title = "Index";
 }
 
-
-<!-- Page Content -->
-<div id="page-wrapper">
-    <div class="container-fluid">
-        @*@Html.HiddenFor(model => model.CategoryId)
-        @Html.HiddenFor(model => model.AccountId)*@
-
-        <div class="row">
-            <div class="col-lg-12">
- 
                 <h3 class="page-header">Account Transactions</h3>
                 <p>
-                    @Html.ActionLink("Create New Transaction", "Create") |
-                    @Html.ActionLink("Household Budget", "Index", "Budgets")
+                    @Html.ActionLink("Create New Transaction", "AddTransaction") |
+                    @Html.ActionLink("Household Budget", "Index", "Budgets") |
+                    @Html.ActionLink("Accounts", "Index", "BankAccounts")
                 </p>
                 <table class="table">
                     <tr>
-                        @*<th>
-                            @Html.DisplayNameFor(model => model.User.FirstName)
-                        </th>*@
+                        <th>
+                                @Html.DisplayNameFor(model => model.User.FullName)
+                            </th>
 
                         <th>
                             @Html.DisplayNameFor(model => model.CategoryId)
@@ -49,9 +40,9 @@
                         <th>
                             @Html.DisplayNameFor(model => model.ReconcileAmount)
                         </th>
-                        <th>
+                        @*<th>
                             @Html.DisplayNameFor(model => model.IsExpense)
-                        </th>
+                        </th>*@
                         <th>
                             @Html.DisplayNameFor(model => model.IsReconciled)
                         </th>
@@ -61,9 +52,9 @@
                     @foreach (var item in Model)
                     {
                         <tr>
-                            @*<td>
-                                @Html.DisplayFor(modelItem => item.User.FirstName)
-                            </td>*@
+                            <td>
+                                    @Html.DisplayFor(modelItem => item.User.FullName)
+                                </td>
                             <td>
                                 @Html.DisplayFor(modelItem => item.CategoryId)
                             </td>
@@ -88,29 +79,21 @@
                             <td>
                                 @Html.DisplayFor(modelItem => item.ReconcileAmount)
                             </td>
-                            <td>
+                            @*<td>
                                 @Html.DisplayFor(modelItem => item.IsExpense)
-                            </td>
+                            </td>*@
                             <td>
                                 @Html.DisplayFor(modelItem => item.IsReconciled)
                             </td>
                             <td>
                                 @Html.ActionLink("Edit", "Edit", new { id = item.Id }) |
                                 @Html.ActionLink("Details", "Details", new { id = item.Id }) |
-                                @Html.ActionLink("Void", "Void", new { id = item.Id })
+                                @Html.ActionLink("Void", "Delete", new { id = item.Id })
                             </td>
                         </tr>
                     }
 
                 </table>
-
-            </div>
-            <!-- /.col-lg-12 -->
-        </div>
-        <!-- /.row -->
-    </div>
-    <!-- /.container-fluid -->
-</div>
 
 
 

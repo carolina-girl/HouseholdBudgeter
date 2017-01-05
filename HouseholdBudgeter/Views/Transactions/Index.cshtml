@@ -4,95 +4,122 @@
     ViewBag.Title = "Index";
 }
 
-                <h3 class="page-header">Account Transactions</h3>
-                <p>
-                    @Html.ActionLink("Create New Transaction", "Create") |
-                    @Html.ActionLink("Household Budget", "Index", "Budgets")
-                </p>
-                <table class="table">
-                    <tr>
-                        <th>
-                                @Html.DisplayNameFor(model => model.User.FullName)
-                            </th>
+<h2><i class="fa fa-archive"></i> Transaction List </h2>
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <div class="panel-body">
+                        <div class="table-responsive">
+                            <table class="table table-bordered">
+                                <a data-toggle="modal" href="#create" class="btn btn-default pull-right">Make A New Transaction</a>
+                              <thead>
+                            <tr>
+                                <th>
+                                    Category
+                                </th>
+                                <th>
+                                    User
+                                </th>
+                                <th>
+                                    Account
+                                </th>
+                                <th>
+                                    Date
+                                </th>
+                                <th>
+                                    Type
+                                </th>
+                                <th>
+                                    Amount
+                                </th>
+                                <th>
+                                    Reconciled Amount
+                                </th>
+                                <th>
+                                    isReconciled
+                                </th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in Model)
+                            {
+                                <tr>
+                                    <td id="">
+                                        @item.Category.Name
+                                    </td>
+                                    <td>
+                                        @{
+                                            var username = item.User.FirstName + " " + item.User.LastName;
+                                        }
+                                        @Html.Raw(username)
+                                    </td>
+                                    <td>
+                                        @item.BankAccounts.Name
+                                    </td>
+                                    <td>
+                                        @item.Date.ToString("D")
+                                    </td>
+                                    <td>
+                                        @if (item.Types == true)
+                                        {
+                                            @Html.Raw("Deposit")
+                                        }
+                                        else
+                                        {
+                                            @Html.Raw("Expenses")
+                                        }
+                                    </td>
+                                    <td>
+                                        @item.Amount.ToString("C")
+                                    </td>
+                                    <td>
+                                        @if (item.ReconciledAmount != null)
+                                        {
+                                            @item.ReconciledAmount.Value.ToString("C")
+                                        }
+                                    </td>
+                                    <td>
+                                        @if (item.Reconciled == true)
+                                        {
+                                            <span class="label label-success">Success</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="label label-warning">Failed</span>
+                                        }
+                                    </td>
+                                    <td>
+                                        <a href="@Url.Action("Edit", new { id = item.Id })"><i class="fa fa-pencil btn btn-xs btn-warning"></i></a>
+                                        <span class="delete-section">
+                                            <a class="delete-link" href="@Url.Action("Delete", new {id = item.Id})"><i class="fa fa-close btn btn-xs btn-danger"></i></a>
+                                            <span class="btn btn-danger btn-xs delete-confirm" style="display:none" data-delete-id="@item.Id">Confirm Delete</span>
+                                        </span>
+                                    </td>
+                                </tr>
+                                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-12">
+            <br />
+            </div>
+        </div>
+    </div>
+ </div>
 
-                        @*<th>
-                            @Html.DisplayNameFor(model => model.CategoryId)
-                        </th>
-                        <th>
-                            @Html.DisplayNameFor(model => model.AccountId)
-                        </th>*@
-                        <th>
-                            @Html.DisplayNameFor(model => model.Date)
-                        </th>
-                        @*<th>
-                            @Html.DisplayNameFor(model => model.ReconcileDate)
-                        </th>*@
-                        <th>
-                            @Html.DisplayNameFor(model => model.Description)
-                        </th>
-                        <th>
-                            @Html.DisplayNameFor(model => model.Name)
-                        </th>
-                        <th>
-                            @Html.DisplayNameFor(model => model.Amount)
-                        </th>
-                        <th>
-                            @Html.DisplayNameFor(model => model.ReconcileAmount)
-                        </th>
-                        <th>
-                            @Html.DisplayNameFor(model => model.IsExpense)
-                        </th>
-                        <th>
-                            @Html.DisplayNameFor(model => model.IsReconciled)
-                        </th>
-                        <th></th>
-                    </tr>
-
-                    @foreach (var item in Model)
-                    {
-                        <tr>
-                            <td>
-                                    @Html.DisplayFor(modelItem => item.User.FullName)
-                                </td>
-                            @*<td>
-                                @Html.DisplayFor(modelItem => item.CategoryId)
-                            </td>
-                            <td>
-                                @Html.DisplayFor(modelItem => item.AccountId)
-                            </td>*@
-                            <td>
-                                @Html.DisplayFor(modelItem => item.Date)
-                            </td>
-                            @*<td>
-                                @Html.DisplayFor(modelItem => item.ReconcileDate)
-                            </td>*@
-                            <td>
-                                @Html.DisplayFor(modelItem => item.Description)
-                            </td>
-                            <td>
-                                @Html.DisplayFor(modelItem => item.Name)
-                            </td>
-                            <td>
-                                @Html.DisplayFor(modelItem => item.Amount)
-                            </td>
-                            <td>
-                                @Html.DisplayFor(modelItem => item.ReconcileAmount)
-                            </td>
-                            <td>
-                                @Html.DisplayFor(modelItem => item.IsExpense)
-                            </td>
-                            <td>
-                                @Html.DisplayFor(modelItem => item.IsReconciled)
-                            </td>
-                            <td>
-                                @Html.ActionLink("Edit", "Edit", new { id = item.Id }) |
-                                @Html.ActionLink("Details", "Details", new { id = item.Id }) |
-                                @Html.ActionLink("Void", "Delete", new { id = item.Id })
-                            </td>
-                        </tr>
-                    }
-
-                </table>
-
-
-
+    <!-- Modal -->
+    <div class="modal fade" id="create" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="container" style="padding:20px;">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                    @Html.Action("_CreateTrans", "Transactions")
+                    <button type="button" class="btn btn-default pull-right" data-dismiss="modal">Close</button>
+                </div>
+            </div><!-- /.modal-content -->
+        </div><!-- /.modal-dialog -->
+    </div><!-- /.modal -->

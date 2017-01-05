@@ -4,104 +4,33 @@
     ViewBag.Title = "Create";
 }
 
+<h2>Wait! <i class="icofont icofont-emo-confounded"></i></h2>
+
 @using (Html.BeginForm())
 {
     @Html.AntiForgeryToken()
 
-    @Html.HiddenFor(model => model.Users)
-    @Html.HiddenFor(model => model.BudgetId)
-
-
     <div class="form-horizontal">
-        <h3>Create A Household</h3>
+        <h4>Do you have an invitation? Check your email.</h4>
+        If not, you can create one below by typing in the budget household name you desire.
+        <hr />
         @Html.ValidationSummary(true, "", new { @class = "text-danger" })
-        @*<div class="form-group">
-                @Html.LabelFor(model => model.Users, htmlAttributes: new { @class = "control-label col-md-2" })
-                <div class="col-md-10">
-                    @Html.EditorFor(model => model.Users, new { htmlAttributes = new { @class = "form-control" } })
-                    @Html.ValidationMessageFor(model => model.Users, "", new { @class = "text-danger" })
-                </div>
-            </div>*@
-
         <div class="form-group">
-            @Html.LabelFor(model => model.EmailAddress, htmlAttributes: new { @class = "control-label col-md-2" })
-            <div class="col-md-10">
-                @Html.EditorFor(model => model.EmailAddress, new { htmlAttributes = new { @class = "form-control" } })
-                @Html.ValidationMessageFor(model => model.EmailAddress, "", new { @class = "text-danger" })
-            </div>
-        </div>
+            @Html.LabelFor(model => model.Name, htmlAttributes: new { @class = "control-label col-md-2" })
 
-        @*<div class="form-group">
-                @Html.LabelFor(model => model.BudgetId, htmlAttributes: new { @class = "control-label col-md-2" })
-                <div class="col-md-10">
-                    @Html.EditorFor(model => model.BudgetId, new { htmlAttributes = new { @class = "form-control" } })
-                    @Html.ValidationMessageFor(model => model.BudgetId, "", new { @class = "text-danger" })
-                </div>
-            </div>*@
-
-        <div class="form-group">
-            @Html.LabelFor(model => model.FirstName, htmlAttributes: new { @class = "control-label col-md-2" })
             <div class="col-md-10">
-                @Html.EditorFor(model => model.FirstName, new { htmlAttributes = new { @class = "form-control" } })
-                @Html.ValidationMessageFor(model => model.FirstName, "", new { @class = "text-danger" })
-            </div>
-        </div>
-
-        <div class="form-group">
-            @Html.LabelFor(model => model.LastName, htmlAttributes: new { @class = "control-label col-md-2" })
-            <div class="col-md-10">
-                @Html.EditorFor(model => model.LastName, new { htmlAttributes = new { @class = "form-control" } })
-                @Html.ValidationMessageFor(model => model.LastName, "", new { @class = "text-danger" })
-            </div>
-        </div>
-
-        <div class="form-group">
-            @Html.LabelFor(model => model.Date, htmlAttributes: new { @class = "control-label col-md-2" })
-            <div class="col-md-10">
-                @Html.EditorFor(model => model.Date, new { htmlAttributes = new { @class = "form-control" } })
-                @Html.ValidationMessageFor(model => model.Date, "", new { @class = "text-danger" })
+                @Html.EditorFor(model => model.Name, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.Name, "", new { @class = "text-danger" })
             </div>
         </div>
 
         <div class="form-group">
             <div class="col-md-offset-2 col-md-10">
-                <input type="submit" value="Create" class="btn btn-default" />
+                <input type="submit" value="Create" class="btn btn-primary" />
             </div>
         </div>
     </div>
-
-
-    <div class="col-md-12">
-        <p><b>Note:</b> If you start a new household you will be removed from any households you are currently in.</p>
-        <div class="col-md-12">
-            <h3>Join Household</h3>
-            <p>If you've received an e-mail to join a household, enter your invitation code here.</p>
-            <p class="text-danger">@ViewBag.Message</p>
-            @using (Html.BeginForm("JoinHousehold", "HouseholdInvitations"))
-            {
-                <div class="form-horizontal">
-                    @Html.ValidationSummary(true, "", new { @class = "text-danger" })
-                    <div class="form-group">
-                        <div class="col-md-12">
-                            @*<label for="inviteCode" class="control-label col-md-12">Invitation Code</label>*@
-                            <input type="text" name="inviteCode" class="form-control" />
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <div class="col-md-12">
-                            <input type="submit" value="Join Household" class="btn btn-default" />
-                        </div>
-                    </div>
-                </div>
-            }
-        </div>
-    </div>
 }
-<div>
-    @Html.ActionLink("Back to List", "Index")
-</div>
-
-
 
 
 

@@ -4,26 +4,38 @@
 }
 
 <!-- Page Content -->
-<div id="page-wrapper">
-    <div class="container-fluid">
-        <div class="row">
-            <div class="col-lg-12">
+
                 <h3 class="page-header">Bank Accounts</h3>
-               
+                    @using (Html.BeginForm("Create", "BankAccount"))
+                    {
+                        @Html.AntiForgeryToken()
+                        <div class="form-horizontal">
+                            @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+                            <div class="form-group">
+                                @*<div class="col-md-6">
+                                    <input type="text" placeholder="BankAccount Name" name="BankAccountName" class="form-control" />
+                                </div>*@
+                            </div>
+                        </div>
+                    }
                 <p>
-                    @Html.ActionLink("Create New Bank Account", "Create")
+                    @Html.ActionLink("New Account", "Create")
                 </p>
+               
                 <table class="table">
                    
                     <tr>
                         <th>
-                            @Html.DisplayNameFor(model => model.Household)
+                            @Html.DisplayNameFor(model => model.HouseholdId)
                         </th>
                         <th>
                             @Html.DisplayNameFor(model => model.Name)
                         </th>
                         <th>
                             @Html.DisplayNameFor(model => model.Date)
+                        </th>
+                        <th>
+                            @Html.DisplayNameFor(model => model.Id)
                         </th>
                         <th>
                             @Html.DisplayNameFor(model => model.Amount)
@@ -38,13 +50,16 @@
                     {
                         <tr>
                             <td>
-                                @Html.DisplayFor(modelItem => item.Household.Name)
+                                @Html.DisplayFor(modelItem => item.HouseholdId)
                             </td>
                             <td>
                                 @Html.DisplayFor(modelItem => item.Name)
                             </td>
                             <td>
                                 @Html.DisplayFor(modelItem => item.Date)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.Id)
                             </td>
                             <td>
                                 @Html.DisplayFor(modelItem => item.Amount)
@@ -63,13 +78,6 @@
                     }
                 </table>
 
-            </div>
-            <!-- /.col-lg-12 -->
-        </div>
-        <!-- /.row -->
-    </div>
-    <!-- /.container-fluid -->
-</div>
 
 
 

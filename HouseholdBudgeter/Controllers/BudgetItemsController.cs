@@ -7,10 +7,11 @@ using System.Net;
 using System.Web;
 using System.Web.Mvc;
 using HouseholdBudgeter.Models;
-using HouseholdBudgeter.Helpers;
+using Microsoft.AspNet.Identity;
 
 namespace HouseholdBudgeter.Controllers
 {
+    [Authorize]
     public class BudgetItemsController : Controller
     {
         private ApplicationDbContext db = new ApplicationDbContext();
@@ -18,31 +19,45 @@ namespace HouseholdBudgeter.Controllers
         // GET: BudgetItems
         public ActionResult Index()
         {
-            var budgetItem = db.BudgetItem.Include(b => b.Budget).Include(b => b.BudgetCategory);
-            return View(budgetItem.ToList());
-        }
+            var user = db.Users.Find(User.Identity.GetUserId());
+            var budgetItems = db.BudgetItems.Include(h => h.Budget.Household).Include(b => b.Budget).Include(b => b.Category);
 
-        // GET: Add BudgetItems
-        public ActionResult _AddBudgetItems(int? Id)
-        {
-            try
+            Household household = db.Households.Find(user.HouseholdId);
+
+
+            if (household == null)
             {
-                return PartialView();
+                return RedirectToAction("Create", "Households");
             }
-            catch
-            {
-                return PartialView("_Error");
-            }
+
+            ViewBag.HouseholdName = household.Name;
+
+            return View(budgetItems);
         }
 
         // GET: BudgetItems/Details/5
         public ActionResult Details(int? id)
         {
+            //heirarchy where we find the user
+            var user = db.Users.Find(User.Identity.GetUserId());
+
+            //then identify the user's budgetitems
+            BudgetItem budgetItem = db.BudgetItems.FirstOrDefault(b => b.Id == id);
+
+            //then the budgetitem's budget owner
+            Budget budget = db.Budgets.FirstOrDefault(b => b.Id == budgetItem.Id);
+
+            //then the budget's household owner
+            Household household = db.Households.FirstOrDefault(h => h.Id == budget.Id);
+
+            if (!household.Members.Contains(user))
+            {
+                return RedirectToAction("Unauthorized", "Error");
+            }
             if (id == null)
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            BudgetItem budgetItem = db.BudgetItem.Find(id);
             if (budgetItem == null)
             {
                 return HttpNotFound();
@@ -51,11 +66,15 @@ namespace HouseholdBudgeter.Controllers
         }
 
         // GET: BudgetItems/Create
-        public ActionResult Create()
+        public PartialViewResult Create()
         {
-            ViewBag.BudgetId = new SelectList(db.Budget, "Id", "Name");
-            ViewBag.BudgetCategoryId = new SelectList(db.BudgetCategory, "Id", "Category");
-            return View();
+            var user = db.Users.Find(User.Identity.GetUserId());
+
+            var getBudget = db.Budgets.Where(u => user.HouseholdId == u.HouseHoldId).ToList();
+
+            ViewBag.BudgetId = new SelectList(getBudget, "Id", "Name");
+            ViewBag.CategoryId = new SelectList(db.BudegetCategory, "Id", "Name");
+            return PartialView();
         }
 
         // POST: BudgetItems/Create
@@ -63,122 +82,113 @@ namespace HouseholdBudgeter.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create([Bind(Include = "Id,BudgetCategoryId,BudgetId,Frequency,Date,Amount,Name")] BudgetItem budgetItem)
+        public ActionResult Create([Bind(Include = "Id,BudgetId,CategoryId,Amount")] BudgetItem budgetItem)
         {
             if (ModelState.IsValid)
             {
-                db.BudgetItem.Add(budgetItem);
+                db.BudgetItems.Add(budgetItem);
                 db.SaveChanges();
                 return RedirectToAction("Index");
             }
 
-            ViewBag.BudgetId = new SelectList(db.Budget, "Id", "Name", budgetItem.BudgetId);
-            ViewBag.BudgetCategoryId = new SelectList(db.BudgetCategory, "Id", "Category", budgetItem.BudgetCategoryId);
+            ViewBag.BudgetId = new SelectList(db.Budgets, "Id", "Name", budgetItem.BudgetId);
+            ViewBag.CategoryId = new SelectList(db.BudegetCategory, "Id", "Name", budgetItem.CategoryId);
             return View(budgetItem);
         }
 
-
-
-
-        // GET: Edit BudgetItem
-        public ActionResult _EditBudgetItem(int? id)
+        // GET: BudgetItems/Edit/5
+        public ActionResult Edit(int? id)
         {
-            try
+            //heirarchy where we find the user
+            var user = db.Users.Find(User.Identity.GetUserId());
+
+            //then identify the user's budgetitems
+            BudgetItem budgetItem = db.BudgetItems.FirstOrDefault(b => b.Id == id);
+
+            //then the budget's household owner
+            Household household = db.Households.FirstOrDefault(h => h.Id == budgetItem.Id);
+
+            if (id == null)
             {
-                var model = db.BudgetItem.Find(id);
-                return PartialView(model);
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            catch
+            if (budgetItem == null)
             {
-                return PartialView("_Error");
+                return HttpNotFound();
             }
+
+            var getBudget = db.Budgets.Where(u => u.HouseHoldId == user.HouseholdId).ToList();
+
+            ViewBag.BudgetId = new SelectList(getBudget, "Id", "Name", budgetItem.BudgetId);
+            ViewBag.CategoryId = new SelectList(db.BudegetCategory, "Id", "Name", budgetItem.CategoryId);
+            return View(budgetItem);
         }
 
-        //POST: Edit Budget Item
+        // POST: BudgetItems/Edit/5
+        // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
+        // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
-        public ActionResult EditBudgetItem([Bind(Include = "Id, BudgetId, Created, Amount, Frequency, BudgetCategory.Id")] BudgetItem item, string CategoryName)
+        [ValidateAntiForgeryToken]
+        public ActionResult Edit([Bind(Include = "Id,BudgetId,CategoryId,Amount")] BudgetItem budgetItem)
         {
             if (ModelState.IsValid)
             {
-                var householdId = User.Identity.GetHouseholdId();
-                var budget = db.Budget.FirstOrDefault(b => b.HouseholdId == householdId);
-                var oldItem = db.BudgetItem.AsNoTracking().FirstOrDefault(m => m.Id == item.Id);
-                item.Date = DateTimeOffset.Now;
-
-                budget.Amount -= oldItem.Amount * oldItem.Frequency / 12;
-                budget.Amount += item.Amount * item.Frequency / 12;
-                budget.Household = budget.Household;
-
-                db.BudgetItem.Attach(item);
-                db.Entry(item).Property("Amount").IsModified = true;
-                db.Entry(item).Property("Frequency").IsModified = true;
-                db.Entry(item).Property("Modified").IsModified = true;
-                db.Budget.Attach(budget);
-                db.Entry(budget).Property("Amount").IsModified = true;
+                db.Entry(budgetItem).State = EntityState.Modified;
                 db.SaveChanges();
-
-                var category = db.BudgetCategory.Find(oldItem.BudgetCategory.Id);
-                var oldCategoryName = oldItem.BudgetCategory.Name;
-                if (oldCategoryName != CategoryName)
-                {
-                    var budgetCategories = from i in budget.BudgetItems
-                                           from c in db.BudgetCategory
-                                           where i.BudgetCategoryId == c.Id
-                                           select c;
-                    if (budgetCategories.Any(b => b.Name.Standardize() == CategoryName.Standardize()))
-                    {
-                        TempData["EditError"] = "That category already exists. Please enter a different category name.";
-                        TempData["Id"] = item.Id;
-                        return RedirectToAction("Index");
-                    }
-                }
-                else
-                {
-                    category.Name = CategoryName;
-                }
-                category.Name = CategoryName;
-                db.BudgetCategory.Attach(category);
-                db.Entry(category).Property("Name").IsModified = true;
-                db.SaveChanges();
+                return RedirectToAction("Index");
             }
-            return RedirectToAction("Index");
+            ViewBag.BudgetId = new SelectList(db.Budgets, "Id", "Name", budgetItem.BudgetId);
+            ViewBag.CategoryId = new SelectList(db.BudegetCategory, "Id", "Name", budgetItem.CategoryId);
+            return View(budgetItem);
         }
 
-        // GET: Edit BudgetItem
-        public ActionResult _DeleteBudgetItem(int? Id)
+        // GET: BudgetItems/Delete/5
+        public ActionResult Delete(int? id)
         {
-            try
+            var user = db.Users.Find(User.Identity.GetUserId());
+            BudgetItem budgetItem = db.BudgetItems.FirstOrDefault(b => b.Id == id);
+            Budget budget = db.Budgets.FirstOrDefault(b => b.Id == budgetItem.BudgetId);
+            Household household = db.Households.FirstOrDefault(h => h.Id == budget.HouseHoldId);
+
+            if (id == null)
             {
-                var model = db.BudgetItem.Find(Id);
-                return PartialView(model);
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            catch
+            if (budgetItem == null)
             {
-                return PartialView("_Error");
+                return HttpNotFound();
             }
+            return View(budgetItem);
         }
 
-        //POST: Transaction/DeleteTransaction
-        [HttpPost]
-        public ActionResult DeleteBudgetItem(int Id)
+        // POST: BudgetItems/Delete/5
+        [HttpPost, ActionName("Delete")]
+        [ValidateAntiForgeryToken]
+        public ActionResult DeleteConfirmed(int id)
         {
-            var category = db.BudgetCategory.Find(Id);
-            var item = db.BudgetItem.Find(Id);
-            //UpdateBudgetAmount(false, item.Amount, item.Frequency, item.BudgetId);
-            db.BudgetCategory.Remove(category);
-            db.BudgetItem.Remove(item);
+            //heirarchy where we find the user
+            var user = db.Users.Find(User.Identity.GetUserId());
+
+            //then identify the user's budgetitems
+            BudgetItem budgetItem = db.BudgetItems.FirstOrDefault(b => b.Id == id);
+
+            //then the budgetitem's budget owner
+            Budget budget = db.Budgets.FirstOrDefault(b => b.Id == budgetItem.Id);
+
+            //then the budget's household owner
+            Household household = db.Households.FirstOrDefault(h => h.Id == budget.Id);
+
+            //if (!household.Members.Contains(user))
+            //{
+            //    return RedirectToAction("Unauthorized", "Error");
+            //}
+
+            db.BudgetItems.Remove(budgetItem);
             db.SaveChanges();
             return RedirectToAction("Index");
         }
 
-        //POST: Edit Budget Amount
-        [HttpPost]
-        public ActionResult EditBudgetAmount()
-        {
-            return RedirectToAction("Index");
-        }
-    
-protected override void Dispose(bool disposing)
+        protected override void Dispose(bool disposing)
         {
             if (disposing)
             {

@@ -2,6 +2,7 @@
 using System.ComponentModel.DataAnnotations;
 using Microsoft.AspNet.Identity;
 using Microsoft.Owin.Security;
+using System;
 
 namespace HouseholdBudgeter.Models
 {
@@ -14,19 +15,41 @@ namespace HouseholdBudgeter.Models
         public bool BrowserRemembered { get; set; }
     }
 
+    public class SendGridCredential
+    {
+        [Key]//setting up a 1-1 relationship using UserId as primarykey & foreignkey
+        public string UserId { get; set; }
+        public string UserName { get; set; }
+        public string Password { get; set; }
+    }
+
+
     public class DashboardViewModel
     {
-        public bool HasPassword { get; set; }
-        public IList<UserLoginInfo> Logins { get; set; }
-        public string MobilePhone { get; set; }
-        public bool TwoFactor { get; set; }
-        public bool BrowserRemembered { get; set; }
-        public string Id { get; set; }
-        public string Name { get; set; }
-    }
-}
+        public Household Households { get; set; }
+        public ICollection<HouseholdInvitation> Invitations { get; set; }
+        public Budget Budgets { get; set; }
+        public ICollection<BankAccount> BankAccounts { get; set; }
+        public ICollection<Transaction> Transactions { get; set; }
+        public ICollection<BudgetCategory> Categories { get; set; }
+        public BudgetItem BudgetItems { get; set; }
 
-public class ManageLoginsViewModel
+        public int GetBudgetId { get; set; }
+
+        [DisplayFormat(DataFormatString = "{0:d}")]
+        public DateTimeOffset begin { get; set; }
+
+        [DisplayFormat(DataFormatString = "{0:d}")]
+        public DateTimeOffset end { get; set; }
+
+
+        public int setLowBalance { get; set; }
+
+
+    }
+
+
+    public class ManageLoginsViewModel
     {
         public IList<UserLoginInfo> CurrentLogins { get; set; }
         public IList<AuthenticationDescription> OtherLogins { get; set; }
@@ -95,3 +118,4 @@ public class ManageLoginsViewModel
         public string SelectedProvider { get; set; }
         public ICollection<System.Web.Mvc.SelectListItem> Providers { get; set; }
     }
+}

@@ -1,126 +1,92 @@
 ﻿@model IEnumerable<HouseholdBudgeter.Models.BudgetItem>
-
 @{
     ViewBag.Title = "Index";
 }
-
-
-@*<div class="row">
-    <div class="col-md-6">
-        <h2>Budget</h2>
-        <h3>Total Monthly Budget: $
-        @foreach(var item in Model)
-        {
-            @item.Amount
-        }
-        </h3>
-        <hr />
-        <h3>Budgeted Expenses</h3>
-        <a href="#" class="addBudgetItem" id="model.BudgetItem.Id"><i class="glyphicon glyphicon-plus"></i> Add Budget Item</a>
-        <table class="table table-striped">
-            <thead>
-                <tr>
-                    <th>Category</th>
-                    <th>Amount</th>
-                    <th>Annual Frequency</th>
-                    <th></th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach (var item in Model)
-                {
-                    <tr>
-                        <td>@item.BudgetCategory.Name</td>
-                        <td>$@item.Amount</td>
-                        <td>@item.Frequency</td>
-                        <td>
-                            <a href="#" class="editBudgetItem" id="@item.BudgetId"><i class="glyphicon glyphicon-pencil"></i></a>
-                            <a href="#" class="deleteBudgetItem" id="@item.BudgetId"><i class="glyphicon glyphicon-remove"></i></a>
-                        </td>
-                    </tr>
-                }
-            </tbody>
-        </table>
-    </div>*@
-    @*<div class="col-md-offset-1 col-md-5 content" id="action">
-        @if (TempData["EditError"] != null)
-        {
-            <p class="text-danger">@TempData["EditError"]</p>
-            @Html.Action("_EditBudgetItem", "Budget", new { id = TempData["Id"] })
-        }
-        else
-        {
-            @*<p class="text-danger">@TempData["Error"]</p>
-            @Html.Action("_AddBudgetItem", "BudgetItmes", new { id = Model.Id })*@
-        @*}
-    </div>
-</div>*@
-                <p>
-                    @Html.ActionLink("Add New Budget Items", "Create")
-                </p>
-                <table class="table">
-                    <tr>
-                        <th>
-                            @Html.DisplayNameFor(model => model.Budget.Name)
-                        </th>
-                        <th>
-                            @Html.DisplayNameFor(model => model.BudgetCategory.Category)
-                        </th>
-                        <th>
-                            @Html.DisplayNameFor(model => model.Frequency)
-                        </th>
-                        <th>
-                            @Html.DisplayNameFor(model => model.Date)
-                        </th>
-                        <th>
-                            @Html.DisplayNameFor(model => model.Amount)
-                        </th>
-                        <th>
-                            @Html.DisplayNameFor(model => model.Name)
-                        </th>
-                        <th></th>
-                    </tr>
-
-                    @foreach (var item in Model)
-                    {
+<div class="row">
+    <div class="col-md-12">
+        <div class="panel panel-success">
+            <div class="panel-heading">
+                <div class="panel-title">
+                    <h2><i class="fa fa-cubes"></i> Budget Items<a data-toggle="modal" href="#create" class="btn btn-default pull-right">Add A New Element</a></h2>
+                </div>
+            </div>
+            <div class="panel-body">
+                <table class="table" id="budgetItemsTable">
+                    <thead>
                         <tr>
-                            <td>
-                                @Html.DisplayFor(modelItem => item.Budget.Name)
-                            </td>
-                            <td>
-                                @Html.DisplayFor(modelItem => item.BudgetCategory.Category)
-                            </td>
-                            <td>
-                                @Html.DisplayFor(modelItem => item.Frequency)
-                            </td>
-                            <td>
-                                @Html.DisplayFor(modelItem => item.Date)
-                            </td>
-                            <td>
-                                @Html.DisplayFor(modelItem => item.Amount)
-                            </td>
-                            <td>
-                                @Html.DisplayFor(modelItem => item.Name)
-                            </td>
-                            <td>
-                                @Html.ActionLink("Edit", "Edit", new { id = item.Id }) |
-                                @Html.ActionLink("Details", "Details", new { id = item.Id }) |
-                                @Html.ActionLink("Delete", "Delete", new { id = item.Id })
-                            </td>
+                            <th>
+                                @Html.DisplayNameFor(model => model.Budget.Name)
+                            </th>
+                            <th>
+                                @Html.DisplayNameFor(model => model.Category.Name)
+                            </th>
+                            <th>
+                                @Html.DisplayNameFor(model => model.Amount)
+                            </th>
+                            <th></th>
                         </tr>
-                    }
-
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model)
+                        {
+                            <tr>
+                                <td>
+                                    <i class="fa fa-cube"></i> @Html.DisplayFor(modelItem => item.Budget.Name)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.Category.Name)
+                                </td>
+                                <td>
+                                    @item.Amount.ToString("C")
+                                </td>
+                                <td>
+                                    <a href="@Url.Action("Edit", new { id = item.Id })"><i class="fa fa-pencil btn btn-xs btn-warning"></i></a>
+                                    <span class="delete-section">
+                                        <a class="delete-link" href="@Url.Action("Delete", new {id = item.Id})"><i class="fa fa-close btn btn-xs btn-danger"></i></a>
+                                        <span class="btn btn-danger btn-xs delete-confirm" style="display:none" data-delete-id="@item.Id">Confirm Delete</span>
+                                    </span>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
                 </table>
- 
-
-
-
-@section Scripts {
-    <script src="~/Scripts/LoadPartials.js"></script>
-    <script src="~/Scripts/jquery.maskMoney.js"></script>
-    <script>
-        $(document).ready(function () {
-            $('#Amount').maskMoney();
-        });
-    </script>
-}
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Modal -->
+<div class="modal fade" id="create" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">X</button>
+            <div class="container" style="padding: 20px">
+                <div class="panel panel-primary">
+                    <div class="panel-heading">
+                        <div class="panel-title">
+                            <h3>Add New Element</h3>
+                        </div>
+                    </div>
+                    <div class="panel-body">
+                        <ul class="nav nav-tabs">
+                            <li class="active"><a data-toggle="tab" href="#home">BudgetItem</a></li>
+                            <li><a data-toggle="tab" href="#menu1">Budget</a></li>
+                            <li><a data-toggle="tab" href="#menu2">Categories</a></li>
+                        </ul>
+                        <div class="tab-content">
+                            <div id="home" class="tab-pane fade in active">
+                                @Html.Action("Create", "BudgetItems")
+                            </div>
+                            <div id="menu1" class="tab-pane fade">
+                                @Html.Action("_CreateBudget", "Budgets")
+                            </div>
+                            <div id="menu2" class="tab-pane fade">
+                                @Html.Action("Create", "BudgetCategories")
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <button type="button" class="btn btn-default pull-right" data-dismiss="modal">Close</button>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->

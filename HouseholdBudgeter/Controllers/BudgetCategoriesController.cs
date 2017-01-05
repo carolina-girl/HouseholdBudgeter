@@ -7,39 +7,55 @@ using System.Net;
 using System.Web;
 using System.Web.Mvc;
 using HouseholdBudgeter.Models;
-using HouseholdBudgeter.Helpers;
+using Microsoft.AspNet.Identity;
 
 namespace HouseholdBudgeter.Controllers
 {
+    [Authorize]
     public class BudgetCategoriesController : Controller
     {
         private ApplicationDbContext db = new ApplicationDbContext();
 
         // GET: BudgetCategories
-        public ActionResult Index()
+        public ActionResult Index(int? id)
         {
-            return View(db.BudgetCategory.ToList());
+            var user = db.Users.Find(User.Identity.GetUserId());
+            Household household = db.Households.Find(user.HouseholdId);
+
+            if (household == null)
+            {
+                return RedirectToAction("Create", "Households");
+            }
+
+            return View(db.BudegetCategory);
         }
 
         // GET: BudgetCategories/Details/5
         public ActionResult Details(int? id)
         {
+            //heirarchy where we find the user
+            var user = db.Users.Find(User.Identity.GetUserId());
+            BudgetCategory category = db.BudegetCategory.FirstOrDefault(b => b.Id == id);
+
+            //then the category's household owner
+            Household household = db.Households.FirstOrDefault(h => h.Id == category.Id);
+
             if (id == null)
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            BudgetCategory budgetCategory = db.BudgetCategory.Find(id);
-            if (budgetCategory == null)
+
+            if (category == null)
             {
                 return HttpNotFound();
             }
-            return View(budgetCategory);
+            return View(category);
         }
 
         // GET: BudgetCategories/Create
-        public ActionResult Create()
+        public PartialViewResult Create()
         {
-            return View();
+            return PartialView();
         }
 
         // POST: BudgetCategories/Create
@@ -47,36 +63,38 @@ namespace HouseholdBudgeter.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create([Bind(Include = "Id,Category")] BudgetCategory budgetCategory)
+        public ActionResult Create([Bind(Include = "Id,Name")] BudgetCategory category)
         {
             if (ModelState.IsValid)
             {
-                //ViewBag.AccountId = Id;
-                var householdId = User.Identity.GetHouseholdId();
-                var household = db.Household.Find(householdId);
-                //var categories = household.Budgets.Select(b => b.BudgetCategory).Distinct().ToList();
-                //ViewBag.BudgetCategories = category;
-                db.BudgetCategory.Add(budgetCategory);
+                db.BudegetCategory.Add(category);
                 db.SaveChanges();
                 return RedirectToAction("Index");
             }
 
-            return View(budgetCategory);
+            return View(category);
         }
 
         // GET: BudgetCategories/Edit/5
         public ActionResult Edit(int? id)
         {
+            //heirarchy where we find the user
+            var user = db.Users.Find(User.Identity.GetUserId());
+            BudgetCategory category = db.BudegetCategory.FirstOrDefault(b => b.Id == id);
+
+            //then the category's household owner
+            Household household = db.Households.FirstOrDefault(h => h.Id == category.Id);
+
             if (id == null)
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            BudgetCategory budgetCategory = db.BudgetCategory.Find(id);
-            if (budgetCategory == null)
+
+            if (category == null)
             {
                 return HttpNotFound();
             }
-            return View(budgetCategory);
+            return View(category);
         }
 
         // POST: BudgetCategories/Edit/5
@@ -84,42 +102,52 @@ namespace HouseholdBudgeter.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit([Bind(Include = "Id,Category")] BudgetCategory budgetCategory)
+        public ActionResult Edit([Bind(Include = "Id,Name")] BudgetCategory category)
         {
             if (ModelState.IsValid)
             {
-                db.Entry(budgetCategory).State = EntityState.Modified;
+                db.Entry(category).State = EntityState.Modified;
                 db.SaveChanges();
                 return RedirectToAction("Index");
             }
-            return View(budgetCategory);
+            return View(category);
         }
 
-        // GET: BudgetCategories/Delete/5
+        // GET: BudgetCategories/Delete/5$
         public ActionResult Delete(int? id)
         {
+            //heirarchy where we find the user
+            var user = db.Users.Find(User.Identity.GetUserId());
+            BudgetCategory category = db.BudegetCategory.FirstOrDefault(b => b.Id == id);
+
+            //then the category's household owner
+            Household household = db.Households.FirstOrDefault(h => h.Id == category.Id);
+
             if (id == null)
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            BudgetCategory budgetCategory = db.BudgetCategory.Find(id);
-            if (budgetCategory == null)
+
+            if (category == null)
             {
                 return HttpNotFound();
             }
-            return View(budgetCategory);
+            return View(category);
         }
 
         // POST: BudgetCategories/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
-        public ActionResult DeleteConfirmed(int Id)
+        public ActionResult DeleteConfirmed(int id)
         {
-            var category = db.BudgetCategory.Find(Id);
-            var item = db.BudgetItem.Find(Id);
-            //UpdateBudgetAmount(false, item.Amount, item.Frequency, item.BudgetId);
-            BudgetCategory budgetCategory = db.BudgetCategory.Find(Id);
-            db.BudgetCategory.Remove(budgetCategory);
+            //heirarchy where we find the user
+            var user = db.Users.Find(User.Identity.GetUserId());
+            BudgetCategory category = db.BudegetCategory.FirstOrDefault(b => b.Id == id);
+
+            //then the category's household owner
+            Household household = db.Households.FirstOrDefault(h => h.Id == category.Id);
+
+            db.BudegetCategory.Remove(category);
             db.SaveChanges();
             return RedirectToAction("Index");
         }

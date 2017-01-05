@@ -2,5 +2,45 @@
     ViewBag.Title = "About";
 }
 
+<h2>@ViewBag.Title.</h2>
+@ViewBag.Message
 
+@{
+    string[] desc = { "Create bank account", "Delete bank accounts", "Create, edit, and delete tranaction",
+               "Search transaction history by transaction property", "View account balance",
+               "Reconcile transaction with my bank statement", "Invite other users to a household",
+               "Leave a household", "Record household Deposit and expenses", "Categorize tranastions",
+               "View monthly expenses vs. budget" };
+    string[] purp = { "Track the transaction that belong to the accounts", "Get rid of all account data",
+                "Maintain accurate record of monthly account transactions", "Locate specific transaction",
+                "Prevent overdraft", "Identify cleared tranactions Spot fraud activity on accounts",
+                "Share account data with a spouse", "Prevent sharing of account data with other users",
+                "Create a budget", "Keep spending within budget limits", "Control monthly spending" };
+}
+
+<style>
+    tr th, tr td {
+        padding: 0 10px;
+    }
+</style>
+
+<table class="table table-responsive">
+    <thead>
+        <tr>
+            <th>Req. #</th>
+            <th>Description</th>
+            <th>Purpose</th>
+        </tr>
+    </thead>
+    <tbody>
+        @for (int i = 0; i < desc.Length; i++)
+        {
+            <tr>
+                <td>@(i + 1)</td>
+                <td>@desc[i]</td>
+                <td>@purp[i]</td>
+            </tr>
+        }
+    </tbody>
+</table>
 

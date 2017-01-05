@@ -5,16 +5,13 @@
 }
 
 
-<!-- Page Content -->
-<div id="page-wrapper">
-    <div class="container-fluid">
-        <div class="row">
-            <div class="col-lg-12">
-                <h1 class="page-header"></h1>
 @using (Html.BeginForm())
 {
     @Html.AntiForgeryToken()
     <input type="hidden" name="AccountId" id="AccountId" value="@ViewBag.AccountId" />
+    <input type="hidden" name="Transactions" id="Transactions" value="@ViewBag.Transactions" />
+    <input type="hidden" name="BudgetItems" id="BudgetItems" value="@ViewBag.BudgetItems" />
+    <input type="hidden" name="Name" id="Name" value="@ViewBag.Name" />
 
     <div class="form-horizontal">
         <h4>BudgetCategory</h4>
@@ -40,13 +37,6 @@
     @Html.ActionLink("Back to List", "Index")
 </div>
 
-            </div>
-            <!-- /.col-lg-12 -->
-        </div>
-        <!-- /.row -->
-    </div>
-    <!-- /.container-fluid -->
-</div>
 
 
 

@@ -4,14 +4,6 @@
     ViewBag.Title = "Index";
 }
 
-
-<!-- Page Content -->
-<div id="page-wrapper">
-    <div class="container-fluid">
-        <div class="row">
-            <div class="col-lg-12">
-                <h1 class="page-header"></h1>
-
                 <p>
                     @Html.ActionLink("Add New Budget Items", "Create")
                 </p>
@@ -60,21 +52,11 @@
                                 @Html.DisplayFor(modelItem => item.Name)
                             </td>
                             <td>
-                                @Html.ActionLink("Edit", "Edit", new { id = item.Id }) |
-                                @Html.ActionLink("Details", "Details", new { id = item.Id }) |
-                                @Html.ActionLink("Delete", "Delete", new { id = item.Id })
+                                @Html.ActionLink("Edit", "Edit", "BudgetItems", new { id = item.Id }) |
+                                @Html.ActionLink("Details", "Details", "BudgetItems", new { id = item.Id }) |
+                                @Html.ActionLink("Delete", "Delete", "BudgetItems", new { id = item.Id })
                             </td>
                         </tr>
                     }
 
                 </table>
-            </div>
-            <!-- /.col-lg-12 -->
-        </div>
-        <!-- /.row -->
-    </div>
-    <!-- /.container-fluid -->
-</div>
-
-
-

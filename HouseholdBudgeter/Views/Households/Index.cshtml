@@ -1,119 +1,126 @@
-﻿@model IEnumerable<HouseholdBudgeter.Models.Household>
+﻿@model HouseholdBudgeter.Models.Household
 
 @{
     ViewBag.Title = "Index";
-    var MsgSent = ViewBag.Message;
 }
 
-@if (ViewBag.HouseholdName != null)
-{
-    <h2>@ViewBag.HouseholdName</h2>
-}
-else
-{
-    <h2>Household</h2>
-}
 
-@if (!Model.Any())
-{
-    <p>You aren't a member of any households.</p>
-    <p>@Html.ActionLink("New Household", "Create", "Households")</p>
-}
-else
-{
-            <div class="row">
-                <div class="col-lg-6">
-                    <div class="panel panel-default">
-                        <div class="panel-heading">
-                        <!-- /.panel-heading -->
-                        <div class="panel-body">
-                            @*<div class="table-responsive">
-                                <div class="row">
-                                    <div class="col-md-8">
-                                        <div class="col-md-12">*@
-                                            <h3>Members</h3>
-                                            <table class="table table-striped">
-                                                <thead>
+<div class="row">
+    <div class="col-lg-12">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <i class="fa fa-cc-paypal"></i> Household Information
+                <div class="panel-body">
+                    <div class="table-responsive">
+                        <table class="table table-bordered">
+                            <tr>
+                                <th>
+                                    Household Name
+                                </th>
+                                <th>
+                                    Members
+                                </th>
+                                <th>
+                                    Bank Accounts
+                                </th>
+                                <th></th>
+                            </tr>
+                            <tr>
+                                <td>
+                                    @Model.Name
+                                </td>
+                                <td>
+                                    @Model.Members.Count()
+                                </td>
+                                <td>
+                                    @Model.BankAccounts.Count()
+                                </td>
+                                <td>
+                                    <a href="@Url.Action("Edit", new { id = Model.Id })" class="btn btn-warning"><i class="fa fa-edit"></i> Change Name</a>
+                                    <a href="@Url.Action("Details", new { id = Model.Id })" class="btn btn-info"><i class="fa fa-search"></i> View Details</a>
+                                    <a data-toggle="modal" href="#leaveHousehold" class="btn btn-danger"><i class="fa fa-chain"></i> Leave Household</a>
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+                </div>
+            </div>
+        </div>
+            </div>
+                <div class="row">
+                    <div class="col-lg-12">
+                        <div class="panel panel-default">
+                            <div class="panel-heading">
+                                <i class="fa fa-cc-paypal"></i> Bank Account Summary
+                                <div class="panel-body">
+                                    <div class="table-responsive">
+                                        <table class="table table-bordered">
+                                            <thead>
+                                                <tr>
+                                                    <th>Bank Name</th>
+                                                    <th>Balance</th>
+                                                    <th>Initial</th>
+                                                    <th>Reconcile</th>
+                                                    <th>Warning</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                @foreach (var item in Model.BankAccounts)
+                                                {
                                                     <tr>
-                                                        <th>Name</th>
-                                                        <th>Email</th>
+                                                        <td>
+                                                            @item.Name
+                                                        </td>
+                                                        <td>
+                                                            @item.Balance.ToString("C")
+                                                        </td>
+                                                        <td>
+                                                            @item.InitialBalance.ToString("C")
+                                                        </td>
+                                                        <td>
+                                                            @item.ReconcileBalance.ToString("C")
+                                                        </td>
+                                                        <td>
+                                                            @item.WarningBalance.ToString("C")
+                                                        </td>
                                                     </tr>
-                                                </thead>
-                                                <tbody>
-                                                    @foreach (var user in Model.SelectMany(a => a.Users))
-                                                    {
-                                                        <tr>
-                                                            <td>@user.FullName</td>
-                                                            <td>@user.Email</td>
-                                                        </tr>
-                                                    }
-
-                                                </tbody>
-                                            </table>
-                                        </div>
-                                        <p>
-                                            @Html.ActionLink("Create New", "Create")
-                                        </p>
+                                                }
+                                            </tbody>
+                                        </table>
                                     </div>
-                                    <!-- /.table-responsive -->
                                 </div>
-                                <!-- /.panel-body -->
-                            </div>
-                    <!-- /.panel -->
-                </div>
-           @*</div>
-        </div>
-     </div>
- </div>*@        
-}
-<div class="col-md-12">
-    <h3>Invite</h3>
-    <p>Invite another user to join your household.</p>
-    @using (Html.BeginForm("InviteUser", "HouseholdInvitations"))
-            {
-        @Html.AntiForgeryToken()
+                                </div>
+                           </div>
+                        </div>
+                    </div>
 
-        <div class="form-horizontal">
-            @Html.ValidationSummary(true, "", new { @class = "text-danger" })
-            <div class="form-group">
-                @*<p class="col-xs-12 text-success">@MsgSent</p>*@
-                <label for="inviteEmail" class="control-label col-md-2">Email</label>
-                <div class="col-md-10">
-                    <input type="text" name="inviteEmail" id="inviteEmail" class="form-control" />
-                </div>
-            </div>
-            <div class="form-group">
-                <div class="col-md-10">
-                    <input type="submit" value="Send Invitation" class="btn btn-default" />
-                </div>
-            </div>
-        </div>
-    }
-</div>
 
-<div class="col-md-12">
-    <h3>Leave</h3>
-    <p class="col-xs-12 text-danger">@ViewBag.Error</p>
-    <p>Leave your current household and start another one.</p>
-    @using (Html.BeginForm("LeaveHousehold", "Households"))
-            {
-        @Html.AntiForgeryToken()
+                                <!-- Modal -->
+                                <div class="modal fade" id="leaveHousehold" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+                                    <div class="modal-dialog">
+                                        <div class="modal-content">
+                                            @*<div class="container" style="padding: 20px">*@
+                                                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
 
-        <div class="form-horizontal">
-            @Html.ValidationSummary(true, "", new { @class = "text-danger" })
-
-            <div class="form-group col-xs-12">
-                <input type="checkbox" name="confirmLeaveHousehold" value="true" class="col-xs-1" />
-                <p class="col-xs-10">I understand that I will no longer have access to my current household's accounts.</p>
-            </div>
-            <div class="form-group">
-                <div class="col-md-11">
-                    <input type="submit" value="Leave Household" class="btn btn-default" />
-                </div>
-            </div>
-        </div>
-    }
-</div>
+                                                <div class="panel panel-danger">
+                                                    <div class="panel-heading">
+                                                        <h3 class="panel-title"><i class="fa fa-chain-broken"></i> Leaving?</h3>
+                                                    </div>
+                                                    <div class="panel-body">
+                                                        Are you sure you want to leave <mark>@Model.Name</mark>?
+                                                        Once you leave, you will lose access to all accounts.
+                                                    </div>
+                                                </div>
+                                                <form method="Post" action="@Url.Action("Leave")">
+                                                    <input type="submit" class="btn btn-danger pull-right" />
+                                                </form>
+                                                <input type="button" class="btn btn-default pull-right" data-dismiss="modal" value="Close" />
+                                            </div>
+                                        </div><!-- /.modal-content -->
+                                    </div><!-- /.modal-dialog -->
+                                @*</div>*@<!-- /.modal -->
+                  
 
 
 
@@ -121,4 +128,4 @@ else
 
 
 
-      
+

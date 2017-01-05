@@ -50,9 +50,8 @@ namespace HouseholdBudgeter.Controllers
             }
         }
 
-        //
         // GET: /Manage/Index
-        public ActionResult Index(ManageMessageId? message)
+        public async Task<ActionResult> Index(ManageMessageId? message)
         {
             ViewBag.StatusMessage =
                 message == ManageMessageId.ChangePasswordSuccess ? "Your password has been changed."
@@ -62,56 +61,18 @@ namespace HouseholdBudgeter.Controllers
                 : message == ManageMessageId.AddPhoneSuccess ? "Your phone number was added."
                 : message == ManageMessageId.RemovePhoneSuccess ? "Your phone number was removed."
                 : "";
+
             var userId = User.Identity.GetUserId();
-
-            var user = UserManager.FindById(userId);
-            var fname = user.FirstName;
-            var lname = user.LastName;
-            var usermail = user.Email;
-            var hholdId = user.HouseholdId;
-            //var hholdName = "";
-            //if (user.HouseholdId != null)
-            //{
-            //    var hhold = Household.Find(hholdId);
-            //    hholdName = hhold.Name;
-            //}
-            //else
-            //{
-            //    hholdName = null;
-            //}
-
-            //var model = new IndexViewModel
-            //{
-            //    FirstName = fname,
-            //    LastName = lname,
-            //    Email = usermail,
-            //    HasPassword = HasPassword(),
-            //    HouseholdId = hholdId,
-            //    HouseholdName = hholdName
-            //};
-            return View();
+            var model = new IndexViewModel
+            {
+                HasPassword = HasPassword(),
+                PhoneNumber = await UserManager.GetPhoneNumberAsync(userId),
+                TwoFactor = await UserManager.GetTwoFactorEnabledAsync(userId),
+                Logins = await UserManager.GetLoginsAsync(userId),
+                BrowserRemembered = await AuthenticationManager.TwoFactorBrowserRememberedAsync(userId)
+            };
+            return View(model);
         }
-
-        //// POST: /Manage/EditProfile
-        //[HttpPost]
-        //[ValidateAntiForgeryToken]
-        //public async Task<ActionResult> EditProfile()
-        //{
-        //    if (!ModelState.IsValid)
-        //    {
-        //        return View();
-        //    }
-        //    // Find the user, update the fields with the new ones
-        //    ApplicationUser user = UserManager.FindById(User.Identity.GetUserId());
-        //    user.FirstName = household.FirstName;
-        //    user.LastName = model.LastName;
-        //    user.EmailAddress = model.EmailAddress;
-        //    user.UserName = model.Email;
-
-        //    IdentityResult result = await UserManager.UpdateAsync(user);
-
-        //    return RedirectToAction("Index");
-        //}
 
         //
         // POST: /Manage/RemoveLogin

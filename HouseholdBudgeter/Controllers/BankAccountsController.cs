@@ -10,9 +10,11 @@ using HouseholdBudgeter.Models;
 using HouseholdBudgeter.Helpers;
 using static HouseholdBudgeter.Helpers.AuthorizeHousehold;
 using Microsoft.AspNet.Identity;
+using static HouseholdBudgeter.Helpers.HouseholdHelper;
 
 namespace HouseholdBudgeter.Controllers
 {
+    [Authorize]
     public class BankAccountsController : Controller
     {
         private ApplicationDbContext db = new ApplicationDbContext();
@@ -20,18 +22,26 @@ namespace HouseholdBudgeter.Controllers
         // GET: BankAccounts
         public ActionResult Index()
         {
-            var bankAccount = db.BankAccount.Include(b => b.Household);
-            return View(bankAccount.ToList());
+            var user = db.Users.Find(User.Identity.GetUserId());
+            var account = db.BankAccounts.Where(u => user.HouseholdId == u.HouseholdId).ToList();
+
+            Household household = db.Households.Find(user.HouseholdId);
+            if (household == null)
+            {
+                return RedirectToAction("Create", "Households");
+            }
+
+            return View(account);
         }
 
         // GET: BankAccounts/Details/5
-        public ActionResult Details(int? Id)
+        public ActionResult Details(int? id)
         {
-            if (Id == null)
+            if (id == null)
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            BankAccount bankAccount = db.BankAccount.Find(Id);
+            BankAccount bankAccount = db.BankAccounts.Find(id);
             if (bankAccount == null)
             {
                 return HttpNotFound();
@@ -39,11 +49,17 @@ namespace HouseholdBudgeter.Controllers
             return View(bankAccount);
         }
 
+        // GET: BankAccounts/Create
+        public PartialViewResult _CreateBankAccount()
+        {
+            ViewBag.HouseholdId = new SelectList(db.Households, "Id", "Name");
+            return PartialView();
+        }
 
         // GET: BankAccounts/Create
         public ActionResult Create()
         {
-            ViewBag.HouseholdId = new SelectList(db.Household, "Id", "Name");
+            ViewBag.HouseholdId = new SelectList(db.Households, "Id", "Name");
             return View();
         }
 
@@ -52,41 +68,48 @@ namespace HouseholdBudgeter.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create([Bind(Include = "Id,HouseholdId,Name,Date,Amount,ReconcileAmount")] BankAccount bankAccount)
+        public ActionResult Create([Bind(Include = "Id,HouseholdId,Name,Created,Balance,InitialBalance,ReconcileBalance")] BankAccount bankAccount)
         {
+            bankAccount.Created = new DateTimeOffset(DateTime.Now);
+
             if (ModelState.IsValid)
             {
-                var BankAccount = bankAccount.Name;
-                bankAccount.Amount = 0;
-                bankAccount.ReconcileAmount = 0;
-                bankAccount.Date = DateTimeOffset.Now;
-                //bankAccount.ReconcileAmount = false;
-                db.BankAccount.Add(bankAccount);
-                db.SaveChanges();
-                var householdId = User.Identity.GetHouseholdId();
-                var household = db.Household.Find(householdId);
-                db.BankAccount.Add(bankAccount);
+                bankAccount.HouseholdId = db.Users.FirstOrDefault(u => u.UserName == User.Identity.Name).HouseholdId.Value;
+                bankAccount.Created = new DateTimeOffset(DateTime.Now);
+
+                bankAccount.ReconcileBalance = bankAccount.Balance;
+
+                db.BankAccounts.Add(bankAccount);
                 db.SaveChanges();
                 return RedirectToAction("Index");
             }
-
-            ViewBag.HouseholdId = new SelectList(db.Household, "Id", "Name", bankAccount.HouseholdId);
+            ViewBag.HouseholdId = new SelectList(db.Households, "Id", "Name", bankAccount.HouseholdId);
             return View(bankAccount);
         }
 
         // GET: BankAccounts/Edit/5
-        public ActionResult Edit(int? Id)
+        public ActionResult Edit(int? id)
         {
-            if (Id == null)
+            var user = db.Users.Find(User.Identity.GetUserId());
+            BankAccount bankAccount = db.BankAccounts.FirstOrDefault(b => b.Id == id);
+            Household household = db.Households.FirstOrDefault(h => h.Id == bankAccount.HouseholdId);
+
+            //if (!household.Members.Contains(user))
+            //{
+            //    return RedirectToAction("Unauthorized", "Error");
+            //}
+
+            if (id == null)
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            BankAccount bankAccount = db.BankAccount.Find(Id);
+
             if (bankAccount == null)
             {
                 return HttpNotFound();
             }
-            ViewBag.HouseholdId = new SelectList(db.Household, "Id", "Name", bankAccount.HouseholdId);
+
+            ViewBag.HouseholdId = new SelectList(db.Households, "Id", "Name", bankAccount.HouseholdId);
             return View(bankAccount);
         }
 
@@ -95,61 +118,66 @@ namespace HouseholdBudgeter.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit([Bind(Include = "Id,HouseholdId,Name,Date,Amount,ReconcileAmount")] BankAccount bankAccount)
+        public ActionResult Edit([Bind(Include = "Id,HouseholdId,Name,Created,Balance,InitialBalance,ReconcileBalance")] BankAccount bankAccount)
         {
+            bankAccount.Created = new DateTimeOffset(DateTime.Now);
+
             if (ModelState.IsValid)
             {
+                bankAccount.HouseholdId = db.Users.FirstOrDefault(u => u.UserName == User.Identity.Name).HouseholdId.Value;
+                bankAccount.Created = new DateTimeOffset(DateTime.Now);
+
                 db.Entry(bankAccount).State = EntityState.Modified;
                 db.SaveChanges();
                 return RedirectToAction("Index");
             }
-            ViewBag.HouseholdId = new SelectList(db.Household, "Id", "Name", bankAccount.HouseholdId);
+            ViewBag.HouseholdId = new SelectList(db.Households, "Id", "Name", bankAccount.HouseholdId);
             return View(bankAccount);
         }
 
-        // GET: BankAccounts/ReconcileAccount
-        public ActionResult ReconcileAccount(int? Id)
+        public ActionResult Update(int? id)
         {
-            try
-            {
-                ViewBag.AccountId = Id;
-                return PartialView();
-            }
-            catch
-            {
-                return PartialView("_Error");
-            }
+            var user = db.Users.Find(User.Identity.GetUserId());
+            BankAccount bankAccount = db.BankAccounts.FirstOrDefault(b => b.Id == id);
+            Household household = db.Households.FirstOrDefault(h => h.Id == bankAccount.HouseholdId);
+
+            return View(bankAccount);
         }
 
-        //Helper function: Update account balance
-        public bool UpdateAccountBalance(bool IsIncome, bool IsReconciled, decimal Amount, int? AccountId)
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult Update([Bind(Include = "Id,HouseholdId,Name,Created,Balance,InitialBalance,ReconcileBalance")] BankAccount bankAccount)
         {
-            var account = db.BankAccount.Find(AccountId);
-            account.Balance = (IsIncome) ? account.Balance + Amount : account.Balance - Amount;
-            if (IsReconciled)
-            {
-                account.ReconcileAmount = (IsIncome) ? account.ReconcileAmount + Amount : account.ReconcileAmount - Amount;
-            }
-            else
-            {
-                account.ReconcileAmount = account.ReconcileAmount;
-            }
-            db.BankAccount.Attach(account);
-            db.Entry(account).Property("Balance").IsModified = true;
-            db.Entry(account).Property("ReconciledAmount").IsModified = true;
-            db.SaveChanges();
+            bankAccount.Created = new DateTimeOffset(DateTime.Now);
 
-            return true;
+            if (ModelState.IsValid)
+            {
+                bankAccount.HouseholdId = db.Users.FirstOrDefault(u => u.UserName == User.Identity.Name).HouseholdId.Value;
+                bankAccount.Created = new DateTimeOffset(DateTime.Now);
+
+                db.Entry(bankAccount).State = EntityState.Modified;
+                db.SaveChanges();
+                return RedirectToAction("Index");
+            }
+            ViewBag.HouseholdId = new SelectList(db.Households, "Id", "Name", bankAccount.HouseholdId);
+            return View(bankAccount);
         }
 
         // GET: BankAccounts/Delete/5
-        public ActionResult Delete(int? Id)
+        public ActionResult Delete(int? id)
         {
-            if (Id == null)
+            var user = db.Users.Find(User.Identity.GetUserId());
+            BankAccount bankAccount = db.BankAccounts.FirstOrDefault(b => b.Id == id);
+            Household household = db.Households.FirstOrDefault(h => h.Id == bankAccount.HouseholdId);
+
+            //if (!household.Members.Contains(user))
+            //{
+            //    return RedirectToAction("Unauthorized", "Error");
+            //}
+            if (id == null)
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            BankAccount bankAccount = db.BankAccount.Find(Id);
             if (bankAccount == null)
             {
                 return HttpNotFound();
@@ -160,13 +188,40 @@ namespace HouseholdBudgeter.Controllers
         // POST: BankAccounts/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
-        public ActionResult DeleteConfirmed(int Id)
+        public ActionResult DeleteConfirmed(int id)
         {
-            BankAccount bankAccount = db.BankAccount.Find(Id);
-            db.BankAccount.Remove(bankAccount);
+            var user = db.Users.Find(User.Identity.GetUserId());
+            BankAccount bankAccount = db.BankAccounts.FirstOrDefault(x => x.Id == id);
+            Household household = db.Households.FirstOrDefault(x => x.Id == bankAccount.HouseholdId);
+
+            //if (!household.Members.Contains(user))
+            //{
+            //    return RedirectToAction("Unauthorized", "Error");
+            //}
+
+            db.BankAccounts.Remove(bankAccount);
             db.SaveChanges();
             return RedirectToAction("Index");
         }
+
+        [HttpGet]
+        public JsonResult GetBal(int id)
+        {
+            var user = db.Users.Find(User.Identity.GetUserId());
+            BankAccount bankAccount = db.BankAccounts.FirstOrDefault(x => x.Id == id);
+            Household household = db.Households.FirstOrDefault(x => x.Id == bankAccount.HouseholdId);
+
+            //Gets all bank account ids for household which contains the incoming 'id'
+            if (household.Id == id)
+            {
+                var account = db.BankAccounts.Find(id);
+                //generic object in c#
+                return Json(new { bal = account.Balance, recBal = account.ReconcileBalance }, JsonRequestBehavior.AllowGet);
+            }
+
+            return null;
+        }
+
 
         protected override void Dispose(bool disposing)
         {

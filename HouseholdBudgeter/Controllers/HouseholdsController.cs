@@ -16,25 +16,31 @@ using System.Security.Policy;
 
 namespace HouseholdBudgeter.Controllers
 {
+    //[Authorize]
     public class HouseholdsController : Controller
     {
         private ApplicationDbContext db = new ApplicationDbContext();
 
-        // GET: Households
         public ActionResult Index()
         {
+            var user = db.Users.Find(User.Identity.GetUserId());
+            Household household = db.Households.Find(user.HouseholdId);
+            if (household == null)
+            {
+                return RedirectToAction("Create", "Households");
+            }
 
-            return View(db.Household.ToList());
+            return View(db.Households.Find(user.HouseholdId));
         }
 
         // GET: Households/Details/5
-        public ActionResult Details(int? Id)
+        public ActionResult Details(int? id)
         {
-            if (Id == null)
+            if (id == null)
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            Household household = db.Household.Find(Id);
+            Household household = db.Households.Find(id);
             if (household == null)
             {
                 return HttpNotFound();
@@ -53,49 +59,64 @@ namespace HouseholdBudgeter.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create([Bind(Include = "Id,Users,BudgetId,FirstName,LastName,EmailAddress,Date")] Household household)
+        public ActionResult Create([Bind(Include = "Id,Name")] Household household)
         {
             if (ModelState.IsValid)
             {
-                //Create household
-                household.Date = System.DateTimeOffset.Now;
-                db.Household.Add(household);
-                db.SaveChanges();
-                //Add user to household
-                var userId = User.Identity.GetUserId();
-                var user = db.Users.Find(userId);
-                var thisHousehold = db.Household.Find(household.Id);
-                thisHousehold.Users.Add(user);
-                ////Create budget for household
-                //Budget budget = new Budget();
-                //budget.Created = System.DateTimeOffset.Now;
-                //budget.Amount = 0;
-                //budget.HouseholdId = thisHousehold.Id;
-                //budget.Household = thisHousehold;
-                //db.Budgets.Add(budget);
-                ////Update household to include budget
-                //thisHousehold.Budget = budget;
-                //thisHousehold.BudgetId = budget.Id;
-                //db.Households.Attach(thisHousehold);
-                //db.Entry(thisHousehold).Property("BudgetId").IsModified = true;
-                //db.SaveChanges();
-                ////Refresh cookies to add new household Id
-                //await ControllerContext.HttpContext.RefreshAuthentication(user);
-                return RedirectToAction("Index");
-            }
+                //previously users could create a matching name and be added to existing household
+                //now, new house is created
+                var user = db.Users.Find(User.Identity.GetUserId());
 
-            return View();
+                if (user.HouseholdId == null)
+                {
+                    Household household2 = household;
+                    db.Households.Add(household2 = new Household
+                    {
+                        Name = household.Name
+                    });
+                    db.SaveChanges();
+
+                    user.HouseholdId = household2.Id;
+
+                    household2.BankAccounts.Add(new BankAccount
+                    {
+                        Name = "Checkings",
+                        Created = new DateTimeOffset(DateTime.Now),
+                        Balance = 0,
+                        InitialBalance = 0,
+                        ReconcileBalance = 0,
+                        WarningBalance = 0
+                    });
+                    household2.BankAccounts.Add(new BankAccount
+                    {
+                        Name = "Savings",
+                        Created = new DateTimeOffset(DateTime.Now),
+                        Balance = 0,
+                        InitialBalance = 0,
+                        ReconcileBalance = 0,
+                        WarningBalance = 0
+                    });
+
+                    db.SaveChanges();
+
+                    return RedirectToAction("Index", new { id = household2.Id });
+                }
+                else
+                {
+                    return RedirectToAction("Index", new { id = user.Id });
+                }
+            }
+            return View(household);
         }
 
-
         // GET: Households/Edit/5
-        public ActionResult Edit(int? Id)
+        public ActionResult Edit(int? id)
         {
-            if (Id == null)
+            if (id == null)
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            Household household = db.Household.Find(Id);
+            Household household = db.Households.Find(id);
             if (household == null)
             {
                 return HttpNotFound();
@@ -108,7 +129,7 @@ namespace HouseholdBudgeter.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit([Bind(Include = "Id,Users,BudgetId,Name,Date,FirstName,LastName,EmailAddress")] Household household)
+        public ActionResult Edit([Bind(Include = "Id,Name")] Household household)
         {
             if (ModelState.IsValid)
             {
@@ -119,41 +140,14 @@ namespace HouseholdBudgeter.Controllers
             return View(household);
         }
 
-
-
-        // POST: Households/LeaveHousehold/5
-        [HttpPost]
-        public async Task<ActionResult> LeaveHousehold(bool? confirmLeaveHousehold)
+        // GET: Households/Delete/5
+        public ActionResult Delete(int? id)
         {
-            var userId = User.Identity.GetUserId();
-            var user = db.Users.Find(userId);
-            var householdId = User.Identity.GetHouseholdId();
-            var household = db.Household.Find(householdId);
-
-            if (confirmLeaveHousehold != null && household.Users.Contains(user))
-            {
-                household.Users.Remove(user);
-                db.SaveChanges();
-                //await ControllerContext.HttpContext.RefreshAuthentication(user);
-                return RedirectToAction("Dashboard", "Home");
-            }
-
-            TempData["Error"] = "Please confirm you want to leave this household.";
-            return RedirectToAction("Dashboard", "Home");
-        }
-    
-
-
-
-
-// GET: Households/Delete/5
-public ActionResult Delete(int? Id)
-        {
-            if (Id == null)
+            if (id == null)
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            Household household = db.Household.Find(Id);
+            Household household = db.Households.Find(id);
             if (household == null)
             {
                 return HttpNotFound();
@@ -161,17 +155,39 @@ public ActionResult Delete(int? Id)
             return View(household);
         }
 
+        public ActionResult Leave()
+        {
+            var user = db.Users.Find(User.Identity.GetUserId());
+            Household household = db.Households.Find(user.HouseholdId);
+
+            //set user's house to null
+            //remove the user from the household list
+            user.HouseholdId = null;
+            household.Members.Remove(user);
+
+            db.SaveChanges();
+            return RedirectToAction("Create", "Households");
+        }
+
         // POST: Households/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
-        public ActionResult DeleteConfirmed(int Id)
+        public ActionResult DeleteConfirmed(int id)
         {
-            Household household = db.Household.Find(Id);
-            db.Household.Remove(household);
+            var user = db.Users.Find(User.Identity.GetUserId());
+            BankAccount bankaccount = db.BankAccounts.FirstOrDefault(x => x.Id == id);
+
+            Household household = db.Households.Find(id);
+
+            if (!household.Members.Contains(user))
+            {
+                return RedirectToAction("Unauthorized", "Error");
+            }
+
+            db.Households.Remove(household);
             db.SaveChanges();
             return RedirectToAction("Index");
         }
-
 
         protected override void Dispose(bool disposing)
         {

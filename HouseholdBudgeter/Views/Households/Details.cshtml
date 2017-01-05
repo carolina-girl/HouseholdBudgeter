@@ -4,48 +4,66 @@
     ViewBag.Title = "Details";
 }
 
-                <div>
-                    <h4>Household</h4>
-                    <hr />
-                    <dl class="dl-horizontal">
-                        <dt>
-                            @Html.DisplayNameFor(model => model.FirstName)
-                        </dt>
+<h2>More Household Information</h2>
 
-                        <dd>
-                            @Html.DisplayFor(model => model.FirstName)
-                        </dd>
+<div>
+    <hr />
+    <dl class="dl-horizontal">
+        <dt>
+            @Html.DisplayNameFor(model => model.Name)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.Name)
+        </dd>
+        <dt>
+            Member(s)
+        </dt>
+        <dd>
+            @foreach (var item in Model.Members)
+            {
+                @item.UserName<br />
+            }
+        </dd>
+        <dt>
+            Bank Account(s)
+        </dt>
+        <dd>
+            @foreach (var item in Model.BankAccounts)
+            {
+                @item.Name<br />
+            }
+        </dd>
 
-                        <dt>
-                            @Html.DisplayNameFor(model => model.LastName)
-                        </dt>
+    </dl>
+</div>
 
-                        <dd>
-                            @Html.DisplayFor(model => model.LastName)
-                        </dd>
+<p>
+    <a href="@Url.Action("Edit", new { id = Model.Id })" class="btn btn-default">Change Name</a>
+    <a data-toggle="modal" href="#leaveHousehold" class="btn btn-default">Leave Household</a>
+    <a href="@Url.Action("Index", new { id = Model.Id })" class="btn btn-default">Go Back</a>
+</p>
 
-                        <dt>
-                            @Html.DisplayNameFor(model => model.EmailAddress)
-                        </dt>
-
-                        <dd>
-                            @Html.DisplayFor(model => model.EmailAddress)
-                        </dd>
-
-                        <dt>
-                            @Html.DisplayNameFor(model => model.Date)
-                        </dt>
-
-                        <dd>
-                            @Html.DisplayFor(model => model.Date)
-                        </dd>
-
-                    </dl>
-                </div>
-                <p>
-                    @Html.ActionLink("Edit", "Edit", new { id = Model.Id }) |
-                    @Html.ActionLink("Back to List", "Index")
-                </p>
+<!-- Modal -->
+<div class="modal fade" id="leaveHousehold" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                <h4 class="modal-title">Modal title</h4>
+            </div>
+            <div class="modal-body">
+                Are you sure you want to leave <mark>@Model.Name</mark>?
+                You will lose access to your bank account(s).
+            </div>
+            <div class="modal-footer">
+                <form method="Post" action="@Url.Action("Leave")">
+                    <input type="submit" class="btn btn-danger pull-right" />
+                </form>
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
 
 
 

@@ -4,24 +4,25 @@
     ViewBag.Title = "Index";
 }
 
-
-<!-- Page Content -->
-<div id="page-wrapper">
-    <div class="container-fluid">
-        <div class="row">
-            <div class="col-lg-12">
-                <h1 class="page-header"></h1>
-
-                <p>
-                    @Html.ActionLink("Create New Budget", "Create")
-                </p>
+<p>
+    @Html.ActionLink("AddBudgetItem", "Create", "BudgetItems")
+</p>
                 <table class="table">
                     <tr>
                         <th>
-                            @Html.DisplayNameFor(model => model.Household)
+                            @Html.DisplayNameFor(model => model.HouseholdId)
                         </th>
                         <th>
-                            @Html.DisplayNameFor(model => model.Name)
+                            @Html.DisplayNameFor(model => model.BudgetCategory)
+                        </th>
+                        <th>
+                            @Html.DisplayNameFor(model => model.BudgetItems)
+                        </th>
+                        <th>
+                            @Html.DisplayNameFor(model => model.Amount)
+                        </th>
+                        <th>
+                            @Html.DisplayNameFor(model => model.Frequency)
                         </th>
                         <th></th>
                     </tr>
@@ -30,27 +31,30 @@
                     {
                         <tr>
                             <td>
-                                @Html.DisplayFor(modelItem => item.Household.Name)
+                                @Html.DisplayFor(modelItem => item.HouseholdId)
                             </td>
                             <td>
-                                @Html.DisplayFor(modelItem => item.Name)
+                                @Html.DisplayFor(modelItem => item.BudgetCategory)
                             </td>
                             <td>
-                                @Html.ActionLink("Edit", "Edit", new { id = item.Id }) |
-                                @Html.ActionLink("Details", "Details", new { id = item.Id }) |
-                                @Html.ActionLink("Delete", "Delete", new { id = item.Id })
+                                @Html.DisplayFor(modelItem => item.BudgetItems)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.Amount)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.Frequency)
+                            </td>
+                            <td>
+                                @Html.ActionLink("EditBudgetItem", "Edit", "BudgetItems", new { id = item.Id }) |
+                                @*@Html.ActionLink("Details", "Details", new { id = item.Id }) |*@
+                                @Html.ActionLink("DeleteBudgetItem", "Delete", "BudgetItems", new { id = item.Id })                       
                             </td>
                         </tr>
+                      
                     }
-
                 </table>
-            </div>
-            <!-- /.col-lg-12 -->
-        </div>
-        <!-- /.row -->
-    </div>
-    <!-- /.container-fluid -->
-</div>
+
 
 
 
