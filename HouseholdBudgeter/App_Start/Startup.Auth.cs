@@ -6,6 +6,7 @@ using Microsoft.Owin.Security.Cookies;
 using Microsoft.Owin.Security.Google;
 using Owin;
 using HouseholdBudgeter.Models;
+using Owin.Security.Providers.LinkedIn;
 
 namespace HouseholdBudgeter
 {
@@ -54,15 +55,18 @@ namespace HouseholdBudgeter
             //   consumerKey: "",
             //   consumerSecret: "");
 
-            //app.UseFacebookAuthentication(
-            //   appId: "",
-            //   appSecret: "");
+            app.UseFacebookAuthentication(
+               appId: "1903573586537960",
+               appSecret: "acb138dc5a6eb75bf4432639991960f8");
 
-            //app.UseGoogleAuthentication(new GoogleOAuth2AuthenticationOptions()
-            //{
-            //    ClientId = "",
-            //    ClientSecret = ""
-            //});
+            app.UseGoogleAuthentication(new GoogleOAuth2AuthenticationOptions()
+            {
+                ClientId = "71360435538-jhik4scmo28vfuso5lki23e4t1bjhs7k.apps.googleusercontent.com",
+                ClientSecret = "zMgvmEQGAmgQ3Db5OdXh9s0P"
+            });
+
+            app.UseLinkedInAuthentication("78i10737hv8f5g", "wJESf6u0cxhWnNUE");
+
+           }
         }
     }
-}

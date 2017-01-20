@@ -1,22 +1,15 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Data;
 using System.Data.Entity;
 using System.Linq;
 using System.Net;
-using System.Web;
 using System.Web.Mvc;
 using HouseholdBudgeter.Models;
-using System.Threading.Tasks;
-using HouseholdBudgeter.Helpers;
-using static HouseholdBudgeter.Helpers.AuthorizeHousehold;
 using Microsoft.AspNet.Identity;
-using Microsoft.AspNet.Identity.EntityFramework;
-using System.Security.Policy;
 
 namespace HouseholdBudgeter.Controllers
 {
-    //[Authorize]
+    [Authorize]
+    [RequireHttps]
     public class HouseholdsController : Controller
     {
         private ApplicationDbContext db = new ApplicationDbContext();

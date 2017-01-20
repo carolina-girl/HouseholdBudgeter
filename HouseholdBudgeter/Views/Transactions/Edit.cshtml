@@ -4,64 +4,85 @@
     ViewBag.Title = "Edit";
 }
 
-<div class="panel panel-success">
-    <div class="panel-heading"><h2>Edit Transaction</h2></div>
-    <div class="panel-body">
-        @using (Html.BeginForm())
-        {
-            @Html.AntiForgeryToken()
-            <div class="form-horizontal">
-                @Html.ValidationSummary(true, "", new { @class = "text-danger" })
-                <div class="form-group">
-                    @Html.LabelFor(model => model.BankAccountsId, "Bank Account", htmlAttributes: new { @class = "control-label col-md-2" })
-                    <div class="col-md-10">
-                        @Html.DropDownList("BankAccountsId", null, htmlAttributes: new { @class = "form-control" })
-                        @Html.ValidationMessageFor(model => model.BankAccountsId, "", new { @class = "text-danger" })
-                    </div>
-                </div>
-
-                <div class="form-group">
-                    @Html.LabelFor(model => model.Description, htmlAttributes: new { @class = "control-label col-md-2" })
-                    <div class="col-md-10">
-                        @Html.TextAreaFor(model => model.Description, new { htmlAttributes = new { @class = "form-control" } })
-                        @Html.ValidationMessageFor(model => model.Description, "", new { @class = "text-danger" })
-                    </div>
-                </div>
-                <div class="form-group">
-                    <div class="col-sm-2 col-sm-offset-4 text-center">
-                        @Html.RadioButton("Types", false) <text class="text-danger"><b>Withdraw</b></text>
-                    </div>
-                    <div class="col-sm-2 text-center">
-                        @Html.RadioButton("Types", true) <text class="text-success"><b>Deposit</b></text>
-                    </div>
-                    @Html.ValidationMessageFor(model => model.Types, "", new { @class = "text-danger" })
-                </div>
-
-                <div class="form-group">
-                    @Html.LabelFor(model => model.Amount, htmlAttributes: new { @class = "control-label col-md-2" })
-                    <div class="col-md-10">
-                        <div class="input-group">
-                            <span class="input-group-addon">$</span>
-                            @Html.EditorFor(model => model.Amount, new { htmlAttributes = new { @class = "form-control", @placeholder = "Enter the amount you wish to save/spend.", @Value = Model.Amount } })
-                        </div>
-                        @Html.ValidationMessageFor(model => model.Amount, "", new { @class = "text-danger" })
-                    </div>
-                </div>
-                <div class="form-group">
-                    @Html.LabelFor(model => model.CategoryId, "Category", htmlAttributes: new { @class = "control-label col-md-2" })
-                    <div class="col-md-10">
-                        @Html.DropDownList("CategoryId", null, htmlAttributes: new { @class = "form-control" })
-                        @Html.ValidationMessageFor(model => model.CategoryId, "", new { @class = "text-danger" })
-                    </div>
-                </div>
-                <div class="form-group">
-                    <div class="col-md-offset-2 col-md-10">
-                        <input type="hidden" name="ReconciledAmount" value="@Model.Amount" />
-                        <input type="submit" value="Reconcile Balance" class="btn btn-primary" />
-                    </div>
-                </div>
+<div class="row">
+    <div class="col-lg-12">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h2><i class="fa fa-shopping-cart"></i> Edit Transactions </h2>
             </div>
-        }
-        <a href="@Url.Action("Index")" class="btn btn-primary"> << Back to Transaction</a>
+            <div class="panel-body">
+                @using (Html.BeginForm())
+                {
+                    @Html.AntiForgeryToken()
+                    <div class="form-horizontal">
+                        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.BankAccountsId, "Bank Account", htmlAttributes: new { @class = "control-label col-md-2" })
+                            <div class="col-md-10">
+                                @Html.DropDownList("BankAccountsId", null, htmlAttributes: new { @class = "form-control" })
+                                @Html.ValidationMessageFor(model => model.BankAccountsId, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.Description, htmlAttributes: new { @class = "control-label col-md-2" })
+                            <div class="col-md-10">
+                                @Html.TextAreaFor(model => model.Description, new { htmlAttributes = new { @class = "form-control" } })
+                                @Html.ValidationMessageFor(model => model.Description, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
+
+                        @*<div class="form-group">
+                            <div class="col-sm-2 col-sm-offset-4 text-center">
+                                @Html.RadioButton("Types", false) <text class="text-danger"><b>Withdraw</b></text>
+                            </div>
+                            <div class="col-sm-2 text-center">
+                                @Html.RadioButton("Types", true) <text class="text-success"><b>Deposit</b></text>
+                            </div>
+                            @Html.ValidationMessageFor(model => model.Types, "", new { @class = "text-danger" })
+                        </div>*@
+
+                        <div class="form-group">         
+                                @Html.LabelFor(model => model.Category, htmlAttributes: new { @class = "control-label col-md-2" })
+                            <div class="col-md-10" text-center">
+                                <div class="btn-group" data-toggle="buttons">
+                                    <label class="btn btn-primary active">
+                                        @Html.RadioButton("Types", "Withdraw", true, new { id = "IsWithdrawal" }) Withdraw
+                                    </label>
+                                    <label class="btn btn-primary">
+                                        @Html.RadioButton("Types", "Deposit", new { id = "IsDeposit" }) Deposit
+                                    </label>
+                                </div>
+                            </div>
+                            </div>
+
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.Amount, htmlAttributes: new { @class = "control-label col-md-2" })
+                            <div class="col-md-10">
+                                <div class="input-group">
+                                    <span class="input-group-addon">$</span>
+                                    @Html.EditorFor(model => model.Amount, new { htmlAttributes = new { @class = "form-control", @placeholder = "Enter the amount you wish to save/spend.", @Value = Model.Amount } })
+                                </div>
+                                @Html.ValidationMessageFor(model => model.Amount, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.CategoryId, "Category", htmlAttributes: new { @class = "control-label col-md-2" })
+                            <div class="col-md-10">
+                                @Html.DropDownList("CategoryId", null, htmlAttributes: new { @class = "form-control" })
+                                @Html.ValidationMessageFor(model => model.CategoryId, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="col-md-offset-2 col-md-10">
+                                <input type="hidden" name="ReconciledAmount" value="@Model.Amount" />
+                                <input type="submit" value="Reconcile Balance" class="btn btn-primary" />
+                            </div>
+                        </div>
+                    </div>
+                    }
+                <a href="@Url.Action("Index")" class="btn btn-primary"> << Back to List</a>
+            </div>
+        </div>
+        </div>
     </div>
-</div>

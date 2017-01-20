@@ -3,122 +3,109 @@
     ViewBag.Title = "Index";
 }
 
-<h2><i class="fa fa-archive"></i> Budget </h2>
+
 <div class="row">
     <div class="col-lg-12">
         <div class="panel panel-default">
             <div class="panel-heading">
-                <div class="panel-body">
-                    <div class="table-responsive">
-                        <table class="table table-bordered">
-                            <a data-toggle="modal" href="#create" class="btn btn-default pull-right">Add A New Element</a>
-                                    <table class="table" id="budgetsTable">
-                                        <thead>
-                                            <tr>
-                                                <th>
-                                                    @Html.DisplayNameFor(model => model.Name)
-                                                </th>
-                                                <th></th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            @foreach (var item in Model)
-                                            {
-                                                <tr>
-                                                    <td>
-                                                        @Html.DisplayFor(modelItem => item.Name)
-                                                    </td>
-                                                    <td>
-                                                        <a href="@Url.Action("Edit", new { id = item.Id })"><i class="fa fa-pencil btn btn-xs btn-warning"></i></a>
-                                                        <span class="delete-section">
-                                                            <a class="delete-link" href="@Url.Action("Delete", new {id = item.Id})"><i class="fa fa-close btn btn-xs btn-danger"></i></a>
-                                                            <span class="btn btn-danger btn-xs delete-confirm" style="display:none" data-delete-id="@item.Id">Confirm Delete</span>
-                                                        </span>
-                                                    </td>
-                                                </tr>
-                                            }
-                                        </tbody>
-                                        </table>
-                                    </table>
-                                </div>
-                            </div>
+                <h2><i class="fa fa-columns"></i> Budgets<a data-toggle="modal" href="#create" class="btn btn-default pull-right">Add A New Element</a></h2>
+            </div>
+            <div class="panel-body">
+                <div class="table-responsive">
+                    <table class="table table-bordered">
+                        <thead>
+                            <tr>
+                                <th>
+                                    @Html.DisplayNameFor(model => model.Name)
+                                </th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in Model)
+                            {
+                                <tr>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => item.Name)
+                                    </td>
+                                    <td>
+                                        <a href="@Url.Action("Edit", new { id = item.Id })"><i class="fa fa-pencil btn btn-xs btn-warning"></i></a>
+                                        <span class="delete-section">
+                                            <a class="delete-link" href="@Url.Action("Delete", new {id = item.Id})"><i class="fa fa-close btn btn-xs btn-danger"></i></a>
+                                            <span class="btn btn-danger btn-xs delete-confirm" style="display:none" data-delete-id="@item.Id">Confirm Delete</span>
+                                        </span>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
                 </div>
+            </div>       
+        </div>
+    </div>
+</div>
+
+
+@*@foreach (var item in Model)
+    {
+        if (item.Household.Budgets < 1)
+        {
+            <div class="modal fade" id="warning" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header text-danger">
+                            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                            <h4 class="modal-title"><i class="fa fa-warning"></i> No budget has been created</h4>
+                        </div>
+                        <p class="modal-body bg-danger">
+                            You must have a budget before your dashboard can be used.
+                        </p>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                        </div>
+                    </div><!-- /.modal-content -->
+                </div><!-- /.modal-dialog -->
+            </div><!-- /.modal -->
+        }
+    }*@
+
+@*@section Scripts{
+        <script type="text/javascript">
+            $(window).load(function () {
+                $('#warning').modal('show');
+            });
+        </script>
+    }*@
+
+<!-- Modal -->
+<div class="modal fade" id="create" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="container" style="padding: 20px">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">X</button>
+                <div class="panel-title">
+                    <h3>Add Element</h3>
+                </div>
+            </div>
+            <div class="panel-body">
+                <ul class="nav nav-tabs">
+                    <li class="active"><a data-toggle="tab" href="#home">Budget</a></li>
+                    <li><a data-toggle="tab" href="#menu1">BudgetItem</a></li>
+                    <li><a data-toggle="tab" href="#menu2">Categories</a></li>
+                </ul>
+                <div class="tab-content">
+                    <div id="home" class="tab-pane fade in active">
+                        @Html.Action("_CreateBudget", "Budgets")
+                    </div>
+                    <div id="menu1" class="tab-pane fade">
+                        @Html.Action("Create", "BudgetItems")
+                    </div>
+                    <div id="menu2" class="tab-pane fade">
+                        @Html.Action("Create", "BudgetCategories")
+                    </div>
+                </div>
+                <button type="button" class="btn btn-default pull-right" data-dismiss="modal">Close</button>
             </div>
         </div>
     </div>
-
-
-
-                            @*@foreach (var item in Model)
-                                {
-                                    if (item.Household.Budgets.Count < 1)
-                                    {
-                                        <div class="modal fade" id="warning" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-                                            <div class="modal-dialog">
-                                                <div class="modal-content">
-                                                    <div class="modal-header text-danger">
-                                                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-                                                        <h4 class="modal-title"><i class="fa fa-warning"></i> No budget has been created</h4>
-                                                    </div>
-                                                    <p class="modal-body bg-danger">
-                                                        You must have a budget before your dashboard can be used.
-                                                    </p>
-                                                    <div class="modal-footer">
-                                                        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-                                                    </div>
-                                                </div><!-- /.modal-content -->
-                                            </div><!-- /.modal-dialog -->
-                                        </div><!-- /.modal -->
-                                    }
-                                }*@
-
-                            @section Scripts{
-                                <script type="text/javascript">
-                                    $(window).load(function () {
-                                        $('#warning').modal('show');
-                                    });
-                                </script>
-                            }
-
-                            <!-- Modal -->
-                            <div class="modal fade" id="create" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-                                <div class="modal-dialog">
-                                    <div class="modal-content">
-                                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">X</button>
-                                        <div class="container" style="padding: 20px">
-                                            <div class="panel panel-primary">
-                                                <div class="panel-heading">
-                                                    <div class="panel-title">
-                                                        <h3>Add Element</h3>
-                                                    </div>
-                                                </div>
-                                                <div class="panel-body">
-                                                    <ul class="nav nav-tabs">
-                                                        <li class="active"><a data-toggle="tab" href="#home">Budget</a></li>
-                                                        <li><a data-toggle="tab" href="#menu1">BudgetItem</a></li>
-                                                        <li><a data-toggle="tab" href="#menu2">Categories</a></li>
-                                                    </ul>
-                                                    <div class="tab-content">
-                                                        <div id="home" class="tab-pane fade in active">
-                                                            @Html.Action("_CreateBudget", "Budgets")
-                                                        </div>
-                                                        <div id="menu1" class="tab-pane fade">
-                                                            @Html.Action("Create", "BudgetItems")
-                                                        </div>
-                                                        <div id="menu2" class="tab-pane fade">
-                                                            @Html.Action("Create", "BudgetCategories")
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <button type="button" class="btn btn-default pull-right" data-dismiss="modal">Close</button>
-                                        </div>
-                                    </div><!-- /.modal-content -->
-                                </div><!-- /.modal-dialog -->
-                            </div><!-- /.modal -->
-
-
-
-
-
-
+</div>

@@ -26,8 +26,7 @@ namespace HouseholdBudgeter.Migrations
 
             string[] demoName =
             {
-                "mahburns@gmail.com", "Admin@HouseholdBudget.com", "Husband@HouseholdBudget.com", "Wife@HouseholdBudget.com",
-                "Son@HouseholdBudget.com", "Daughter@HouseholdBudget.com"
+                "mahburns@gmail.com", "Admin@HouseholdBudget.com"
             };
             string demoPassword = "Password-1";
 
@@ -88,55 +87,8 @@ namespace HouseholdBudgeter.Migrations
                     HouseholdId = household.Id,
                     EmailConfirmed = true
                 }, demoPassword);
-            }
-            if (!context.Users.Any(u => u.Email == "Husband@HouseholdBudget.com"))
-            {
-                userManager.Create(new ApplicationUser
-                {
-                    Email = "Husband@HouseholdBudget.com",
-                    UserName = "Husband@HouseholdBudget.com",
-                    FirstName = "Demo-Husband-User",
-                    LastName = "Household-Budgeter-Application",
-                    HouseholdId = household.Id,
-                    EmailConfirmed = true
-                }, demoPassword);
-            }
-            if (!context.Users.Any(u => u.Email == "Wife@HouseholdBudget.com"))
-            {
-                userManager.Create(new ApplicationUser
-                {
-                    Email = "Wife@HouseholdBudget.com",
-                    UserName = "Wife@HouseholdBudget.com",
-                    FirstName = "Demo-Wife-User",
-                    LastName = "Household-Budgeter-Application",
-                    HouseholdId = household.Id,
-                    EmailConfirmed = true
-                }, demoPassword);
-            }
-            if (!context.Users.Any(u => u.Email == "Son@HouseholdBudget.com"))
-            {
-                userManager.Create(new ApplicationUser
-                {
-                    Email = "Son@HouseholdBudget.com",
-                    UserName = "Son@HouseholdBudget.com",
-                    FirstName = "Demo-Son-User",
-                    LastName = "Household-Budgeter-Application",
-                    HouseholdId = household.Id,
-                    EmailConfirmed = true
-                }, demoPassword);
-            }
-            if (!context.Users.Any(u => u.Email == "Daughter@HouseholdBudget.com"))
-            {
-                userManager.Create(new ApplicationUser
-                {
-                    Email = "Daughter@HouseholdBudget.com",
-                    UserName = "Daughter@HouseholdBudget.com",
-                    FirstName = "Demo-Daughter-User",
-                    LastName = "Household-Budgeter-Application",
-                    HouseholdId = household.Id,
-                    EmailConfirmed = true
-                }, demoPassword);
-            }
+              }
+           }
         }
     }
-}
+

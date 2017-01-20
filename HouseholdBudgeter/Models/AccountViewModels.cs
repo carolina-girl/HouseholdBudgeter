@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
 namespace HouseholdBudgeter.Models
@@ -6,8 +7,16 @@ namespace HouseholdBudgeter.Models
     public class ExternalLoginConfirmationViewModel
     {
         [Required]
-        [Display(Name = "Email")]
+        [Display(Name = "*Email")]
         public string Email { get; set; }
+
+        [Required]
+        [Display(Name = "*First Name")]
+        public string FirstName { get; set; }
+
+        [Required]
+        [Display(Name = "*Last Name")]
+        public string LastName { get; set; }
     }
 
     public class ExternalLoginListViewModel
@@ -48,8 +57,6 @@ namespace HouseholdBudgeter.Models
 
     public class LoginViewModel
     {
-        public string Name { get; set; }
-
         [Required]
         [Display(Name = "Email")]
         [EmailAddress]
@@ -62,28 +69,27 @@ namespace HouseholdBudgeter.Models
 
         [Display(Name = "Remember me?")]
         public bool RememberMe { get; set; }
-
     }
 
     public class RegisterViewModel
     {
-
-
-        [Display(Name = "First Name")]
+        [Required]
+        [Display(Name = "*First Name")]
         public string FirstName { get; set; }
 
-
-        [Display(Name = "Last Name")]
+        [Required]
+        [Display(Name = "*Last Name")]
         public string LastName { get; set; }
-
-
-        [Display(Name = "Phone")]
-        public string Phone { get; set; }
 
         [Required]
         [EmailAddress]
-        [Display(Name = "Email")]
+        [Display(Name = "*Email")]
         public string Email { get; set; }
+
+        [Display(Name = "Household Name")]
+        public string HouseholdName { get; set; }
+
+        public int? HouseholdId { get; set; }
 
         [Required]
         [StringLength(100, ErrorMessage = "The {0} must be at least {2} characters long.", MinimumLength = 6)]
@@ -99,21 +105,6 @@ namespace HouseholdBudgeter.Models
 
     public class ResetPasswordViewModel
     {
-        //[Required]
-        //[EmailAddress]
-        //[Display(Name = "First Name")]
-        //public string FirstName { get; set; }
-
-        //[Required]
-        //[EmailAddress]
-        //[Display(Name = "Last Name")]
-        //public string LastName { get; set; }
-
-        //[Required]
-        //[EmailAddress]
-        //[Display(Name = "Phone")]
-        //public string Phone { get; set; }
-
         [Required]
         [EmailAddress]
         [Display(Name = "Email")]
@@ -139,26 +130,6 @@ namespace HouseholdBudgeter.Models
         [EmailAddress]
         [Display(Name = "Email")]
         public string Email { get; set; }
-    }
-
-    public class UserProfileViewModel
-    {
-        [Display(Name = "First Name")]
-        public string FirstName { get; set; }
-
-        [Display(Name = "Last Name")]
-        public string LastName { get; set; }
-
-        [Display(Name = "Email")]
-        public string Email { get; set; }
-
-        [Display(Name = "Phone")]
-        public string Phone { get; set; }
-
-        public int? HouseholdId { get; set; }
-        public string HouseholdName { get; set; }
-
-        public bool HasPassword { get; set; }
     }
 
     public class DemoLogin

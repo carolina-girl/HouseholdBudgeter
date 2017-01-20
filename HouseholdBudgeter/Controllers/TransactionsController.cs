@@ -1,21 +1,17 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Data;
 using System.Data.Entity;
 using System.Linq;
 using System.Net;
-using System.Web;
 using System.Web.Mvc;
 using HouseholdBudgeter.Models;
 using Microsoft.AspNet.Identity;
-using HouseholdBudgeter.Helpers;
-using static HouseholdBudgeter.Helpers.HouseholdHelper;
-using static HouseholdBudgeter.Helpers.AuthorizeHousehold;
 using System.Threading.Tasks;
 
 namespace HouseholdBudgeter.Controllers
 {
     [Authorize]
+    [RequireHttps]
     public class TransactionsController : Controller
     {
         private ApplicationDbContext db = new ApplicationDbContext();

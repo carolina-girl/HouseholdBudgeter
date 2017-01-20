@@ -1,7 +1,5 @@
 ﻿using System;
-using System.Globalization;
 using System.Linq;
-using System.Security.Claims;
 using System.Threading.Tasks;
 using System.Web;
 using System.Web.Mvc;
@@ -9,19 +7,19 @@ using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.Owin;
 using Microsoft.Owin.Security;
 using HouseholdBudgeter.Models;
-using System.Web.Profile;
-using System.Reflection.Emit;
 using System.Web.UI.WebControls;
 using System.Data.Entity;
 
 namespace HouseholdBudgeter.Controllers
 {
-    //[Authorize]
+    [RequireHttps]
+    [Authorize]
     public class AccountController : Controller
     {
         private ApplicationDbContext db = new ApplicationDbContext();
         private ApplicationSignInManager _signInManager;
         private ApplicationUserManager _userManager;
+        RegisterViewModel model = new RegisterViewModel();
 
         public AccountController()
         {
@@ -57,6 +55,121 @@ namespace HouseholdBudgeter.Controllers
             }
         }
 
+        // registers the user from email invitation.
+        // GET: /Account/Register
+        [AllowAnonymous]
+        public ActionResult RegisterToJoinHousehold(int inviteHouseholdId, int invitationId, Guid guid)
+        {
+            var user = db.Users.Find(User.Identity.GetUserId());
+
+            Household HouseholdJoin = db.Households.FirstOrDefault(i => i.Id == inviteHouseholdId);
+            HouseholdInvitation invited = db.Invitations.FirstOrDefault(i => i.Id == invitationId);
+
+            invited.JoinCode = guid;
+
+            model.HouseholdName = HouseholdJoin.Name;
+            model.HouseholdId = HouseholdJoin.Id;
+            model.Email = invited.ToEmail;
+            db.SaveChanges();
+
+            return View(model);
+        }
+
+        //
+        // POST: /Account/Register
+        [HttpPost]
+        [AllowAnonymous]
+        [ValidateAntiForgeryToken]
+        public async Task<ActionResult> RegisterToJoinHousehold(RegisterViewModel model, int householdId)
+        {
+
+            if (ModelState.IsValid)
+            {
+                var user = new ApplicationUser
+                {
+                    UserName = model.Email,
+                    Email = model.Email,
+                    FirstName = model.FirstName,
+                    LastName = model.LastName,
+                    HouseholdId = householdId
+                };
+
+                var result = await UserManager.CreateAsync(user, model.Password);
+
+                if (result.Succeeded)
+                {
+                    await SignInManager.SignInAsync(user, isPersistent: false, rememberBrowser: false);
+                    return RedirectToAction("Index", "Households");
+                }
+                AddErrors(result);
+            }
+
+            return View(model);
+        }
+
+        [Authorize]
+        //Get: Households/Join
+        public ActionResult JoinHousehold(int inviteHouseholdId)
+        {
+
+            var user = db.Users.Find(User.Identity.GetUserId());
+
+            Household Household = db.Households.FirstOrDefault(i => i.Id == inviteHouseholdId);
+
+            model.HouseholdName = Household.Name;
+            model.Email = user.Email;
+            model.FirstName = user.FirstName;
+            model.LastName = user.LastName;
+            model.Password = user.PasswordHash;
+            model.ConfirmPassword = user.PasswordHash;
+
+            if (model.HouseholdId == null)
+            {
+                model.HouseholdId = Household.Id;
+            }
+            db.SaveChanges();
+
+
+            return View(model);
+        }
+
+        // POST: /Account/Register
+        [HttpPost]
+        [AllowAnonymous]
+        [ValidateAntiForgeryToken]
+        public ActionResult JoinHousehold(RegisterViewModel model, int? HouseholdId)
+        {
+            ApplicationDbContext db = new ApplicationDbContext();
+
+            //the get action, send to the view,
+            //the view form-group sends to the posts
+            //the hidden for name must match to be a paramater
+
+            Household Household = db.Households.FirstOrDefault(i => i.Id == HouseholdId);
+
+            var updatedUser = db.Users.Find(User.Identity.GetUserId());
+
+            if (ModelState.IsValid)
+            {
+                Household.Members.Add(updatedUser);
+
+                updatedUser.FirstName = model.FirstName;
+                updatedUser.LastName = model.LastName;
+                updatedUser.Email = model.Email;
+                updatedUser.UserName = model.Email;
+                updatedUser.HouseholdId = model.HouseholdId;
+                db.Entry(updatedUser).State = EntityState.Modified;
+
+                db.SaveChanges();
+                return RedirectToAction("Index", "Households");
+            }
+
+
+
+            // If we got this far, something failed, redisplay form
+            return View(model);
+        }
+
         //
         // GET: /Account/Login
         [AllowAnonymous]
@@ -84,8 +197,8 @@ namespace HouseholdBudgeter.Controllers
             switch (result)
             {
                 case SignInStatus.Success:
-                    return RedirectToLocal(returnUrl);
-                    //return RedirectToAction("Dashboard", "Home");
+                    //return RedirectToLocal(returnUrl);
+                    return RedirectToAction("Dashboard", "Home");
                 case SignInStatus.LockedOut:
                     return View("Lockout");
                 case SignInStatus.RequiresVerification:
@@ -190,7 +303,7 @@ namespace HouseholdBudgeter.Controllers
         {
             if (ModelState.IsValid)
             {
-                var user = new ApplicationUser { UserName = model.Email, Email = model.Email, FirstName = model.FirstName, LastName = model.LastName, PhoneNumber = model.Phone };
+                var user = new ApplicationUser { UserName = model.Email, Email = model.Email, FirstName = model.FirstName, LastName = model.LastName };
                 var result = await UserManager.CreateAsync(user, model.Password);
                 if (result.Succeeded)
                 {
@@ -463,46 +576,6 @@ namespace HouseholdBudgeter.Controllers
         {
             AuthenticationManager.SignOut(DefaultAuthenticationTypes.ApplicationCookie);
             return RedirectToAction("Login", "Account");
-        }
-
-
-        // GET: User Profile
-        public ActionResult UserProfile()
-        {
-            var userId = User.Identity.GetUserId();
-            var user = UserManager.FindById(userId);
-            var FirstName = user.FirstName;
-            var LastName = user.LastName;
-            var Email = user.Email;
-            var Phone = user.PhoneNumber;
-            var model = new UserProfileViewModel
-            {
-                FirstName = FirstName,
-                LastName = LastName,
-                Email = Email,
-                Phone = Phone,
-            };
-            return View(model);
-        }
-
-        [HttpPost]
-        public async Task<ActionResult> UserProfile(UserProfileViewModel model)
-        {
-            if (!ModelState.IsValid)
-            {
-                return View(model);
-            }
-            // Find the user, update the fields with the new ones
-            ApplicationUser user = UserManager.FindById(User.Identity.GetUserId());
-            user.FirstName = model.FirstName;
-            user.LastName = model.LastName;
-            user.Email = model.Email;
-            user.UserName = model.Email;
-            user.PhoneNumber = model.Phone;
-
-            IdentityResult result = await UserManager.UpdateAsync(user);
-
-            return RedirectToAction("Dashboard", "Home");
         }
 
 

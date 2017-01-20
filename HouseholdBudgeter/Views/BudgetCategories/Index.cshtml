@@ -2,78 +2,79 @@
 @{
     ViewBag.Title = "Index";
 }
-<div class="panel panel-success">
-    <div class="panel-heading">
-        <div class="panel-title">
-            <h2><i class="fa fa-database"></i> Categories<a data-toggle="modal" href="#create" class="btn btn-default pull-right">Add A New Category</a></h2>
+
+<div class="row">
+    <div class="col-lg-12">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h2><i class="fa fa-group"></i> Budget Catagories <a data-toggle="modal" href="#create" class="btn btn-default pull-right">Add A Budget Category</a></h2>
+            </div>
+            <div class="panel-body">
+                <div class="table-responsive">
+                    <table class="table table-bordered">
+                        <thead>
+                            <tr>
+                                <th>
+                                    @Html.DisplayNameFor(model => model.Name)
+                                </th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in Model)
+                            {
+                                <tr>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => item.Name)
+                                    </td>
+                                    <td>
+                                        <a href="@Url.Action("Edit", new { id = item.Id })"><i class="fa fa-pencil btn btn-xs btn-warning"></i></a>
+                                        <span class="delete-section">
+                                            <a class="delete-link" href="@Url.Action("Delete", new {id = item.Id})"><i class="fa fa-close btn btn-xs btn-danger"></i></a>
+                                            <span class="btn btn-danger btn-xs delete-confirm" style="display:none" data-delete-id="@item.Id">Confirm Delete</span>
+                                        </span>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            </div>
         </div>
     </div>
-    <div class="panel-body">
-        <table class="table" id="categoriesTable">
-            <thead>
-                <tr>
-                    <th>
-                        @Html.DisplayNameFor(model => model.Name)
-                    </th>
-                    <th></th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach (var item in Model)
-                {
-                    <tr>
-                        <td>
-                            @Html.DisplayFor(modelItem => item.Name)
-                        </td>
-                        <td>
-                            <a href="@Url.Action("Edit", new { id = item.Id })"><i class="fa fa-pencil btn btn-xs btn-warning"></i></a>
-                            <span class="delete-section">
-                                <a class="delete-link" href="@Url.Action("Delete", new {id = item.Id})"><i class="fa fa-close btn btn-xs btn-danger"></i></a>
-                                <span class="btn btn-danger btn-xs delete-confirm" style="display:none" data-delete-id="@item.Id">Confirm Delete</span>
-                            </span>
-                        </td>
-                    </tr>
-                }
-            </tbody>
-        </table>
-    </div>
-</div>
 <!-- Modal -->
 <div class="modal fade" id="create" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
-            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">X</button>
             <div class="container" style="padding: 20px">
-                <div class="panel panel-primary">
-                    <div class="panel-heading">
-                        <div class="panel-title">
-                            <h3>Add New Element</h3>
-                        </div>
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">X</button>
+                <div class="panel-title">
+                    <h3>Add Element</h3>
+                </div>
+            </div>
+            <div class="panel-body">
+                <ul class="nav nav-tabs">
+                    <li class="active"><a data-toggle="tab" href="#home">Budget</a></li>
+                    <li><a data-toggle="tab" href="#menu1">BudgetItem</a></li>
+                    <li><a data-toggle="tab" href="#menu2">Categories</a></li>
+                </ul>
+                <div class="tab-content">
+                    <div id="home" class="tab-pane fade in active">
+                        @Html.Action("_CreateBudget", "Budgets")
                     </div>
-                    <div class="panel-body">
-                        <ul class="nav nav-tabs">
-                            <li class="active"><a data-toggle="tab" href="#home">Categories</a></li>
-                            <li><a data-toggle="tab" href="#menu1">Budgets</a></li>
-                            <li><a data-toggle="tab" href="#menu2">BudgetItems</a></li>
-                        </ul>
-                        <div class="tab-content">
-                            <div id="home" class="tab-pane fade in active">
-                                @Html.Action("Create", "BudgetCategories")
-                            </div>
-                            <div id="menu1" class="tab-pane fade">
-                                @Html.Action("_CreateBudget", "Budgets")
-                            </div>
-                            <div id="menu2" class="tab-pane fade">
-                                @Html.Action("Create", "BudgetItems")
-                            </div>
-                        </div>
+                    <div id="menu1" class="tab-pane fade">
+                        @Html.Action("Create", "BudgetItems")
+                    </div>
+                    <div id="menu2" class="tab-pane fade">
+                        @Html.Action("Create", "BudgetCategories")
                     </div>
                 </div>
                 <button type="button" class="btn btn-default pull-right" data-dismiss="modal">Close</button>
             </div>
-        </div><!-- /.modal-content -->
-    </div><!-- /.modal-dialog -->
-</div><!-- /.modal -->
+        </div>
+    </div>
+</div>
 
 
 

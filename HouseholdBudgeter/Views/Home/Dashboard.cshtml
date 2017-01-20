@@ -6,16 +6,14 @@
 
 
 <h1 class="page-header">Dashboard</h1>
-
 <!-- /.row -->
-
 <div class="row">
     <div class="col-lg-3 col-md-6">
         <div class="panel panel-primary">
             <div class="panel-heading">
                 <div class="row">
                     <div class="col-xs-3">
-                        <i class="fa fa-comments fa-5x"></i>
+                        <i class="fa fa-home fa-5x"></i>
                     </div>
                     <div class="col-xs-9 text-right">
                         <div class="huge"></div>
@@ -37,7 +35,7 @@
             <div class="panel-heading">
                 <div class="row">
                     <div class="col-xs-3">
-                        <i class="fa fa-tasks fa-5x"></i>
+                        <i class="fa fa-dollar fa-5x"></i>
                     </div>
                     <div class="col-xs-9 text-right">
                         <div class="huge"></div>
@@ -81,7 +79,7 @@
             <div class="panel-heading">
                 <div class="row">
                     <div class="col-xs-3">
-                        <i class="fa fa-support fa-5x"></i>
+                        <i class="fa fa-columns fa-5x"></i>
                     </div>
                     <div class="col-xs-9 text-right">
                         <div class="huge"></div>
@@ -99,183 +97,125 @@
         </div>
     </div>
 </div>
-<!--Recent Transaction Panel-->
 
+<!--Recent Transaction Panel-->
 <div class="row">
     <div class="col-lg-6">
         <div class="panel panel-default">
             <div class="panel-heading">
-                <i class="fa fa-bar-chart-o fa-fw"></i> Recent Transactions
+                <h2><i class="fa fa-shopping-cart fa-fw"></i> Recent Transactions </h2>
                 <div class="panel-body">
-                    <div class="table-responsive">
-                        <table class="table table-bordered">
-                            <ul class="list-unstyled">
-                                <li class="text-muted">
-                                    <strong><i class="fa fa-user"></i> UserName </strong>
+                    <table class="table table-bordered">
+                        <ul class="list-unstyled">
+                            <li class="text-muted">
+                                <strong><i class="fa fa-user"></i> UserName </strong>
+                                <p>
+                                    <span>
+                                        Deposit/Withdraw
+                                        | $ 00.00 | Bank Account Type | Category Type | Description | Date
+                                    </span>
+                                </p>
+                            </li>
+                            @foreach (var tran in Model.Transactions)
+                            {
+                                <li>
+                                    <strong><i class="fa fa-user"></i> @tran.User.FirstName @tran.User.LastName</strong>
                                     <p>
                                         <span>
-                                            Deposit/Withdraw
-                                            | $ 00.00 | Bank Account Type | Category Type | Description | Date
+                                            @if (tran.Types == true)
+                                            {
+                                                <span class="text-success"><b>@("Deposit")</b></span>
+                                            }
+                                            else
+                                            {
+                                                <span class="text-danger"><b>@("Withdraw")</b></span>
+                                            }
+                                            | @string.Format("{0:C}", tran.Amount) | @tran.BankAccounts.Name | @tran.Category.Name
+                                        </span>
+
+                                        <span class="p-meta">
+                                            @if (tran.Description != null)
+                                            {
+                                                <span> | @tran.Description</span>
+
+                                            }
+                                            else
+                                            {
+                                                @Html.Raw("| ")
+                                                <span class="text-muted">@Html.Raw("Null")</span>
+                                            }
+                                        </span>
+                                        <span class="p-meta">
+                                            <!-- Due date & % Completed -->
+                                            <span> | @tran.Date.ToString("D")</span>
                                         </span>
                                     </p>
                                 </li>
-                                @foreach (var tran in Model.Transactions)
-                                {
-                                    <li>
-                                        <strong><i class="fa fa-user"></i> @tran.User.FirstName @tran.User.LastName</strong>
-                                        <p>
-                                            <span>
-                                                @if (tran.Types == true)
-                                                {
-                                                    <span class="text-success"><b>@("Deposit")</b></span>
-                                                }
-                                                else
-                                                {
-                                                    <span class="text-danger"><b>@("Withdraw")</b></span>
-                                                }
-                                                | @string.Format("{0:C}", tran.Amount) | @tran.BankAccounts.Name | @tran.Category.Name
-                                            </span>
-
-                                            <span class="p-meta">
-                                                @if (tran.Description != null)
-                                                {
-                                                    <span> | @tran.Description</span>
-
-                                                }
-                                                else
-                                                {
-                                                    @Html.Raw("| ")
-                                                    <span class="text-muted">@Html.Raw("Null")</span>
-                                                }
-                                            </span>
-                                            <span class="p-meta">
-                                                <!-- Due date & % Completed -->
-                                                <span> | @tran.Date.ToString("D")</span>
-                                            </span>
-                                        </p>
-                                    </li>
-                                }
-                            </ul>
-                        </table>
-                    </div>
+                            }
+                        </ul>
+                    </table>
                 </div>
-
             </div>
         </div>
-    </div>
-</div>
 
-<!-- Accounts/Balances panel/.row -->
-<div class="row">
-    <div class="col-lg-6">
-        <div class="panel panel-default">
-            <div class="panel-heading">
-                <i class="fa fa-cc-paypal"></i> Account Balances
-                <div class="panel-body">
-                    <div class="table-responsive">
-                        <table class="table table-bordered">
-                            <!-- Table heading -->
-                            <thead>
-                                <tr>
-                                    <th>Account Name</th>
-                                    <th>Balance</th>
-                                    <th>Reconciled</th>
-                                    <th>Control</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @foreach (var item in Model.BankAccounts)
-                                {
+
+        <!-- Accounts/Balances panel/.row -->
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <h2><i class="fa fa-dollar"></i> Accounts / Balances</h2>
+                        <div class="panel-body">
+                            <table class="table table-bordered">
+                                <!-- Table heading -->
+                                <thead>
                                     <tr>
-                                        <td>
-                                            @Html.DisplayFor(modelItem => item.Name)
-                                        </td>
-                                        <td>
-                                            @string.Format("{0:C}", item.Balance)
-                                        </td>
-                                        <td>
-                                            @string.Format("{0:C}", item.ReconcileBalance)
-                                        </td>
-                                        <td>
-                                            <a href="@Url.Action("Edit", "BankAccounts", new { id = item.Id })"><i class="fa fa-pencil btn btn-xs btn-warning"></i></a>
-                                            <span class="delete-section">
-                                                <a class="delete-link" href="@Url.Action("Delete", new {id = item.Id})"><i class="fa fa-close btn btn-xs btn-danger"></i></a>
-                                                <span class="btn btn-danger btn-xs delete-confirm" style="display:none" data-delete-id="@item.Id">Confirm Delete</span>
-                                            </span>
-                                        </td>
+                                        <th>Account Name</th>
+                                        <th>Balance</th>
+                                        <th>Reconciled</th>
+                                        @*<th>Control</th>*@
                                     </tr>
-                                }
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-
-        </div>
-    </div>
-</div>
-<!-- Spending Panel-->
-<div class="row">
-    <div class="col-lg-6">
-        <div class="panel panel-default">
-            <div class="panel-heading">
-                <i class="fa fa-cc-paypal"></i> Spending
-                <div class="panel-body">
-                    <div class="table-responsive">
-                        <table class="table table-bordered">
-                            <h2>
-                                @foreach (var item in Model.BankAccounts) //retrieve everything from Model Accounts until empty
-                                {
-                                    if (item.Balance < item.WarningBalance) //if the account balance if less than the warning Balance
+                                </thead>
+                                <tbody>
+                                    @foreach (var item in Model.BankAccounts)
                                     {
-                                        <strong class="text-danger"> @item.Name  @(" Account is low on Balance!")</strong> //return balance and message
+                                        <tr>
+                                            <td>
+                                                @Html.DisplayFor(modelItem => item.Name)
+                                            </td>
+                                            <td>
+                                                @string.Format("{0:C}", item.Balance)
+                                            </td>
+                                            <td>
+                                                @string.Format("{0:C}", item.ReconcileBalance)
+                                            </td>
+                                            <td>
+                                                <a href="@Url.Action("Edit", "BankAccounts", new { id = item.Id })"><i class="fa fa-pencil btn btn-xs btn-warning"></i></a>
+                                                <span class="delete-section">
+                                                    <a class="delete-link" href="@Url.Action("Delete", new {id = item.Id})"><i class="fa fa-close btn btn-xs btn-danger"></i></a>
+                                                    <span class="btn btn-danger btn-xs delete-confirm" style="display:none" data-delete-id="@item.Id">Confirm Delete</span>
+                                                </span>
+                                            </td>
+                                        </tr>
                                     }
-                                }
-                            </h2>
-                            <!-- Table heading -->
-                            <thead>
-                                <tr>
-                                    <th>@Model.begin.ToString("MMMM yyyy") Transaction Spent</th>  <!--Return the date of the beginning of the month and year-->
-                                    <th>Budget Balance</th>
-                                    <th>Balance left to spend</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr>
-                                    <td>
-                                        @string.Format("{0:C}", Model.Transactions.Where(t => t.Types == false).Sum(t => t.Amount))
-                                    </td>
-                                    <td>
-                                        @string.Format("{0:C}", Model.Budgets.BudgetItems.Sum(t => t.Amount))
-                                    </td>
-                                    <td>
-                                        @if ((Model.Budgets.BudgetItems.Sum(t => t.Amount) - Model.Transactions.Sum(t => t.Amount)) < 0)
-                                        {
-                                            <p class="red">Budget Spending has been exceeded!!! of  @(string.Format("{0:C}", Model.Budgets.BudgetItems.Sum(t => t.Amount) - Model.Transactions.Sum(t => t.Amount)))</p>
-                                        }
-                                        else
-                                        {
-                                            <p class="green"><b>@(string.Format("{0:C}", Model.Budgets.BudgetItems.Sum(t => t.Amount) - Model.Transactions.Sum(t => t.Amount)))</b></p>
-                                        }
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
-</div>
 
-<div class="row">
+    <!-- Chart Panel -->
+
     <div class="col-lg-6">
         <div class="panel panel-default">
             <div class="panel-heading">
-                <i class="fa fa-cc-paypal"></i> Budget Balances
+                <h2><i class="fa fa-columns"></i> Budget Balance </h2>
                 <div class="panel-body">
-                    <div class="table-responsive">
-                        <table class="table table-bordered">
+                    <table class="table table-bordered">
+                        <div class="form-group">
                             @using (Html.BeginForm("UpdateChart", "Home", FormMethod.Post))
                             {
                                 @Html.AntiForgeryToken()
@@ -283,7 +223,6 @@
                                     <b>Budget Name:</b>  @Html.DropDownList("BudgetId", null, htmlAttributes: new { @class = "form-control", onchange = "this.form.submit();" })
                                 </div>
                             }
-
                             @using (Html.BeginForm())
                             {
                                 @Html.AntiForgeryToken()
@@ -304,79 +243,45 @@
                                     </div>
                                 </div>
                             }
-                        </table>
-                    </div>
+                            <div id="container"></div>
+                            <table class="table table-bordered" id="datatable">
+                                <thead>
+                                    <tr>
+                                        <th></th>
+                                        <th>BudgetItems</th>
+                                        <th>Transactions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var v in Model.Budgets.BudgetItems)
+                                    {
+                                        <tr>
+                                            <th>
+                                                @v.Category.Name
+                                            </th>
+                                            <td>
+                                                @v.Amount
+                                            </td>
+                                            <td>
+                                                @Model.Transactions.Where(a => a.CategoryId == v.CategoryId && a.Date >= Model.begin && a.Date <= Model.end).Sum(t => t.Amount)
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    </table>
                 </div>
-                <div id="container"></div>
-                <table class="table table-bordered" id="datatable">
-                    <thead>
-                        <tr>
-                            <th></th>
-                            <th>BudgetItems</th>
-                            <th>Transactions</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach (var v in Model.Budgets.BudgetItems)
-            {
-                            <tr>
-                                <th>
-                                    @v.Category.Name
-                                </th>
-                                <td>
-                                    @v.Amount
-                                </td>
-                                <td>
-                                    @Model.Transactions.Where(a => a.CategoryId == v.CategoryId && a.Date >= Model.begin && a.Date <= Model.end).Sum(t => t.Amount)
-                                </td>
-                            </tr>
-                        }
-                    </tbody>
-                </table>
+                <!-- /.panel-body -->
             </div>
+            <!-- /.panel-heading -->
         </div>
+        <!-- /.panel-panel-default -->
     </div>
-</div>
+    <!-- /.col-lg-6 -->
 
-<div class="row">
-    <div class="col-lg-6 col-md-12 col-sm-12 col-xs-12">
-        <div class="widget">
-            <div class="widget-header bordered-bottom bordered-blue">
-                <span class="widget-caption"> Expenses vs Budget for the month</span>
-            </div>
-            <div class="widget-body">
-                <div id="chart1" style="width: 400px; height: 300px">
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div class="col-lg-6 col-md-12 col-sm-12 col-xs-12">
-        <div class="widget">
-            <div class="widget-header bordered-bottom bordered-blue">
-                <span class="widget-caption"> Expenses for the Month</span>
-            </div>
-            <div class="widget-body">
-                <div id="chart2" style="width: 200px; height: 200px">
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-
-<div class="row">
-    <div class="widget">
-        <div class="widget-header bordered-bottom bordered-blue">
-            <span class="widget-caption"> Monthly Expenses, Income and Budget</span>
-        </div>
-        <div class="widget-body">
-            <div id="MonthlyChart" style="width: 300px; height: 200px;">
-            </div>
-        </div>
-    </div>
-</div>
-<div id="myfirstchart" style="height: 250px;"></div>
-        <!-- Modal Create Budget -->
+<!-- /#page-wrapper -->
+<!-- Modal Create Budget -->
 <div class="modal fade" id="createB" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
@@ -400,61 +305,43 @@
         </div><!-- /.modal-content -->
     </div><!-- /.modal-dialog -->
 </div><!-- /.modal -->
+@section Scripts{
 
-<script src="//cdnjs.cloudflare.com/ajax/libs/raphael/2.1.0/raphael-min.js"></script>
-<script src="//cdnjs.cloudflare.com/ajax/libs/morris.js/0.5.1/morris.min.js"></script>
+    @*<style>
+            #datatable > tbody > tr > th, #datatable > thead > tr > th  {
+                text-align: center;
+            }
+        </style>*@
 
-<script>
-    $(document).ready(function () {
-        $.get('@Url.Action("GetChart", "Home")').then(function (response) {
-
-            $('#exp').text('$' + response.totalExpense);
-            $('#bud').text('$' + response.totalBudget);
-            $('#acc').text('$' + response.totalAcc);
-            new Morris.Bar({
-                // ID of the element in which to draw the chart.
-                element: 'chart1',
-                // Chart data records -- each entry in this array corresponds to
-                // a point on the chart.
-                data: response.bar,
-
-                // The name of the data record attribute that contains x-values.
-                xkey: 'Name',
-                // A list of names of data record attributes that contain y-
-                // values.
-                ykeys: ['Actual', 'Budgeted'],
-                // Labels for the ykeys -- will be displayed when you hover over
-                // the chart.
-                labels: ['Expenses to Date', 'Amount Budgeted'],
-                resize: true
-            });
-            new Morris.Donut({
-                element: 'chart2',
-                data: response.donut,
-                label: 'Name',
-                value: 'Value',
-                resize: true
+    <script type="text/javascript">
+        $(function () {
+            $('#container').highcharts({
+                data: {
+                    table: 'datatable'
+                },
+                chart: {
+                    type: 'column'
+                },
+                title: {
+                    text: 'Monthly Budget Balance Transactions'
+                },
+                yAxis: {
+                    allowDecimals: true,
+                    title: {
+                        text: 'Amount'
+                    }
+                },
+                tooltip: {
+                    formatter: function () {
+                        return this.series.name + '</b><br/>'
+                            + '$' + this.point.y + ' ' + this.point.name;
+                    }
+                }
             });
         });
-
-        $.post('@Url.Action("GetMonthly","Home")').then(function (response) {
-            console.log(response);
-            new Morris.Bar({
-                // ID of the element in which to draw the chart.
-                element: 'MonthlyChart',
-                // Chart data records -- each entry in this array corresponds to
-                // a point on the chart.
-                data: response,
-                // The name of the data record attribute that contains x-values.
-                xkey: 'month',
-                // A list of names of data record attributes that contain y-
-                // values.
-                ykeys: ['income', 'expense', 'budget'],
-                // Labels for the ykeys -- will be displayed when you hover over
-                // the chart.
-                labels: ['Income to Date', 'Expenses to Date', 'Amount Budgeted'],
-                resize: true
-            });
-        });
-    });
-</script>
+    </script>
+    <script src="https://code.highcharts.com/highcharts.js"></script>
+    <script src="~/Scripts/Highcharts-4.0.1/js/themes/sand-signika.js"></script>
+    <script src="https://code.highcharts.com/modules/data.js"></script>
+    <script src="https://code.highcharts.com/modules/exporting.js"></script>
+}

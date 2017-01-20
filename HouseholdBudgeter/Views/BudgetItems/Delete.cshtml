@@ -3,22 +3,22 @@
 @{
     ViewBag.Title = "Delete";
 }
-<div class="panel panel-danger">
-    <div class="panel-heading"><h2>Delete Budget Item</h2></div>
+
+<div class="panel panel-default">
+    <div class="panel-heading"><h2><i class="fa fa-gear"></i> Delete Budget Item</h2></div>
     <div class="panel-body">
         <h3>Are you sure you want to delete this?</h3>
         <div>
-            <h4>BudgetItem</h4>
             <hr />
             <dl class="dl-horizontal">
                 <dt>
-                    @Html.DisplayNameFor(model => model.Budget.Name)
+                    @Html.DisplayNameFor(model => model.Budget)
                 </dt>
                 <dd>
                     @Html.DisplayFor(model => model.Budget.Name)
                 </dd>
                 <dt>
-                    @Html.DisplayNameFor(model => model.Category.Name)
+                    @Html.DisplayNameFor(model => model.Category)
                 </dt>
                 <dd>
                     @Html.DisplayFor(model => model.Category.Name)
@@ -35,8 +35,8 @@
                 @Html.AntiForgeryToken()
 
                 <div class="form-actions no-color">
-                    <input type="submit" value="Delete" class="btn btn-danger" /> |
-                    @Html.ActionLink("Back to List", "Index")
+                    <input type="submit" value="Delete" class="btn btn-danger" />
+                    <a href="@Url.Action("Index")" class="btn btn-primary"> << Back to List</a>
                 </div>
             }
         </div>

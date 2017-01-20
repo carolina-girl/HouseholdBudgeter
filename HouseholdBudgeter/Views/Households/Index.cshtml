@@ -9,123 +9,118 @@
     <div class="col-lg-12">
         <div class="panel panel-default">
             <div class="panel-heading">
-                <i class="fa fa-cc-paypal"></i> Household Information
-                <div class="panel-body">
-                    <div class="table-responsive">
-                        <table class="table table-bordered">
-                            <tr>
-                                <th>
-                                    Household Name
-                                </th>
-                                <th>
-                                    Members
-                                </th>
-                                <th>
-                                    Bank Accounts
-                                </th>
-                                <th></th>
-                            </tr>
-                            <tr>
-                                <td>
-                                    @Model.Name
-                                </td>
-                                <td>
-                                    @Model.Members.Count()
-                                </td>
-                                <td>
-                                    @Model.BankAccounts.Count()
-                                </td>
-                                <td>
-                                    <a href="@Url.Action("Edit", new { id = Model.Id })" class="btn btn-warning"><i class="fa fa-edit"></i> Change Name</a>
-                                    <a href="@Url.Action("Details", new { id = Model.Id })" class="btn btn-info"><i class="fa fa-search"></i> View Details</a>
-                                    <a data-toggle="modal" href="#leaveHousehold" class="btn btn-danger"><i class="fa fa-chain"></i> Leave Household</a>
-                                </td>
-                            </tr>
-                        </table>
-                    </div>
-                </div>
+                <h2><i class="fa fa-home"></i> Household Information </h2>
+            </div>
+            <div class="panel-body">
+                <div class="table-responsive">
+                    <table class="table table-bordered">
+                        <tr>
+                            <th>
+                                Household Name
+                            </th>
+                            <th>
+                                Members
+                            </th>
+                            <th>
+                                Bank Accounts
+                            </th>
+                            <th></th>
+                        </tr>
+                        <tr>
+                            <td>
+                                @Model.Name
+                            </td>
+                            <td>
+                                @Model.Members.Count()
+                            </td>
+                            <td>
+                                @Model.BankAccounts.Count()
+                            </td>
+                            <td>
+                                <a href="@Url.Action("Edit", new { id = Model.Id })" class="btn btn-warning"><i class="fa fa-edit"></i> Change Name</a>
+                                <a href="@Url.Action("Details", new { id = Model.Id })" class="btn btn-info"><i class="fa fa-search"></i> View Details</a>
+                                <a data-toggle="modal" href="#leaveHousehold" class="btn btn-danger"><i class="fa fa-chain"></i> Leave Household</a>
+                            </td>
+                        </tr>
+                    </table>
                 </div>
             </div>
         </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-lg-12">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h2><i class="fa fa-dollar"></i> Bank Accounts </h2>
             </div>
-                <div class="row">
-                    <div class="col-lg-12">
-                        <div class="panel panel-default">
-                            <div class="panel-heading">
-                                <i class="fa fa-cc-paypal"></i> Bank Account Summary
-                                <div class="panel-body">
-                                    <div class="table-responsive">
-                                        <table class="table table-bordered">
-                                            <thead>
-                                                <tr>
-                                                    <th>Bank Name</th>
-                                                    <th>Balance</th>
-                                                    <th>Initial</th>
-                                                    <th>Reconcile</th>
-                                                    <th>Warning</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody>
-                                                @foreach (var item in Model.BankAccounts)
-                                                {
-                                                    <tr>
-                                                        <td>
-                                                            @item.Name
-                                                        </td>
-                                                        <td>
-                                                            @item.Balance.ToString("C")
-                                                        </td>
-                                                        <td>
-                                                            @item.InitialBalance.ToString("C")
-                                                        </td>
-                                                        <td>
-                                                            @item.ReconcileBalance.ToString("C")
-                                                        </td>
-                                                        <td>
-                                                            @item.WarningBalance.ToString("C")
-                                                        </td>
-                                                    </tr>
-                                                }
-                                            </tbody>
-                                        </table>
-                                    </div>
-                                </div>
-                                </div>
-                           </div>
-                        </div>
-                    </div>
-
-
-                                <!-- Modal -->
-                                <div class="modal fade" id="leaveHousehold" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-                                    <div class="modal-dialog">
-                                        <div class="modal-content">
-                                            @*<div class="container" style="padding: 20px">*@
-                                                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-
-                                                <div class="panel panel-danger">
-                                                    <div class="panel-heading">
-                                                        <h3 class="panel-title"><i class="fa fa-chain-broken"></i> Leaving?</h3>
-                                                    </div>
-                                                    <div class="panel-body">
-                                                        Are you sure you want to leave <mark>@Model.Name</mark>?
-                                                        Once you leave, you will lose access to all accounts.
-                                                    </div>
-                                                </div>
-                                                <form method="Post" action="@Url.Action("Leave")">
-                                                    <input type="submit" class="btn btn-danger pull-right" />
-                                                </form>
-                                                <input type="button" class="btn btn-default pull-right" data-dismiss="modal" value="Close" />
-                                            </div>
-                                        </div><!-- /.modal-content -->
-                                    </div><!-- /.modal-dialog -->
-                                @*</div>*@<!-- /.modal -->
-                  
+            <div class="panel-body">
+                <div class="table-responsive">
+                    <table class="table table-bordered">
+                        <thead>
+                            <tr>
+                                <th>Bank Name</th>
+                                <th>Balance</th>
+                                <th>Initial</th>
+                                <th>Reconcile</th>
+                                <th>Warning</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in Model.BankAccounts)
+                            {
+                                <tr>
+                                    <td>
+                                        @item.Name
+                                    </td>
+                                    <td>
+                                        @item.Balance.ToString("C")
+                                    </td>
+                                    <td>
+                                        @item.InitialBalance.ToString("C")
+                                    </td>
+                                    <td>
+                                        @item.ReconcileBalance.ToString("C")
+                                    </td>
+                                    <td>
+                                        @item.WarningBalance.ToString("C")
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 
 
 
-
-
-
-
-
+<!-- Modal -->
+<div class="modal fade" id="leaveHousehold" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="container" style="padding: 20px">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                <div class="panel-title">
+                    <h3>Leave Household</h3>
+                </div>
+            </div>
+            <div class="panel panel-danger">
+                <div class="panel-heading">
+                    <h3 class="panel-title"><i class="fa fa-chain-broken"></i> Leaving?</h3>
+                <div class="panel-body">
+                    Are you sure you want to leave <mark>@Model.Name</mark>?
+                    Once you leave, you will lose access to all accounts.
+                </div>
+            <form method="Post" action="@Url.Action("Leave")">
+                <input type="submit" class="btn btn-danger pull-right" />
+            </form>
+            <input type="button" class="btn btn-default pull-right" data-dismiss="modal" value="Close" />
+        </div>
+    </div>
+</div>
+   </div>
+      </div>

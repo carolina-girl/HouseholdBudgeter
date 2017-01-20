@@ -1,20 +1,16 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Data;
 using System.Data.Entity;
 using System.Linq;
 using System.Net;
-using System.Web;
 using System.Web.Mvc;
 using HouseholdBudgeter.Models;
-using HouseholdBudgeter.Helpers;
-using static HouseholdBudgeter.Helpers.AuthorizeHousehold;
 using Microsoft.AspNet.Identity;
-using static HouseholdBudgeter.Helpers.HouseholdHelper;
 
 namespace HouseholdBudgeter.Controllers
 {
     [Authorize]
+    [RequireHttps]
     public class BankAccountsController : Controller
     {
         private ApplicationDbContext db = new ApplicationDbContext();
@@ -126,6 +122,7 @@ namespace HouseholdBudgeter.Controllers
             {
                 bankAccount.HouseholdId = db.Users.FirstOrDefault(u => u.UserName == User.Identity.Name).HouseholdId.Value;
                 bankAccount.Created = new DateTimeOffset(DateTime.Now);
+                bankAccount.ReconcileBalance = bankAccount.Balance;
 
                 db.Entry(bankAccount).State = EntityState.Modified;
                 db.SaveChanges();
@@ -154,6 +151,7 @@ namespace HouseholdBudgeter.Controllers
             {
                 bankAccount.HouseholdId = db.Users.FirstOrDefault(u => u.UserName == User.Identity.Name).HouseholdId.Value;
                 bankAccount.Created = new DateTimeOffset(DateTime.Now);
+                bankAccount.ReconcileBalance = bankAccount.Balance;
 
                 db.Entry(bankAccount).State = EntityState.Modified;
                 db.SaveChanges();
@@ -233,3 +231,4 @@ namespace HouseholdBudgeter.Controllers
         }
     }
 }
+

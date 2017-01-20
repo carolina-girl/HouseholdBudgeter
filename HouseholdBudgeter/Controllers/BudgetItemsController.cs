@@ -1,10 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Data;
+﻿using System.Data;
 using System.Data.Entity;
 using System.Linq;
 using System.Net;
-using System.Web;
 using System.Web.Mvc;
 using HouseholdBudgeter.Models;
 using Microsoft.AspNet.Identity;
@@ -12,6 +9,7 @@ using Microsoft.AspNet.Identity;
 namespace HouseholdBudgeter.Controllers
 {
     [Authorize]
+    [RequireHttps]
     public class BudgetItemsController : Controller
     {
         private ApplicationDbContext db = new ApplicationDbContext();
@@ -176,7 +174,7 @@ namespace HouseholdBudgeter.Controllers
             Budget budget = db.Budgets.FirstOrDefault(b => b.Id == budgetItem.Id);
 
             //then the budget's household owner
-            Household household = db.Households.FirstOrDefault(h => h.Id == budget.Id);
+            //Household household = db.Households.FirstOrDefault(h => h.Id == budget.Id);
 
             //if (!household.Members.Contains(user))
             //{

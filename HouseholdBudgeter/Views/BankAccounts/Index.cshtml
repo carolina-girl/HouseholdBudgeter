@@ -3,185 +3,168 @@
     ViewBag.Title = "Index";
 }
 
-<h2><i class="fa fa-bank"></i> Bank Accounts</h2>
-    <div class="row">
-        <div class="col-lg-12">
-            <div class="panel panel-default">
-                <div class="panel-heading">
-                    <a data-toggle="modal" href="#create" class="btn btn-default pull-right">Add A New Bank Account</a>
-                            <div class="panel-body">
-                                <div class="table-responsive">
-                                    <table class="table table-bordered">
-                                        <tr>
-                                            <th>
-                                                @Html.DisplayNameFor(model => model.Name)
-                                            </th>
-                                            <th>
-                                                @Html.DisplayNameFor(model => model.Balance)
-                                            </th>
-                                            <th>
-                                                Warning Balance
-                                            </th>
-                                            <th>
-                                                @Html.DisplayNameFor(model => model.ReconcileBalance)
-                                            </th>
-                                            <th>
-                                                @Html.DisplayNameFor(model => model.Created)
-                                            </th>
-                                            <th></th>
-                                        </tr>
-                                        @foreach (var item in Model)
-            {
-                                            <tr>
-                                                <td>
-                                                    @Html.DisplayFor(modelItem => item.Name)
-                                                </td>
-                                                <td>
-                                                    @item.Balance.ToString("C")
-                                                </td>
-                                                <td>
-                                                    @item.WarningBalance.ToString("C")
-                                                </td>
-                                                <td>
-                                                    @string.Format("{0:C}", item.ReconcileBalance)
-                                                </td>
-                                                <td>
-                                                    @item.Created.ToString("M/dd/yyyy")
-                                                </td>
-                                                <td>
-                                                    <a href="@Url.Action("Edit", new { id = item.Id })"><i class="fa fa-pencil btn btn-xs btn-warning"></i></a>
-                                                    <span class="delete-section">
-                                                        <a class="delete-link" href="@Url.Action("Delete", new {id = item.Id})"><i class="fa fa-close btn btn-xs btn-danger"></i></a>
-                                                        <span class="btn btn-danger btn-xs delete-confirm" style="display:none" data-delete-id="@item.Id">Confirm Delete</span>
-                                                    </span>
-                                                </td>
-                                            </tr>
-                                        }
-                                    </table>
-                                </div>
-                            </div>
-
-                            <!-- warning modal when the warningbalance >= original balance-->
+<div class="row">
+    <div class="col-lg-12">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h2><i class="fa fa-dollar"></i> Bank Accounts <a data-toggle="modal" href="#create" class="btn btn-default pull-right">Add A Bank Account</a></h2>
+                </div>
+                <div class="panel-body">
+                    <div class="table-responsive">
+                        <table class="table table-bordered">
+                            <tr>
+                                <th>
+                                    @Html.DisplayNameFor(model => model.Name)
+                                </th>
+                                <th>
+                                    @Html.DisplayNameFor(model => model.Balance)
+                                </th>
+                                <th>
+                                    Warning Balance
+                                </th>
+                                <th>
+                                    @Html.DisplayNameFor(model => model.ReconcileBalance)
+                                </th>
+                                <th>
+                                    @Html.DisplayNameFor(model => model.Created)
+                                </th>
+                                <th></th>
+                            </tr>
                             @foreach (var item in Model)
                             {
-                                if (item.WarningBalance >= item.Balance)
-                                {
-        <!-- Modal -->
-                                    <div class="modal fade" id="warning" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-                                        <div class="modal-dialog">
-                                            <div class="modal-content">
-                                                <div class="container" style="padding: 20px">
-                                                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-                                                    <div class="panel panel-danger">
-                                                        <div class="panel-heading">
-                                                            <h3 class="panel-title"><i class="fa fa-warning"></i> Friendly Reminder!</h3>
-                                                        </div>
-                                                        <div class="panel-body">
-                                                            Your <mark>@item.Name Account</mark> has reached it's warning balance.
-                                                        </div>
-                                                    </div>
-                                                    <button type="button" class="btn btn-danger" data-dismiss="modal" style="width: 100%"><i class="fa fa-check"></i> Okay, I have read this message.</button>
-                                                    <button type="button" class="btn btn-default" data-dismiss="modal" style="width: 100%">Exit</button>
-                                                </div>
-                                            </div><!-- /.modal-content -->
-                                        </div><!-- /.modal-dialog -->
-                                    </div><!-- /.modal -->
-                                }
+                                <tr>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => item.Name)
+                                    </td>
+                                    <td>
+                                        @item.Balance.ToString("C")
+                                    </td>
+                                    <td>
+                                        @item.WarningBalance.ToString("C")
+                                    </td>
+                                    <td>
+                                        @string.Format("{0:C}", item.ReconcileBalance)
+                                    </td>
+                                    <td>
+                                        @item.Created.ToString("M/dd/yyyy")
+                                    </td>
+                                    <td>
+                                        <a href="@Url.Action("Edit", new { id = item.Id })"><i class="fa fa-pencil btn btn-xs btn-warning"></i></a>
+                                        <span class="delete-section">
+                                            <a class="delete-link" href="@Url.Action("Delete", new {id = item.Id})"><i class="fa fa-close btn btn-xs btn-danger"></i></a>
+                                            <span class="btn btn-danger btn-xs delete-confirm" style="display:none" data-delete-id="@item.Id">Confirm Delete</span>
+                                        </span>
+                                    </td>
+                                </tr>
                             }
-                            </div>
-                        </div>
+                        </table>
                     </div>
                 </div>
 
-                            @section Scripts{
-                                <script type="text/javascript">
-                                    $(window).load(function () {
-                                        $('#warning').modal('show');
-                                    });
-                                </script>
-                                <script>
-                                    $(function () {
-                                        $("a.delete-link").click(function () {
-                                            var deleteLink = $(this);
-                                            deleteLink.hide();
-                                            var confirmButton = deleteLink.siblings(".delete-confirm");
-                                            confirmButton.show();
-
-                                            var cancelDelete = function () {
-                                                removeEvents();
-                                                showDeleteLink();
-                                            };
-
-                                            var deleteItem = function () {
-                                                removeEvents();
-                                                confirmButton.hide();
-                                                $.post(
-                                                    '@Url.Action("Delete")',
-                                                    AddAntiForgeryToken({ id: confirmButton.attr('data-delete-id') }))
-                                                   .done(function () {
-                                                       var parentRow = deleteLink.parents("tr:first");
-                                                       parentRow.fadeOut('fast', function () {
-                                                           parentRow.remove();
-                                                       });
-                                                   }).fail(function (data) {
-                                                       alert("error");
-                                                   });
-                                                return false;
-                                            };
-
-                                            var removeEvents = function () {
-                                                confirmButton.off("click", deleteItem);
-                                                $(document).on("click", cancelDelete);
-                                                $(document).off("keypress", onKeyPress);
-                                            };
-
-                                            var showDeleteLink = function () {
-                                                confirmButton.hide();
-                                                deleteLink.show();
-                                            };
-
-                                            var onKeyPress = function (e) {
-                                                //Cancel if escape key pressed
-                                                if (e.which == 27) {
-                                                    cancelDelete();
-                                                }
-                                            };
-
-                                            confirmButton.on("click", deleteItem);
-                                            $(document).on("click", cancelDelete);
-                                            $(document).on("keypress", onKeyPress);
-
-                                            return false;
-                                        });
-
-                                        AddAntiForgeryToken = function (data) {
-                                            data.__RequestVerificationToken = $('input[name=__RequestVerificationToken]').val();
-                                            return data;
-                                        };
-                                    });
-                                </script>
-                            }
-                            <!-- Modal -->
-                            <div class="modal fade" id="create" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-                                <div class="modal-dialog">
-                                    <div class="modal-content">
-                                        <div class="container" style="padding: 20px">
-                                            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-                                            @Html.Action("_CreateBankAccount")
-                                            <button type="button" class="btn btn-default pull-right" data-dismiss="modal">Close</button>
+                <!-- warning modal when the warningbalance >= original balance-->
+                @foreach (var item in Model)
+                {
+                    if (item.WarningBalance >= item.Balance)
+                    {
+        <!-- Modal -->
+                        <div class="modal fade" id="warning" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+                            <div class="modal-dialog">
+                                <div class="modal-content">
+                                    <div class="container" style="padding: 20px">
+                                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                                        <div class="panel panel-danger">
+                                            <div class="panel-heading">
+                                                <h3 class="panel-title"><i class="fa fa-warning"></i> Friendly Reminder!</h3>
+                                            </div>
+                                            <div class="panel-body">
+                                                Your <mark>@item.Name Account</mark> has reached it's warning balance.
+                                            </div>
                                         </div>
-                                    </div><!-- /.modal-content -->
-                                </div><!-- /.modal-dialog -->
-                            </div><!-- /.modal -->
+                                        <button type="button" class="btn btn-danger" data-dismiss="modal" style="width: 100%"><i class="fa fa-check"></i> Okay, I have read this message.</button>
+                                        <button type="button" class="btn btn-default" data-dismiss="modal" style="width: 100%">Exit</button>
+                                    </div>
+                                </div><!-- /.modal-content -->
+                            </div><!-- /.modal-dialog -->
+                        </div><!-- /.modal -->
+                    }
+                }
+            </div>
+        </div>
+    </div>
 
-
-
-
-
-
-
-
-
-
+@section Scripts{
+    <script type="text/javascript">
+        $(window).load(function () {
+            $('#warning').modal('show');
+        });
+    </script>
+    <script>
+        $(function () {
+            $("a.delete-link").click(function () {
+                var deleteLink = $(this);
+                deleteLink.hide();
+                var confirmButton = deleteLink.siblings(".delete-confirm");
+                confirmButton.show();
+                var cancelDelete = function () {
+                    removeEvents();
+                    showDeleteLink();
+                };
+                var deleteItem = function () {
+                    removeEvents();
+                    confirmButton.hide();
+                    $.post(
+                        '@Url.Action("Delete")',
+                        AddAntiForgeryToken({ id: confirmButton.attr('data-delete-id') }))
+                       .done(function () {
+                           var parentRow = deleteLink.parents("tr:first");
+                           parentRow.fadeOut('fast', function () {
+                               parentRow.remove();
+                           });
+                       }).fail(function (data) {
+                           alert("error");
+                       });
+                    return false;
+                };
+                var removeEvents = function () {
+                    confirmButton.off("click", deleteItem);
+                    $(document).on("click", cancelDelete);
+                    $(document).off("keypress", onKeyPress);
+                };
+                var showDeleteLink = function () {
+                    confirmButton.hide();
+                    deleteLink.show();
+                };
+                var onKeyPress = function (e) {
+                    //Cancel if escape key pressed
+                    if (e.which == 27) {
+                        cancelDelete();
+                    }
+                };
+                confirmButton.on("click", deleteItem);
+                $(document).on("click", cancelDelete);
+                $(document).on("keypress", onKeyPress);
+                return false;
+            });
+            AddAntiForgeryToken = function (data) {
+                data.__RequestVerificationToken = $('input[name=__RequestVerificationToken]').val();
+                return data;
+            };
+        });
+    </script>
+}
+<!-- Modal -->
+<div class="modal fade" id="create" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="container" style="padding: 20px">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+            </div>
+            <div class="panel-body">
+                @Html.Action("_CreateBankAccount")
+                <button type="button" class="btn btn-default pull-right" data-dismiss="modal">Close</button>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
 
 

@@ -1,5 +1,4 @@
-﻿using System;
-using System.Linq;
+﻿using System.Linq;
 using System.Threading.Tasks;
 using System.Web;
 using System.Web.Mvc;
@@ -10,11 +9,14 @@ using HouseholdBudgeter.Models;
 
 namespace HouseholdBudgeter.Controllers
 {
+  
     [Authorize]
+    [RequireHttps]
     public class ManageController : Controller
     {
         private ApplicationSignInManager _signInManager;
         private ApplicationUserManager _userManager;
+        private ApplicationDbContext db = new ApplicationDbContext();
 
         public ManageController()
         {
@@ -241,6 +243,27 @@ namespace HouseholdBudgeter.Controllers
             }
             AddErrors(result);
             return View(model);
+        }
+
+        // GET: /EditProfile
+        [HttpGet]
+        [Authorize]
+        public ActionResult EditProfile()
+        {
+            return View();
+        }
+
+        // POST: /EditProfile
+        public ActionResult EditProfile(string Email)
+        {
+            var name = new EditProfileViewModel();
+            var user = db.Users.Find(User.Identity.GetUserId());
+
+            name.FirstName = user.FirstName;
+            name.LastName = user.LastName;
+            name.Email = user.Email;
+
+            return RedirectToAction("Dashboard", "Home");
         }
 
         //

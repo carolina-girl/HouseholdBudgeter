@@ -60,6 +60,24 @@ namespace HouseholdBudgeter.Models
         public string Purpose { get; set; }
     }
 
+    public class EditProfileViewModel
+    {
+        [Required]
+        [DataType(DataType.Text)]
+        [Display(Name = "First Name")]
+        public string FirstName { get; set; }
+
+        [Required]
+        [DataType(DataType.Text)]
+        [Display(Name = "Last Name")]
+        public string LastName { get; set; }
+
+        [Required]
+        [EmailAddress]
+        [Display(Name = "Email")]
+        public string Email { get; set; }
+    }
+
     public class SetPasswordViewModel
     {
         [Required]

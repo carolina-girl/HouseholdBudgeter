@@ -1,21 +1,19 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Data;
 using System.Data.Entity;
 using System.Linq;
 using System.Net;
-using System.Web;
 using System.Web.Mvc;
 using HouseholdBudgeter.Models;
 using System.Threading.Tasks;
 using Microsoft.AspNet.Identity;
-using HouseholdBudgeter.Helpers;
 using System.Net.Mail;
 using System.Net.Mime;
 
 namespace HouseholdBudgeter.Controllers
 {
     [Authorize]
+    [RequireHttps]
     public class HouseholdInvitationsController : Controller
     {
         private ApplicationDbContext db = new ApplicationDbContext();
@@ -85,7 +83,7 @@ namespace HouseholdBudgeter.Controllers
                     //Build Email Message
                     MailMessage inviteMessasge = new MailMessage();
                     inviteMessasge.To.Add(new MailAddress(invitation.ToEmail, invitation.ToEmail));
-                    inviteMessasge.From = new MailAddress(user.Email, "zxiong1008-budget Household Invitation");
+                    inviteMessasge.From = new MailAddress(user.Email, "From");
                     inviteMessasge.Subject = "Household-Budget: Invitation to Join a Household";
 
                     //if receiving user is registered, send join code
@@ -95,32 +93,36 @@ namespace HouseholdBudgeter.Controllers
 
                         string bodytext = String.Concat("<p>I would like to invite you to join my household <mark>", household.Name,
                                     "</mark> in the Household-Budget app budgeting system", "</p> <p><a href='"
-                                    , callbackUrlForExistingUser, "'>Join the household application</a></p>");
+                                    , callbackUrlForExistingUser, "'>Join</a></p>");
                         inviteMessasge.AlternateViews.Add(AlternateView.CreateAlternateViewFromString(bodytext, null, MediaTypeNames.Text.Html));
 
                     }
                     //if receiving user is not registered, register user and send join code
                     else
                     {
-                        var callbackUrl = Url.Action("RegisterToJoinHousehold", "Account", new { inviteHouseholdId = invitation.HouseholdId, invitationId = invitation.Id, guid = invitation.JoinCode }, protocol: Request.Url.Scheme);
+                        var callbackUrl = Url.Action("RegisterToJoinHousehold", 
+                            "Account", new { inviteHouseholdId = invitation.HouseholdId,
+                                invitationId = invitation.Id,
+                                guid = invitation.JoinCode }, 
+                            protocol: Request.Url.Scheme);
 
                         string html = String.Concat("<p>I would like to invite you to join my household <mark>", household.Name,
-                                        "</mark> in the Household-Budget app budgeting system.</p> <p><a href='", callbackUrl, "'>Join Now</a></p>",
-                                        "Thank you for your time, <p>", user.FirstName, " ", user.LastName, "</p>"
-                                    );
+                                        "</mark> in the Household-Budget app budgeting system.</p> <p><a href='", callbackUrl, "'>Join</a></p>");
 
 
                         inviteMessasge.AlternateViews.Add(AlternateView.CreateAlternateViewFromString(html, null, MediaTypeNames.Text.Html));
+                        var ems = new EmailService();
+                        await ems.SendAsync(inviteMessasge);
+
                     }
                     //Initialise SmtpClient and send
-                    SmtpClient smtpClient = new SmtpClient("smtp.sendgrid.net", Convert.ToInt32(587));
-                    var SendGridCredentials = db.SendGridCredentials.First();
-                    NetworkCredential credentials = new NetworkCredential(SendGridCredentials.UserName, SendGridCredentials.Password);
-                    smtpClient.Credentials = credentials;
-                    smtpClient.Send(inviteMessasge);
+                    //SmtpClient smtpClient = new SmtpClient("smtp.sendgrid.net", Convert.ToInt32(587));
+                    //var SendGridCredentials = db.SendGridCredentials.First();
+                    //NetworkCredential credentials = new NetworkCredential(SendGridCredentials.UserName, SendGridCredentials.Password);
+                    //smtpClient.Credentials = credentials;
+                    //smtpClient.Send(inviteMessasge);
 
-
-                    return RedirectToAction("Index", "Invitations");
+                    return RedirectToAction("Index", "HouseholdInvitations");
 
                 }
                 catch (Exception ex)
@@ -135,7 +137,7 @@ namespace HouseholdBudgeter.Controllers
 
 
 
-        // GET:HouseholdInvitations/Delete/5
+        // GET: HouseholdInvitations/Delete/5
         [Authorize]
         public ActionResult Delete(int? id)
         {
@@ -166,14 +168,14 @@ namespace HouseholdBudgeter.Controllers
         public ActionResult DeleteConfirmed(int id)
         {
             var user = db.Users.Find(User.Identity.GetUserId());
-           HouseholdInvitation invitation = db.Invitations.FirstOrDefault(x => x.Id == id);
+            HouseholdInvitation invitation = db.Invitations.FirstOrDefault(x => x.Id == id);
             Household household = db.Households.FirstOrDefault(x => x.Id == invitation.HouseholdId);
 
             if (!household.Members.Contains(user))
             {
                 return RedirectToAction("Unauthorized", "Error");
             }
-           //HouseholdInvitation invitation = db.HouseholdInvitations.Find(id);
+            //Invitation invitation = db.Invitations.Find(id);
             db.Invitations.Remove(invitation);
             db.SaveChanges();
             return RedirectToAction("Index");
@@ -189,3 +191,5 @@ namespace HouseholdBudgeter.Controllers
         }
     }
 }
+
+

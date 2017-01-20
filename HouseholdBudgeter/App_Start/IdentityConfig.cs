@@ -7,43 +7,61 @@ using Microsoft.AspNet.Identity.Owin;
 using Microsoft.Owin;
 using Microsoft.Owin.Security;
 using HouseholdBudgeter.Models;
-using System.Configuration;
-using System.Net.Mail;
 using SendGrid;
+using System.Net;
+using System.Linq;
+using System.Diagnostics;
+using System.Net.Mail;
 
 namespace HouseholdBudgeter
 {
     public class EmailService : IIdentityMessageService
     {
-            public async Task SendAsync(IdentityMessage message)
-            {
-                var apiKey = ConfigurationManager.AppSettings["SendGridAPIkey"];
-                var from = ConfigurationManager.AppSettings["ContactEmail"];
-
-                SendGridMessage myMessage = new SendGridMessage();
-                myMessage.AddTo(message.Destination);
-                myMessage.From = new MailAddress("maburns@carolina.rr.com");
-                myMessage.Subject = message.Subject;
-                myMessage.Html = message.Body;
-
-                //Create a Web transport, using API key
-                var transportWeb = new Web(apiKey);
-
-                //Send the email
-                try
-                {
-                    await transportWeb.DeliverAsync(myMessage);
-                }
-                catch (Exception e)
-                {
-                    Console.WriteLine(e.Message);
-                    await Task.FromResult(0);
-                }
-
-            }
+        public async Task SendAsync(IdentityMessage message)
+        {
+            //await ConfigureSendGridAsync(message);
         }
 
-        public class SmsService : IIdentityMessageService
+        public async Task SendAsync(MailMessage message)
+        {
+            await ConfigureSendGridAsync(message);
+        }
+
+        private async Task ConfigureSendGridAsync(MailMessage message)
+        {
+            var db = new ApplicationDbContext();
+            var myMessage = new SendGridMessage();
+            var sgc = new SendGridCredential();
+            //var userId = HttpContext.Current.User.Identity.GetUserId();
+
+            myMessage.AddTo(message.To.First().ToString());
+            myMessage.Subject = message.Subject;
+            myMessage.Text = message.AlternateViews.FirstOrDefault().ToString();
+            myMessage.Html = message.AlternateViews.FirstOrDefault().ToString();
+            myMessage.From = new System.Net.Mail.MailAddress("support@household-budget.com", "Household-budgeter Support Team");
+
+            sgc = db.SendGridCredentials.First();
+
+            var credentials = new NetworkCredential(sgc.UserName, sgc.Password);
+            var transportWeb = new Web(credentials);
+            if (transportWeb != null)
+            {
+                await transportWeb.DeliverAsync(myMessage);
+            }
+            else
+            {
+                Trace.TraceError("Failed to create Web transport");
+                await Task.FromResult(0);
+            }
+        }
+        //public Task SendAsync(IdentityMessage message)
+        //{
+        //    // Plug in your email service here to send an email.
+        //    return Task.FromResult(0);
+        //}
+    }
+
+    public class SmsService : IIdentityMessageService
     {
         public Task SendAsync(IdentityMessage message)
         {
