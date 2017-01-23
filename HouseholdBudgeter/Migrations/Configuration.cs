@@ -87,8 +87,7 @@ namespace HouseholdBudgeter.Migrations
                     HouseholdId = household.Id,
                     EmailConfirmed = true
                 }, demoPassword);
-              }
-           }
+            }
         }
     }
-
+}

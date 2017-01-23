@@ -21,9 +21,5 @@ namespace HouseholdBudgeter.Helpers
             //[Display(Name = "Income")]
             Income
         }
-        //Send invitation
-        //get email to be sent
-        //removing someone from account (leave)
-
     }
 }

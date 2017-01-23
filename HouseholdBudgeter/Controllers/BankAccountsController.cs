@@ -64,7 +64,7 @@ namespace HouseholdBudgeter.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create([Bind(Include = "Id,HouseholdId,Name,Created,Balance,InitialBalance,ReconcileBalance")] BankAccount bankAccount)
+        public ActionResult Create([Bind(Include = "Id,HouseholdId,Name,Created,Balance,InitialBalance,ReconcileBalance,WarningBalance")] BankAccount bankAccount)
         {
             bankAccount.Created = new DateTimeOffset(DateTime.Now);
 
@@ -114,7 +114,7 @@ namespace HouseholdBudgeter.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit([Bind(Include = "Id,HouseholdId,Name,Created,Balance,InitialBalance,ReconcileBalance")] BankAccount bankAccount)
+        public ActionResult Edit([Bind(Include = "Id,HouseholdId,Name,Created,Balance,InitialBalance,ReconcileBalance,WarningBalance")] BankAccount bankAccount)
         {
             bankAccount.Created = new DateTimeOffset(DateTime.Now);
 
@@ -143,7 +143,7 @@ namespace HouseholdBudgeter.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Update([Bind(Include = "Id,HouseholdId,Name,Created,Balance,InitialBalance,ReconcileBalance")] BankAccount bankAccount)
+        public ActionResult Update([Bind(Include = "Id,HouseholdId,Name,Created,Balance,InitialBalance,ReconcileBalance,WarningBalance")] BankAccount bankAccount)
         {
             bankAccount.Created = new DateTimeOffset(DateTime.Now);
 

@@ -174,7 +174,7 @@ namespace HouseholdBudgeter.Controllers
             Budget budget = db.Budgets.FirstOrDefault(b => b.Id == budgetItem.Id);
 
             //then the budget's household owner
-            //Household household = db.Households.FirstOrDefault(h => h.Id == budget.Id);
+            Household household = db.Households.FirstOrDefault(h => h.Id == budget.Id);
 
             //if (!household.Members.Contains(user))
             //{

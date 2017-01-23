@@ -12,6 +12,8 @@ using System.Net;
 using System.Linq;
 using System.Diagnostics;
 using System.Net.Mail;
+using System.Configuration;
+using HouseholdBudgeter;
 
 namespace HouseholdBudgeter
 {
@@ -19,47 +21,38 @@ namespace HouseholdBudgeter
     {
         public async Task SendAsync(IdentityMessage message)
         {
-            //await ConfigureSendGridAsync(message);
+            await configSendGridasync(message);
         }
 
-        public async Task SendAsync(MailMessage message)
-        {
-            await ConfigureSendGridAsync(message);
-        }
 
-        private async Task ConfigureSendGridAsync(MailMessage message)
+        private async Task configSendGridasync(IdentityMessage message)
         {
-            var db = new ApplicationDbContext();
-            var myMessage = new SendGridMessage();
-            var sgc = new SendGridCredential();
-            //var userId = HttpContext.Current.User.Identity.GetUserId();
+            var apiKey = ConfigurationManager.AppSettings["SendGridAPIkey"];
+            var from = ConfigurationManager.AppSettings["ContactEmail"];
 
-            myMessage.AddTo(message.To.First().ToString());
+            SendGridMessage myMessage = new SendGridMessage();
+            myMessage.AddTo(message.Destination);
+            myMessage.From = new MailAddress("maburns@carolina.rr.com");
             myMessage.Subject = message.Subject;
-            myMessage.Text = message.AlternateViews.FirstOrDefault().ToString();
-            myMessage.Html = message.AlternateViews.FirstOrDefault().ToString();
-            myMessage.From = new System.Net.Mail.MailAddress("support@household-budget.com", "Household-budgeter Support Team");
+            myMessage.Html = message.Body;
 
-            sgc = db.SendGridCredentials.First();
+            //Create a Web transport, using API key
+            var transportWeb = new Web(apiKey);
 
-            var credentials = new NetworkCredential(sgc.UserName, sgc.Password);
-            var transportWeb = new Web(credentials);
-            if (transportWeb != null)
+            //Send the email
+            try
             {
                 await transportWeb.DeliverAsync(myMessage);
             }
-            else
+            catch (Exception e)
             {
-                Trace.TraceError("Failed to create Web transport");
+                Console.WriteLine(e.Message);
                 await Task.FromResult(0);
             }
+
         }
-        //public Task SendAsync(IdentityMessage message)
-        //{
-        //    // Plug in your email service here to send an email.
-        //    return Task.FromResult(0);
-        //}
     }
+
 
     public class SmsService : IIdentityMessageService
     {
@@ -78,7 +71,7 @@ namespace HouseholdBudgeter
         {
         }
 
-        public static ApplicationUserManager Create(IdentityFactoryOptions<ApplicationUserManager> options, IOwinContext context) 
+        public static ApplicationUserManager Create(IdentityFactoryOptions<ApplicationUserManager> options, IOwinContext context)
         {
             var manager = new ApplicationUserManager(new UserStore<ApplicationUser>(context.Get<ApplicationDbContext>()));
             // Configure validation logic for usernames
@@ -119,7 +112,7 @@ namespace HouseholdBudgeter
             var dataProtectionProvider = options.DataProtectionProvider;
             if (dataProtectionProvider != null)
             {
-                manager.UserTokenProvider = 
+                manager.UserTokenProvider =
                     new DataProtectorTokenProvider<ApplicationUser>(dataProtectionProvider.Create("ASP.NET Identity"));
             }
             return manager;
@@ -145,3 +138,4 @@ namespace HouseholdBudgeter
         }
     }
 }
+

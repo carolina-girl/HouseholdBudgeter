@@ -57,7 +57,7 @@ namespace HouseholdBudgeter.Controllers
             //}
 
             //Get currentbudget for this
-            var CurrentBudget = db.Budgets.First(a => a.HouseHoldId == model.Households.Id);
+            var CurrentBudget = db.Budgets.FirstOrDefault(a => a.HouseHoldId == model.Households.Id);
 
             if (id == null)
             {

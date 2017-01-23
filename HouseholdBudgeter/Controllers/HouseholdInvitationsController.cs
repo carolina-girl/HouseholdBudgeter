@@ -9,6 +9,9 @@ using System.Threading.Tasks;
 using Microsoft.AspNet.Identity;
 using System.Net.Mail;
 using System.Net.Mime;
+using HouseholdBudgeter.Helpers;
+using System.Web.Security;
+using Microsoft.Ajax.Utilities;
 
 namespace HouseholdBudgeter.Controllers
 {
@@ -70,68 +73,30 @@ namespace HouseholdBudgeter.Controllers
         {
             if (ModelState.IsValid)
             {
-                var user = db.Users.Find(User.Identity.GetUserId());
-                var existingUser = db.Users.Where(u => u.Email == invitation.ToEmail).FirstOrDefault();
-                Household household = db.Households.Find(user.HouseholdId);
-
+                int? householdId = User.Identity.GetHouseholdId();
+                string userId = User.Identity.GetUserId();
+                var user = db.Users.Find(userId);
+                HouseholdInvitation invitations = new HouseholdInvitation();
                 invitation.JoinCode = Guid.NewGuid();
-                invitation.HouseholdId = household.Id;
+                invitation.ToEmail = invitation.ToEmail;
+                invitation.HouseholdId = invitation.HouseholdId;
                 db.Invitations.Add(invitation);
-                await db.SaveChangesAsync();
-                try
+                db.SaveChanges();
+
+                var es = new EmailService();
+                var msg = new IdentityMessage();
+                msg.Destination = invitation.ToEmail;
+                msg.Subject = user.FirstName + "" + user.LastName + " has invited you to join their Money Manager household.";
+                msg.Body = user.FirstName + "" + user.LastName + " has invited you to join their household in the Money Manager! To join, go to budgeter.azurewebsites.net and enter the following invitation code: " + invitation.JoinCode;
+                await es.SendAsync(msg);
+                TempData["Message"] = "Your invitation has been sent!";
+
+                return RedirectToAction("Index", (new
                 {
-                    //Build Email Message
-                    MailMessage inviteMessasge = new MailMessage();
-                    inviteMessasge.To.Add(new MailAddress(invitation.ToEmail, invitation.ToEmail));
-                    inviteMessasge.From = new MailAddress(user.Email, "From");
-                    inviteMessasge.Subject = "Household-Budget: Invitation to Join a Household";
-
-                    //if receiving user is registered, send join code
-                    if (existingUser != null)
-                    {
-                        var callbackUrlForExistingUser = Url.Action("JoinHousehold", "Account", new { inviteHouseholdId = invitation.HouseholdId }, protocol: Request.Url.Scheme);
-
-                        string bodytext = String.Concat("<p>I would like to invite you to join my household <mark>", household.Name,
-                                    "</mark> in the Household-Budget app budgeting system", "</p> <p><a href='"
-                                    , callbackUrlForExistingUser, "'>Join</a></p>");
-                        inviteMessasge.AlternateViews.Add(AlternateView.CreateAlternateViewFromString(bodytext, null, MediaTypeNames.Text.Html));
-
-                    }
-                    //if receiving user is not registered, register user and send join code
-                    else
-                    {
-                        var callbackUrl = Url.Action("RegisterToJoinHousehold", 
-                            "Account", new { inviteHouseholdId = invitation.HouseholdId,
-                                invitationId = invitation.Id,
-                                guid = invitation.JoinCode }, 
-                            protocol: Request.Url.Scheme);
-
-                        string html = String.Concat("<p>I would like to invite you to join my household <mark>", household.Name,
-                                        "</mark> in the Household-Budget app budgeting system.</p> <p><a href='", callbackUrl, "'>Join</a></p>");
-
-
-                        inviteMessasge.AlternateViews.Add(AlternateView.CreateAlternateViewFromString(html, null, MediaTypeNames.Text.Html));
-                        var ems = new EmailService();
-                        await ems.SendAsync(inviteMessasge);
-
-                    }
-                    //Initialise SmtpClient and send
-                    //SmtpClient smtpClient = new SmtpClient("smtp.sendgrid.net", Convert.ToInt32(587));
-                    //var SendGridCredentials = db.SendGridCredentials.First();
-                    //NetworkCredential credentials = new NetworkCredential(SendGridCredentials.UserName, SendGridCredentials.Password);
-                    //smtpClient.Credentials = credentials;
-                    //smtpClient.Send(inviteMessasge);
-
-                    return RedirectToAction("Index", "HouseholdInvitations");
-
-                }
-                catch (Exception ex)
-                {
-                    ViewBag.Exception = ex.Message;
-                    return View(invitation);
-                }
+                    id = user.HouseholdId
+                }));
             }
-            ViewBag.HouseholdId = new SelectList(db.Households, "Id", "Name", invitation.HouseholdId);
+
             return View(invitation);
         }
 

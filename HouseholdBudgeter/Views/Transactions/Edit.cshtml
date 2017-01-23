@@ -32,17 +32,17 @@
                             </div>
                         </div>
 
-                        @*<div class="form-group">
-                            <div class="col-sm-2 col-sm-offset-4 text-center">
+                        <div class="form-group">
+                            <div class="col-sm-2 offset-12 text-center">
                                 @Html.RadioButton("Types", false) <text class="text-danger"><b>Withdraw</b></text>
                             </div>
                             <div class="col-sm-2 text-center">
                                 @Html.RadioButton("Types", true) <text class="text-success"><b>Deposit</b></text>
                             </div>
                             @Html.ValidationMessageFor(model => model.Types, "", new { @class = "text-danger" })
-                        </div>*@
+                        </div>
 
-                        <div class="form-group">         
+                        @*<div class="form-group">         
                                 @Html.LabelFor(model => model.Category, htmlAttributes: new { @class = "control-label col-md-2" })
                             <div class="col-md-10" text-center">
                                 <div class="btn-group" data-toggle="buttons">
@@ -54,7 +54,7 @@
                                     </label>
                                 </div>
                             </div>
-                            </div>
+                            </div>*@
 
                         <div class="form-group">
                             @Html.LabelFor(model => model.Amount, htmlAttributes: new { @class = "control-label col-md-2" })
