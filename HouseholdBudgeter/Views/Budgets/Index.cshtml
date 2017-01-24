@@ -45,10 +45,9 @@
     </div>
 </div>
 
-
 @*@foreach (var item in Model)
     {
-        if (item.Household.Budgets < 1)
+        if (item.BudgetItems < 1)
         {
             <div class="modal fade" id="warning" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
                 <div class="modal-dialog">
@@ -67,13 +66,13 @@
                 </div><!-- /.modal-dialog -->
             </div><!-- /.modal -->
         }
-    }*@
+    }
 
-@*@section Scripts{
+@section Scripts{
         <script type="text/javascript">
-            $(window).load(function () {
-                $('#warning').modal('show');
-            });
+        $(window).load(function(){
+            $('#warning').modal('show');
+        });
         </script>
     }*@
 
@@ -84,7 +83,7 @@
             <div class="container" style="padding: 20px">
                 <button type="button" class="close" data-dismiss="modal" aria-hidden="true">X</button>
                 <div class="panel-title">
-                    <h3>Add Element</h3>
+                    <h3><i class="fa fa-columns"></i>Budgets</h3>
                 </div>
             </div>
             <div class="panel-body">

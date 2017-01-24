@@ -109,13 +109,13 @@ namespace HouseholdBudgeter.Controllers
 
         [Authorize]
         //Get: Households/Join
-        public ActionResult JoinHousehold(int inviteHouseholdId)
+        public ActionResult JoinHousehold(int? inviteHouseholdId, string HouseholdName)
         {
 
             var user = db.Users.Find(User.Identity.GetUserId());
 
             Household Household = db.Households.FirstOrDefault(i => i.Id == inviteHouseholdId);
-
+       
             model.HouseholdName = Household.Name;
             model.Email = user.Email;
             model.FirstName = user.FirstName;
@@ -137,7 +137,7 @@ namespace HouseholdBudgeter.Controllers
         [HttpPost]
         [AllowAnonymous]
         [ValidateAntiForgeryToken]
-        public ActionResult JoinHousehold(RegisterViewModel model, int? HouseholdId)
+        public ActionResult JoinHousehold(RegisterViewModel model, int? HouseholdId, string Members)
         {
             ApplicationDbContext db = new ApplicationDbContext();
 

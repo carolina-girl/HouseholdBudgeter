@@ -23,7 +23,7 @@ namespace HouseholdBudgeter.Models
 
         public virtual ICollection<ApplicationUser> Members { get; set; }
         public virtual ICollection<BankAccount> BankAccounts { get; set; }
-        //already in ACCOUNTS, dont need to ask twice
+        //already in BANKACCOUNTS, dont need to ask twice
         //public virtual ICollection<Transaction> Transactions { get; set; }
         public virtual ICollection<Budget> Budgets { get; set; }
         public virtual ICollection<BudgetCategory> Categories { get; set; }

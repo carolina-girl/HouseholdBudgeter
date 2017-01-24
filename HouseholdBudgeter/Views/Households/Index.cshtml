@@ -96,8 +96,6 @@
     </div>
 </div>
 
-
-
 <!-- Modal -->
 <div class="modal fade" id="leaveHousehold" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
     <div class="modal-dialog">
@@ -108,19 +106,22 @@
                     <h3>Leave Household</h3>
                 </div>
             </div>
-            <div class="panel panel-danger">
+            <div class="panel panel-default">
                 <div class="panel-heading">
                     <h3 class="panel-title"><i class="fa fa-chain-broken"></i> Leaving?</h3>
-                <div class="panel-body">
-                    Are you sure you want to leave <mark>@Model.Name</mark>?
-                    Once you leave, you will lose access to all accounts.
+                    <div class="panel-body">
+                        Are you sure you want to leave <mark>@Model.Name</mark>?
+                        Once you leave, you will lose access to all accounts.
+                    @*</div>*@
+                    <form method="Post" action="@Url.Action("Leave")">
+                        <input type="submit" class="btn btn-danger pull-right" />
+
+                        <input type="button" class="btn btn-default pull-right" data-dismiss="modal" value="Close" />
+                    </form>
                 </div>
-            <form method="Post" action="@Url.Action("Leave")">
-                <input type="submit" class="btn btn-danger pull-right" />
-            </form>
-            <input type="button" class="btn btn-default pull-right" data-dismiss="modal" value="Close" />
+            </div>
         </div>
     </div>
 </div>
-   </div>
-      </div>
+    </div>
+

@@ -35,10 +35,6 @@ namespace HouseholdBudgeter.Migrations
                 context.BudegetCategory.Add(new BudgetCategory { Name = c });
             }
 
-            //context.TransactionTypes.AddOrUpdate(new TransactionType {Id = 1, Name = "Debit" });
-            //context.TransactionTypes.AddOrUpdate(new TransactionType { Id = 2, Name = "Credit" });
-
-
             foreach (var d in demoName)
             {
                 context.DemoLogins.Add(new DemoLogin { UserName = d, Password = demoPassword });
