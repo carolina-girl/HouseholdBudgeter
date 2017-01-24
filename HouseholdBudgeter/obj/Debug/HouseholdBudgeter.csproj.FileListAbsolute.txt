@@ -136,6 +136,5 @@ C:\Users\Mary Ann Burns\documents\visual studio 2015\Projects\HouseholdBudgeter\
 C:\Users\Mary Ann Burns\documents\visual studio 2015\Projects\HouseholdBudgeter\HouseholdBudgeter\bin\Microsoft.IdentityModel.Tokens.xml
 C:\Users\Mary Ann Burns\documents\visual studio 2015\Projects\HouseholdBudgeter\HouseholdBudgeter\bin\Newtonsoft.Json.xml
 C:\Users\Mary Ann Burns\documents\visual studio 2015\Projects\HouseholdBudgeter\HouseholdBudgeter\bin\System.IdentityModel.Tokens.Jwt.xml
-C:\Users\Mary Ann Burns\documents\visual studio 2015\Projects\HouseholdBudgeter\HouseholdBudgeter\obj\Debug\HouseholdBudgeter.csprojResolveAssemblyReference.cache
 C:\Users\Mary Ann Burns\documents\visual studio 2015\Projects\HouseholdBudgeter\HouseholdBudgeter\obj\Debug\HouseholdBudgeter.dll
 C:\Users\Mary Ann Burns\documents\visual studio 2015\Projects\HouseholdBudgeter\HouseholdBudgeter\obj\Debug\HouseholdBudgeter.pdb

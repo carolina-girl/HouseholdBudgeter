@@ -7,54 +7,50 @@ using Microsoft.AspNet.Identity.Owin;
 using Microsoft.Owin;
 using Microsoft.Owin.Security;
 using HouseholdBudgeter.Models;
-using SendGrid;
-using System.Net;
-using System.Linq;
-using System.Diagnostics;
 using System.Net.Mail;
 using System.Configuration;
-using HouseholdBudgeter;
+using SendGrid;
 
 namespace HouseholdBudgeter
 {
     public class EmailService : IIdentityMessageService
     {
-        public async Task SendAsync(IdentityMessage message)
-        {
-            await configSendGridasync(message);
+            public async Task SendAsync(IdentityMessage message)
+            {
+                await configSendGridasync(message);
+            }
+
+
+            private async Task configSendGridasync(IdentityMessage message)
+            {
+                var apiKey = ConfigurationManager.AppSettings["SendGridAPIkey"];
+                var from = ConfigurationManager.AppSettings["ContactEmail"];
+
+                SendGridMessage myMessage = new SendGridMessage();
+                myMessage.AddTo(message.Destination);
+                myMessage.From = new MailAddress("maburns@carolina.rr.com");
+                myMessage.Subject = message.Subject;
+                myMessage.Html = message.Body;
+
+                //Create a Web transport, using API key
+                var transportWeb = new Web(apiKey);
+
+                //Send the email
+                try
+                {
+                    await transportWeb.DeliverAsync(myMessage);
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine(e.Message);
+                    await Task.FromResult(0);
+                }
+
+            }
         }
 
 
-        private async Task configSendGridasync(IdentityMessage message)
-        {
-            var apiKey = ConfigurationManager.AppSettings["SendGridAPIkey"];
-            var from = ConfigurationManager.AppSettings["ContactEmail"];
-
-            SendGridMessage myMessage = new SendGridMessage();
-            myMessage.AddTo(message.Destination);
-            myMessage.From = new MailAddress("maburns@carolina.rr.com");
-            myMessage.Subject = message.Subject;
-            myMessage.Html = message.Body;
-
-            //Create a Web transport, using API key
-            var transportWeb = new Web(apiKey);
-
-            //Send the email
-            try
-            {
-                await transportWeb.DeliverAsync(myMessage);
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine(e.Message);
-                await Task.FromResult(0);
-            }
-
-        }
-    }
-
-
-    public class SmsService : IIdentityMessageService
+        public class SmsService : IIdentityMessageService
     {
         public Task SendAsync(IdentityMessage message)
         {
@@ -107,7 +103,7 @@ namespace HouseholdBudgeter
                 Subject = "Security Code",
                 BodyFormat = "Your security code is {0}"
             });
-            manager.EmailService = new EmailService();
+            //manager.EmailService = new EmailService();
             manager.SmsService = new SmsService();
             var dataProtectionProvider = options.DataProtectionProvider;
             if (dataProtectionProvider != null)

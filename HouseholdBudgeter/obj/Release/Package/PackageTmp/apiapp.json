@@ -7,8 +7,5 @@
   "title": "HouseholdBudgeter",
   "summary": "",
   "author": "",
-  "endpoints": {
-    "apiDefinition": "/swagger/docs/v1",
-    "status": null
-  }
+  "endpoints": null
 }
