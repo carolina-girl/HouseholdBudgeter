@@ -20,7 +20,6 @@ namespace HouseholdBudgeter
                 await configSendGridasync(message);
             }
 
-
             private async Task configSendGridasync(IdentityMessage message)
             {
                 var apiKey = ConfigurationManager.AppSettings["SendGridAPIkey"];

@@ -1,0 +1,52 @@
+﻿@model HouseholdBudgeter.Models.RegisterViewModel
+@{
+    ViewBag.Title = "HouseholdBudgeter - JoinHousehold";
+}
+
+<h1>Join Household</h1>
+<hr />
+@using (Html.BeginForm("JoinHousehold", "Account", FormMethod.Post))
+{
+    @Html.AntiForgeryToken()
+    <div class="form-horizontal">
+        <div class="form-group">
+            @Html.LabelFor(m => m.FirstName)
+            @Html.HiddenFor(m => m.FirstName)
+            @Html.DisplayFor(m => m.FirstName, new { @class = "form-control", @placeholder = "First Name" })
+        </div>
+        <div class="form-group">
+            @Html.LabelFor(m => m.LastName)
+            @Html.HiddenFor(m => m.LastName)
+            @Html.DisplayFor(m => m.LastName, new { @class = "form-control", @placeholder = "Last Name" })
+        </div>
+        <div class="form-group">
+            @Html.LabelFor(m => m.HouseholdId)
+            @Html.HiddenFor(m => m.HouseholdId)
+            @Html.DisplayFor(m => m.HouseholdId, new { @class = "form-control", @placeholder = "Household Id" })
+        </div>
+        <div class="form-group">
+            <b>You are Joining Household</b>
+            @Html.HiddenFor(m => m.HouseholdName)
+            @Html.DisplayFor(m => m.HouseholdName)
+        </div>
+        <div class="form-group">
+            <b>UserName</b>
+            @Html.HiddenFor(m => m.Email)
+            @Html.DisplayFor(m => m.Email)
+        </div>
+        <div class="form-group">
+            @Html.HiddenFor(m => m.Password)
+            @Html.HiddenFor(m => m.ConfirmPassword)
+        </div>
+        <div class="form-group">
+            <input type='hidden' name="HouseholdId" />
+            <input type="submit" class="btn btn-default" value="Join" />
+        </div>
+    </div>
+
+
+
+}
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+}
