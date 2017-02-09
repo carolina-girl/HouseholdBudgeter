@@ -6,9 +6,11 @@ using System.Web.Mvc;
 
 namespace HouseholdBudgeter.Controllers
 {
+    [Authorize]
     [RequireHttps]
     public class HomeController : Controller
     {
+
         private ApplicationDbContext db = new ApplicationDbContext();
 
         public ActionResult Index()
