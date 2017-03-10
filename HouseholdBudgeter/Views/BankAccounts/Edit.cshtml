@@ -110,3 +110,74 @@
         </div>
     </div>
 
+
+<div>
+    @Html.ActionLink("Back to List", "Index")
+</div>
+
+@section Scripts{
+    <script type="text/javascript">
+        $(window).load(function () {
+            $('#warning').modal('show');
+        });
+    </script>
+    <script>
+    function postRec(id) {
+        var num = id.substring(3);
+        var val = document.getElementById(id).checked;
+        $post("Transactions/Rec/" + num + "?rec=" + val).done(function(date){
+            var amt = $('#amount' + num);
+            var recAmt = $('#recAmount' + num);
+            recAmt.html(data);
+            if(val){
+                if(recAmt.hasClass('color-green'))
+                {
+                    recAmt.removeClass('color-green');
+                    recAmt.addClass('color-green-muted')
+                }
+                else{
+                    recAmt.removeClass('color-red');
+                    recAmt.addClass('color-red-muted')
+                }
+                if(recAmt.hasClass('color-green-muted')){
+                    recAmt.removeClass('color-green-muted');
+                    recAmt.addClass('color-green')
+                }
+                else{
+                    recAmt.removeClass('color-red-muted');
+                    recAmt.addClass('color-red-muted')
+                }
+            }
+            else{
+                if(recAmt.hasClass('color-red')){
+                    recAmt.removeClass('color-red');
+                    recAmt.addClass('color-red-muted')
+                }
+                else{
+                    recAmt.removeClass('color-green');
+                    recAmt.addClass('color-green-muted')
+                }
+                if(recAmt.hasClass('color-green')){
+                    recAmt.removeClass('color-green');
+                    recAmt.addClass('color-green-muted')
+                }
+                else{
+                    recAmt.removeClass('color-red');
+                    recAmt.addClass('color-red-muted')
+                }
+            }
+        }).done(function() {
+            $getJson("/BankAccounts/GetBal/" + @Model.Id, null, function(data){
+                if(!data){
+                    alert("Request failed");
+                }
+                else
+                {
+                    $('#bal').html("Account Balance: $" + data.bal);
+                    $('#recBal').html("Reconciled Balance: $" + data.recBal);
+                }
+            });
+        });
+    }
+    </script>
+}

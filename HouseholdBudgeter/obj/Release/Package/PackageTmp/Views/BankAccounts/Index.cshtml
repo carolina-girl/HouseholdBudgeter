@@ -12,8 +12,9 @@
             </div>
             <div class="panel-body">
                 <div class="table-responsive">
-                    <table class="table table-bordered">
-                        <tr>
+                    <table id="mytable" class="table table-striped table-bordered table-hover">
+                       <thead>
+                         <tr>
                             <th>
                                 @Html.DisplayNameFor(model => model.Name)
                             </th>
@@ -31,6 +32,8 @@
                             </th>
                             <th></th>
                         </tr>
+                           </thead>
+                        <tbody>
                         @foreach (var item in Model)
                         {
                             <tr>
@@ -57,7 +60,8 @@
                                     </span>
                                 </td>
                             </tr>
-                        }
+                            }
+                       </tbody>
                     </table>
                 </div>
             </div>

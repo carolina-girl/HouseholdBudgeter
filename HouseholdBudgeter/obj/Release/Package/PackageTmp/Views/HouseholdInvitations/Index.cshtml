@@ -11,8 +11,10 @@
                 <h2><i class="fa fa-envelope-o"></i> Household Invitations <a data-toggle="modal" href="#create" class="btn btn-default pull-right">Add A Household Invitation</a></h2>
             </div>
             <div class="panel-body">
-                <table class="table table-bordered">
-                    <tr>
+                <div class="table-responsive">
+                    <table id="mytable" class="table table-striped table-bordered table-hover">
+                        <thead>
+                            <tr>
                         <th>
                             @Html.DisplayNameFor(model => model.Households.Name)
                         </th>
@@ -29,35 +31,37 @@
                             @Html.DisplayNameFor(model => model.Joined)
                         </th>
                         <th></th>
-                    </tr>
-
-                    @foreach (var item in Model)
-                    {
-                        <tr>
-                            <td>
-                                @Html.DisplayFor(modelItem => item.Households.Name)
-                            </td>
-                            @*<td>
-                                @Html.DisplayFor(modelItem => item.User.FirstName)
-                            </td>*@
-                            <td>
-                                @Html.DisplayFor(modelItem => item.JoinCode)
-                            </td>
-                            <td>
-                                @Html.DisplayFor(modelItem => item.ToEmail)
-                            </td>
-                            <td>
-                                @Html.DisplayFor(modelItem => item.Joined)
-                            </td>
-                            <td>
-                                <a href="@Url.Action("Delete", new { id=item.Id })" class="btn btn-danger">Delete Invitation</a>
-                            </td>
                         </tr>
-                    }
-                </table>
+                       </thead>
+                        <tbody>
+                        @foreach (var item in Model)
+                        {
+                            <tr>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.Households.Name)
+                                </td>
+                                @*<td>
+                                    @Html.DisplayFor(modelItem => item.User.FirstName)
+                                </td>*@
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.JoinCode)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.ToEmail)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.Joined)
+                                </td>
+                                <td>
+                                    <a href="@Url.Action("Delete", new { id = item.Id })" class="btn btn-danger">Delete Invitation</a>
+                                </td>
+                            </tr>
+                            }
+                          </tbody>
+                    </table>
+                </div>
             </div>
         </div>
-    </div>
 </div>
 
 <!-- Modal -->

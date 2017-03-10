@@ -16,7 +16,8 @@ namespace HouseholdBudgeter.Controllers
         // GET: BudgetCategories
         public ActionResult Index(int? id)
         {
-            var user = db.Users.Find(User.Identity.GetUserId());
+            var UserId = User.Identity.GetUserId();
+            var user = db.Users.Find(UserId);
             Household household = db.Households.Find(user.HouseholdId);
 
             if (household == null)

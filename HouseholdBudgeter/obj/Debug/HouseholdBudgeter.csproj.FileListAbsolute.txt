@@ -163,3 +163,4 @@ C:\Users\Mary Ann Burns\documents\visual studio 2015\Projects\HouseholdBudgeter\
 C:\Users\Mary Ann Burns\documents\visual studio 2015\Projects\HouseholdBudgeter\HouseholdBudgeter\obj\Debug\HouseholdBudgeter.dll
 C:\Users\Mary Ann Burns\documents\visual studio 2015\Projects\HouseholdBudgeter\HouseholdBudgeter\obj\Debug\HouseholdBudgeter.pdb
 C:\Users\Mary Ann Burns\Documents\Visual Studio 2015\Projects\HouseholdBudgeter\HouseholdBudgeter\obj\Debug\HouseholdBudgeter.csprojResolveAssemblyReference.cache
+C:\Users\Mary Ann Burns\documents\visual studio 2015\Projects\HouseholdBudgeter\HouseholdBudgeter\bin\DotNet.Highcharts.dll

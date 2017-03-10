@@ -19,7 +19,8 @@ namespace HouseholdBudgeter.Controllers
         public ActionResult Index(int? id)
         {
             //find user in the household
-            var user = db.Users.Find(User.Identity.GetUserId());
+            var UserId = User.Identity.GetUserId();
+            var user = db.Users.Find(UserId);
 
             Household household = db.Households.Find(user.HouseholdId);
 

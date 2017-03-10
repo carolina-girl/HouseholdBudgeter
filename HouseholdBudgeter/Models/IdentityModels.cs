@@ -51,7 +51,7 @@ namespace HouseholdBudgeter.Models
         public virtual DbSet<Budget> Budgets { get; set; }
         public virtual DbSet<BudgetItem> BudgetItems { get; set; }
         public virtual DbSet<SendGridCredential> SendGridCredentials { get; set; }
-        public virtual DbSet<DemoLogin> DemoLogins { get; set; }
+        public virtual DbSet<DemoLogin> Login { get; set; }
         public virtual DbSet<HouseholdInvitation> Invitations { get; set; }
     }
 }

@@ -31,6 +31,7 @@ namespace HouseholdBudgeter
             bundles.Add(new StyleBundle("~/Template/css").Include(
            "~/Template/vendor/metisMenu/metisMenu.min.css",
            "~/Template/dist/css/sb-admin-2.css",
+           "~/Template/vendor/datatables/css/jquery.dataTables.min.css",
            "~/Template/vendor/morrisjs/morris.css",
            "~/Template/vendor/font-awesome/css/font-awesome.min.css"));
 
@@ -39,6 +40,7 @@ namespace HouseholdBudgeter
           "~/Template/vendor/metisMenu/metisMenu.min.js",
           "~/Template/vendor/raphael/raphael.min.js",
           "~/Template/vendor/morrisjs/morris.min.js",
+          "~/Template/vendor/datatables/js/jquery.dataTables.min.js",
            "~/Template/dist/js/sb-admin-2.js"));
         }
     }

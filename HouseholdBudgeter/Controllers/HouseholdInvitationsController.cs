@@ -25,7 +25,8 @@ namespace HouseholdBudgeter.Controllers
         [Authorize]
         public ActionResult Index()
         {
-            var user = db.Users.Find(User.Identity.GetUserId());
+            var UserId = User.Identity.GetUserId();
+            var user = db.Users.Find(UserId);
 
             var invitations = db.Invitations.Include(i => i.Households).Where(u => user.HouseholdId == u.HouseholdId).ToList();
 
@@ -87,7 +88,7 @@ namespace HouseholdBudgeter.Controllers
                 var msg = new IdentityMessage();
                 msg.Destination = invitation.ToEmail;
                 msg.Subject = user.FirstName + "" + user.LastName + " has invited you to join their Money Manager household.";
-                msg.Body = user.FirstName + "" + user.LastName + " has invited you to join their household in the Money Manager! To join, go to budgeter.azurewebsites.net and enter the following invitation code: " + invitation.JoinCode;
+                msg.Body = user.FirstName + "" + user.LastName + " has invited you to join their household in the Money Manager! To join, go to mburns-budgeter.azurewebsites.net to register as a new user, and enter the following invitation code: " + invitation.JoinCode;
                 await es.SendAsync(msg);
                 TempData["Message"] = "Your invitation has been sent!";
 
@@ -118,7 +119,8 @@ namespace HouseholdBudgeter.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            //Invitation invitation = db.Invitations.Find(id);
+
+           // HouseholdInvitation invitation = db.Invitations.Find(id);
             if (invitation == null)
             {
                 return HttpNotFound();

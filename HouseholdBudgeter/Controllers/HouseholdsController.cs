@@ -5,6 +5,8 @@ using System.Net;
 using System.Web.Mvc;
 using HouseholdBudgeter.Models;
 using Microsoft.AspNet.Identity;
+using static HouseholdBudgeter.Helpers.AuthorizeHousehold;
+using HouseholdBudgeter.Helpers;
 
 namespace HouseholdBudgeter.Controllers
 {
@@ -16,7 +18,8 @@ namespace HouseholdBudgeter.Controllers
 
         public ActionResult Index()
         {
-            var user = db.Users.Find(User.Identity.GetUserId());
+            var UserId = User.Identity.GetUserId();
+            var user = db.Users.Find(UserId);
             Household household = db.Households.Find(user.HouseholdId);
             if (household == null)
             {
@@ -148,9 +151,12 @@ namespace HouseholdBudgeter.Controllers
             return View(household);
         }
 
-        public ActionResult Leave()
+
+        [AuthorizeHouseholdRequired]
+        public async System.Threading.Tasks.Task<ActionResult> Leave()
         {
             var user = db.Users.Find(User.Identity.GetUserId());
+            await ControllerContext.HttpContext.RefreshAuthentication(user);
             Household household = db.Households.Find(user.HouseholdId);
 
             //set user's house to null

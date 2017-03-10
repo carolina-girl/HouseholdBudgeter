@@ -17,7 +17,8 @@ namespace HouseholdBudgeter.Controllers
         // GET: BudgetItems
         public ActionResult Index()
         {
-            var user = db.Users.Find(User.Identity.GetUserId());
+            var UserId = User.Identity.GetUserId();
+            var user = db.Users.Find(UserId);
             var budgetItems = db.BudgetItems.Include(h => h.Budget.Household).Include(b => b.Budget).Include(b => b.Category);
 
             Household household = db.Households.Find(user.HouseholdId);

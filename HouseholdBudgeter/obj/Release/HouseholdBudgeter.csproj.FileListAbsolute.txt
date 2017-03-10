@@ -163,3 +163,4 @@ C:\Users\Mary Ann Burns\documents\visual studio 2015\Projects\HouseholdBudgeter\
 C:\Users\Mary Ann Burns\documents\visual studio 2015\Projects\HouseholdBudgeter\HouseholdBudgeter\bin\Microsoft.Owin.Security.Google.xml
 C:\Users\Mary Ann Burns\documents\visual studio 2015\Projects\HouseholdBudgeter\HouseholdBudgeter\bin\Microsoft.Owin.Security.Twitter.xml
 C:\Users\Mary Ann Burns\documents\visual studio 2015\Projects\HouseholdBudgeter\HouseholdBudgeter\bin\Microsoft.Owin.Security.MicrosoftAccount.xml
+C:\Users\Mary Ann Burns\Documents\Visual Studio 2015\Projects\HouseholdBudgeter\HouseholdBudgeter\bin\DotNet.Highcharts.dll

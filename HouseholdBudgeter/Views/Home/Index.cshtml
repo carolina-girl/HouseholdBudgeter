@@ -1,21 +1,66 @@
 ﻿@{
     ViewBag.Title = "Home Page";
+    Layout = null;
 }
-<br />
-<div class="jumbotron">
-    <h1>Household Budgeter Application</h1>
-   <p><a href="@Url.Action("Dashboard")" target="_blank" class="btn btn-success btn-lg">Dashboard</a></p>
-    <p class="lead">
-        A financial portal built using Microsoft MVC, Entity Framework, Code-First database creation, LINQ, and SQL.
-        The Household Budgeter is a Web-based software application designed for creating and managing budgets for
-        household finances and the balancing of bank accounts.
-        It functions as an online service that may be used in multiple households/families throughout the world.
+<style>
+    .jumbotron {
+        margin-top: 100px;
+        margin-right: 200px;
+        margin-left: 200px;
+        background-color: white;
+    }
+         body {
+            background-position: center;
+            background-image: linear-gradient(to bottom, rgba(0,0,0,0.6) 0%,rgba(0,0,0,0.6) 100%), url('../../images/2391983-American-coins-background-texture-or-concept-Stock-Photo.jpg');
+            background-size: 100%;
+            background-repeat: no-repeat;   
+        }
+</style>
 
-        The Household Budgeter project is similar in nature to many such commercial-grade products
-        (i.e. AceMonkey, BudgetPulse, Moneydance, Pocketsmith, QuickBooks, EveryDollar, etc.),
-        which most employers are familiar.
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    @Styles.Render("~/Content/css")
+    @Styles.Render("~/Template/css")
+    @Scripts.Render("~/bundles/modernizr")
+</head>
+<body>
+    <nav class="navbar navbar-default navbar-static-top" role="navigation" style="margin-top: 0">
+        <div class="navbar-header">
+            @Html.Partial("_LoginPartial")
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="navbar-collapse">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href=@Url.Action("Login", "Account")>Money Manager</a>
+        </div>
+  </nav>
+   
+        <div class="container">
+            <div class="jumbotron">
+                <p class="lead">
+                    The Money Manager, is a financial portal, built using Microsoft MVC, Entity Framework, Code-First database creation, LINQ, and SQL.
+                    It is a Web-based software application designed for creating and managing budgets for
+                    household finances and the balancing of bank accounts.
+                    It also functions as an online service that may be used in multiple households/families.
 
-    </p>
-    <p><a href="@Url.Action("About")" target="_blank" class="btn btn-success btn-lg">Learn more &raquo;</a></p>
-</div>
+                    This Money Manager is similar in nature to many such commercial-grade products
+                    (i.e. AceMonkey, BudgetPulse, Moneydance, Pocketsmith, QuickBooks, EveryDollar, etc.),
+                    which most employers are familiar.
+                </p>
+               </div>
+           </div>
+    @Scripts.Render("~/bundles/jquery")
+    @Scripts.Render("~/bundles/bootstrap")
+    @Scripts.Render("~/Template/bootstrap")
+    @RenderSection("scripts", required: false)
+   </body>
+</html>
 

@@ -33,7 +33,7 @@ namespace HouseholdBudgeter.Helpers
                 }
                 else
                 {
-                    filterContext.Result = new RedirectToRouteResult(new RouteValueDictionary(new { controller = "Home", action = "Dashboard" }));
+                    filterContext.Result = new RedirectToRouteResult(new RouteValueDictionary(new { controller = "Account", action = "JoinHousehold" }));
 
                 }
             }

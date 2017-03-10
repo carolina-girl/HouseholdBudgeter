@@ -19,7 +19,8 @@ namespace HouseholdBudgeter.Controllers
         // GET: Transactions
         public ActionResult Index()
         {
-            var user = db.Users.Find(User.Identity.GetUserId());
+            var UserId = User.Identity.GetUserId();
+            var user = db.Users.Find(UserId);
             Household household = db.Households.Find(user.HouseholdId);
             if (household == null)
             {
@@ -30,7 +31,7 @@ namespace HouseholdBudgeter.Controllers
             return View(transactions.ToList());
         }
 
-        //// GET: Transactions/Details/5
+        // GET: Transactions/Details/5
         public ActionResult Details(int? id)
         {
             if (id == null)
@@ -81,13 +82,9 @@ namespace HouseholdBudgeter.Controllers
             if (ModelState.IsValid)
             {
                 transaction.Date = new DateTimeOffset(DateTime.Now);
-
                 transaction.UserId = db.Users.FirstOrDefault(u => u.UserName == User.Identity.Name).Id;
-
                 var account = db.BankAccounts.FirstOrDefault(x => x.Id == transaction.BankAccountsId);
-
                 transaction.ReconciledAmount = transaction.Amount;
-
                 if (transaction.ReconciledAmount == transaction.Amount)
                 {
                     transaction.Reconciled = true;
@@ -157,7 +154,6 @@ namespace HouseholdBudgeter.Controllers
             {
                 transaction.Date = new DateTimeOffset(DateTime.Now);
                 transaction.UserId = db.Users.FirstOrDefault(u => u.UserName == User.Identity.Name).Id;
-
                 var original = db.Transactions.AsNoTracking().FirstOrDefault(t => t.Id == transaction.Id);
                 var account = db.BankAccounts.FirstOrDefault(b => b.Id == transaction.BankAccountsId);
 

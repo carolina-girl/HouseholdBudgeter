@@ -37,7 +37,7 @@ namespace HouseholdBudgeter.Migrations
 
             foreach (var d in demoName)
             {
-                context.DemoLogins.Add(new DemoLogin { UserName = d, Password = demoPassword });
+                context.Login.Add(new DemoLogin { UserName = d, Password = demoPassword });
             }
 
             var roleManager = new RoleManager<IdentityRole>(new RoleStore<IdentityRole>(context));

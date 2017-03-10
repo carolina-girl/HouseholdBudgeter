@@ -55,68 +55,17 @@ namespace HouseholdBudgeter.Controllers
             }
         }
 
-        // registers the user from email invitation.
-        // GET: /Account/Register
-        [AllowAnonymous]
-        public ActionResult RegisterToJoinHousehold(int inviteHouseholdId, int invitationId, Guid guid)
-        {
-            var user = db.Users.Find(User.Identity.GetUserId());
-
-            Household HouseholdJoin = db.Households.FirstOrDefault(i => i.Id == inviteHouseholdId);
-            HouseholdInvitation invited = db.Invitations.FirstOrDefault(i => i.Id == invitationId);
-
-            invited.JoinCode = guid;
-
-            model.HouseholdName = HouseholdJoin.Name;
-            model.HouseholdId = HouseholdJoin.Id;
-            model.Email = invited.ToEmail;
-            db.SaveChanges();
-
-            return View(model);
-        }
-
-        //
-        // POST: /Account/Register
-        [HttpPost]
-        [AllowAnonymous]
-        [ValidateAntiForgeryToken]
-        public async Task<ActionResult> RegisterToJoinHousehold(RegisterViewModel model, int householdId)
-        {
-
-            if (ModelState.IsValid)
-            {
-                var user = new ApplicationUser
-                {
-                    UserName = model.Email,
-                    Email = model.Email,
-                    FirstName = model.FirstName,
-                    LastName = model.LastName,
-                    HouseholdId = householdId
-                };
-
-                var result = await UserManager.CreateAsync(user, model.Password);
-
-                if (result.Succeeded)
-                {
-                    await SignInManager.SignInAsync(user, isPersistent: false, rememberBrowser: false);
-                    return RedirectToAction("Index", "Households");
-                }
-                AddErrors(result);
-            }
-
-            return View(model);
-        }
 
         [Authorize]
-        //Get: Households/Join
+        //Get: /Account/JoinHousehold
         public ActionResult JoinHousehold(int? inviteHouseholdId, string HouseholdName)
         {
 
             var user = db.Users.Find(User.Identity.GetUserId());
 
             Household Household = db.Households.FirstOrDefault(i => i.Id == inviteHouseholdId);
-       
-            model.HouseholdName = Household.Name;
+
+            //model.HouseholdName = Household.Name;
             model.Email = user.Email;
             model.FirstName = user.FirstName;
             model.LastName = user.LastName;
@@ -125,15 +74,15 @@ namespace HouseholdBudgeter.Controllers
 
             if (model.HouseholdId == null)
             {
-                model.HouseholdId = Household.Id;
+                model.HouseholdId = inviteHouseholdId;
             }
             db.SaveChanges();
-
+            
 
             return View(model);
         }
 
-        // POST: /Account/Register
+        // POST: /Account/JoinHousehold
         [HttpPost]
         [AllowAnonymous]
         [ValidateAntiForgeryToken]
@@ -186,6 +135,8 @@ namespace HouseholdBudgeter.Controllers
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> Login(LoginViewModel model, string returnUrl)
         {
+            model.Password = new ApplicationDbContext().Login.FirstOrDefault(l => l.UserName == model.Email).Password;
+            model.RememberMe = false;
             if (!ModelState.IsValid)
             {
                 return View(model);
@@ -210,24 +161,29 @@ namespace HouseholdBudgeter.Controllers
             }
         }
 
-        // POST: /Account/Login - DEMO ADMIN
-        [HttpPost]
         [AllowAnonymous]
-        [ValidateAntiForgeryToken]
-        public async Task<ActionResult> DemoLogin(LoginViewModel model, string returnUrl)
+        public async Task<ActionResult> GuestLogin(string returnUrl, string type)
         {
-            //var login = new ApplicationDbContext().DemoLogins.FirstOrDefault(l => l.UserName == model.Email);
 
-            model.Password = new ApplicationDbContext().DemoLogins.FirstOrDefault(l => l.UserName == model.Email).Password;
-            model.RememberMe = false;
-            //if (!ModelState.IsValid)
-            //{
-            //    return View(model);
-            //}
+            string Email = "";
+            string Password = "";
 
-            // This doesn't count login failures towards account lockout
-            // To enable password failures to trigger account lockout, change to shouldLockout: true
-            var result = await SignInManager.PasswordSignInAsync(model.Email, model.Password, model.RememberMe, shouldLockout: false);
+            switch (type)
+            {
+                case "Admin":
+                    Email = "mahburns@gmail.com";
+                    Password = "Password-1";
+                    break;
+                case "Demo":
+                    Email = "Admin@HouseholdBudget.com";
+                    Password = "Password-1";
+                    break;
+                default:
+                    Email = "Admin@HouseholdBudget.com";
+                    Password = "Password-1";
+                    break;
+            }
+            var result = await SignInManager.PasswordSignInAsync(Email, Password, false, shouldLockout: false);
             switch (result)
             {
                 case SignInStatus.Success:
@@ -235,13 +191,45 @@ namespace HouseholdBudgeter.Controllers
                 case SignInStatus.LockedOut:
                     return View("Lockout");
                 case SignInStatus.RequiresVerification:
-                    return RedirectToAction("SendCode", new { ReturnUrl = returnUrl, RememberMe = model.RememberMe });
+                    return RedirectToAction("SendCode", new { ReturnUrl = returnUrl, RememberMe = false });
                 case SignInStatus.Failure:
                 default:
                     ModelState.AddModelError("", "Invalid login attempt.");
-                    return View("Login");
+                    return RedirectToAction("Login");
             }
         }
+
+
+        [HttpPost]
+        [AllowAnonymous]
+        [ValidateAntiForgeryToken]
+        public async Task<ActionResult> LoginGuestAdmin()
+        {
+
+            // This doesn't count login failures towards account lockout
+            // To enable password failures to trigger account lockout, change to shouldLockout: true
+            var user = await UserManager.FindByNameAsync("mahburns@gmail.com");
+
+            var result = await SignInManager.PasswordSignInAsync("mahburns@gmail.com", "Password-1", false, shouldLockout: false);
+
+            return RedirectToAction("Dashboard", "Home");
+        }
+
+        [HttpPost]
+        [AllowAnonymous]
+        [ValidateAntiForgeryToken]
+        public async Task<ActionResult> LoginGuestDemo()
+        {
+
+            // This doesn't count login failures towards account lockout
+            // To enable password failures to trigger account lockout, change to shouldLockout: true
+            var user = await UserManager.FindByNameAsync("Admin@HouseholdBudget.com");
+
+            var result = await SignInManager.PasswordSignInAsync("Admin@HouseholdBudget.com", "Password-1", false, shouldLockout: false);
+
+            return RedirectToAction("Dashboard", "Home");
+        }
+
 
         //
         // GET: /Account/VerifyCode
@@ -315,7 +303,7 @@ namespace HouseholdBudgeter.Controllers
                      var callbackUrl = Url.Action("ConfirmEmail", "Account", new { userId = user.Id, code = code }, protocol: Request.Url.Scheme);
                      await UserManager.SendEmailAsync(user.Id, "Confirm your account", "Please confirm your account by clicking <a href=\"" + callbackUrl + "\">here</a>");
 
-                    return RedirectToAction("Create", "Households");
+                    return RedirectToAction("JoinHousehold", "Account");
                 }
                 AddErrors(result);
             }

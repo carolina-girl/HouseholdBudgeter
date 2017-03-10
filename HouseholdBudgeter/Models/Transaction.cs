@@ -18,7 +18,6 @@ namespace HouseholdBudgeter.Models
         public DateTimeOffset Date { get; set; }
 
         [Required]
-        //debit/credit
         public bool Types { get; set; }
         public bool Void { get; set; }
 
@@ -26,7 +25,6 @@ namespace HouseholdBudgeter.Models
         public decimal? ReconciledAmount { get; set; }
         public int CategoryId { get; set; }
         public bool Reconciled { get; set; }
-        //userId
         public string UserId { get; set; }
 
         public virtual ApplicationUser User { get; set; }
