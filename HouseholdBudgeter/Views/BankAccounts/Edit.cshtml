@@ -11,173 +11,87 @@
                 <h2><i class="fa fa-dollar"></i> Edit Bank Accounts </h2>
             </div>
             <div class="panel-body">
-                        @using (Html.BeginForm())
-                        {
-                            @Html.AntiForgeryToken()
+                @using (Html.BeginForm())
+                {
+                    @Html.AntiForgeryToken()
 
-                            <table class="table">
-                                <tr>
-                                    <th>
-                                        Account
-                                    </th>
-                                    <th>
-                                        Created
-                                    </th>
-                                    <th>
-                                        Balance
-                                    </th>
-                                    <th>
-                                        Initial Balance
-                                    </th>
-                                    <th>
-                                        Warning Balance
-                                    </th>
-                                    <th>
-                                        Reconcile Balance
-                                    </th>
-                                </tr>
-                                <tr>
-                                    <td>
-                                        @Html.DisplayFor(modelItem => Model.Name)
-                                        @Html.HiddenFor(modelItem => Model.Name)
-                                    </td>
-                                    <td>
-                                        @Model.Created.ToString("D")
-                                    </td>
-                                    <td>
-                                        <div class="input-group">
-                                            <span class="input-group-addon">$</span>
-                                            <span class="input-group-lg">
-                                                @Html.EditorFor(modelItem => Model.Balance)
-                                            </span>
-                                        </div>
-                                    </td>
-                                    <td>
-                                        <div class="input-group">
-                                            <span class="input-group-addon">$</span>
-                                            <span class="input-group-lg">
-                                                @Html.EditorFor(modelItem => Model.InitialBalance)
-                                            </span>
-                                        </div>
-                                    </td>
-                                    <td>
-                                        <div class="input-group">
-                                            <span class="input-group-addon">$</span>
-                                            <span class="input-group-lg">
-                                                @Html.EditorFor(modelItem => Model.WarningBalance)
-                                            </span>
-                                        </div>
-                                    </td>
-                                    <td>
-                                        <div class="input-group">
-                                            <span class="input-group-addon">$</span>
-                                            <span class="input-group-lg">
-                                                @Html.EditorFor(modelItem => Model.ReconcileBalance)
-                                            </span>
-                                        </div>
-                                    </td>
-                                </tr>
-                            </table>
-
-                            <div class="form-group">
-                                <input type="submit" class="btn btn-primary" value="Update" />
-                            </div>
-
-
-                            if (Model.WarningBalance >= Model.Balance)
-                            {
-        <!-- Modal -->
-                                <div class="modal fade" id="warning" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-                                    <div class="modal-dialog">
-                                        <div class="modal-content">
-                                            <div class="modal-header text-danger">
-                                                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-                                                <h4 class="modal-title"><i class="fa fa-warning"></i> Friendly Reminder</h4>
-                                            </div>
-                                            <p class="modal-body bg-danger">
-                                                Your <mark>@Model.Name Account</mark> has reached it's warning balance.
-                                            </p>
-                                            <div class="modal-footer">
-                                                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-                                            </div>
-                                        </div><!-- /.modal-content -->
-                                    </div><!-- /.modal-dialog -->
-                                </div><!-- /.modal -->
-                            }
-                        }
-                </div>
+                    <table class="table">
+                        <tr>
+                            <th>
+                                Account
+                            </th>
+                            <th>
+                                Created
+                            </th>
+                            <th>
+                                Balance
+                            </th>
+                            <th>
+                                Initial Balance
+                            </th>
+                            <th>
+                                Warning Balance
+                            </th>
+                            <th>
+                                Reconcile Balance
+                            </th>
+                        </tr>
+                        <tr>
+                            <td>
+                                @Html.DisplayFor(modelItem => Model.Name)
+                                @Html.HiddenFor(modelItem => Model.Name)
+                            </td>
+                            <td>
+                                @Model.Created.ToString("D")
+                            </td>
+                            <td>
+                                <div class="input-group">
+                                    <span class="input-group-addon">$</span>
+                                    <span class="input-group-lg">
+                                        @Html.EditorFor(modelItem => Model.Balance)
+                                    </span>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="input-group">
+                                    <span class="input-group-addon">$</span>
+                                    <span class="input-group-lg">
+                                        @Html.EditorFor(modelItem => Model.InitialBalance)
+                                    </span>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="input-group">
+                                    <span class="input-group-addon">$</span>
+                                    <span class="input-group-lg">
+                                        @Html.EditorFor(modelItem => Model.WarningBalance)
+                                    </span>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="input-group">
+                                    <span class="input-group-addon">$</span>
+                                    <span class="input-group-lg">
+                                        @Html.EditorFor(modelItem => Model.ReconcileBalance)
+                                    </span>
+                                </div>
+                            </td>
+                        </tr>
+                    </table>
+                    if (Model.WarningBalance >= Model.Balance)
+                    {
+                        <div class="alert alert-danger">
+                            Your <mark>@Model.Name Account</mark> has reached it's warning balance.
+                        </div>
+                    }
+                    <div class="form-group">
+                        <input type="submit" class="btn btn-primary" value="Update" />
+                    </div>
+                    }
+                 </div>
             </div>
         </div>
     </div>
-
-
 <div>
     @Html.ActionLink("Back to List", "Index")
 </div>
-
-@section Scripts{
-    <script type="text/javascript">
-        $(window).load(function () {
-            $('#warning').modal('show');
-        });
-    </script>
-    <script>
-    function postRec(id) {
-        var num = id.substring(3);
-        var val = document.getElementById(id).checked;
-        $post("Transactions/Rec/" + num + "?rec=" + val).done(function(date){
-            var amt = $('#amount' + num);
-            var recAmt = $('#recAmount' + num);
-            recAmt.html(data);
-            if(val){
-                if(recAmt.hasClass('color-green'))
-                {
-                    recAmt.removeClass('color-green');
-                    recAmt.addClass('color-green-muted')
-                }
-                else{
-                    recAmt.removeClass('color-red');
-                    recAmt.addClass('color-red-muted')
-                }
-                if(recAmt.hasClass('color-green-muted')){
-                    recAmt.removeClass('color-green-muted');
-                    recAmt.addClass('color-green')
-                }
-                else{
-                    recAmt.removeClass('color-red-muted');
-                    recAmt.addClass('color-red-muted')
-                }
-            }
-            else{
-                if(recAmt.hasClass('color-red')){
-                    recAmt.removeClass('color-red');
-                    recAmt.addClass('color-red-muted')
-                }
-                else{
-                    recAmt.removeClass('color-green');
-                    recAmt.addClass('color-green-muted')
-                }
-                if(recAmt.hasClass('color-green')){
-                    recAmt.removeClass('color-green');
-                    recAmt.addClass('color-green-muted')
-                }
-                else{
-                    recAmt.removeClass('color-red');
-                    recAmt.addClass('color-red-muted')
-                }
-            }
-        }).done(function() {
-            $getJson("/BankAccounts/GetBal/" + @Model.Id, null, function(data){
-                if(!data){
-                    alert("Request failed");
-                }
-                else
-                {
-                    $('#bal').html("Account Balance: $" + data.bal);
-                    $('#recBal').html("Reconciled Balance: $" + data.recBal);
-                }
-            });
-        });
-    }
-    </script>
-}

@@ -10,6 +10,7 @@ using System.Web;
 
 namespace HouseholdBudgeter.Helpers
 {
+    //extension to the IIdentity interface that reads HouseholdId claim
     public static class Extensions
     {
         public static int? GetHouseholdId(this IIdentity user)

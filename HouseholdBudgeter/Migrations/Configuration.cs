@@ -32,7 +32,7 @@ namespace HouseholdBudgeter.Migrations
 
             foreach (var c in Category)
             {
-                context.BudegetCategory.Add(new BudgetCategory { Name = c });
+                context.BudgetCategory.Add(new BudgetCategory { Name = c });
             }
 
             foreach (var d in demoName)

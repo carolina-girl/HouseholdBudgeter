@@ -15,6 +15,9 @@ namespace HouseholdBudgeter.Helpers
 
         public class AuthorizeHouseholdRequired : AuthorizeAttribute
         {
+            //creates custom Authorization attribute by creating a new class that inherits from System.Web.Mvc.AuthorizeAttribute
+            //overrrides 2 methods of this class: AuthorizeCore() and HandleUnauthorizedRequest()
+            //checks to see if we are logged in and part of household
             protected override bool AuthorizeCore(HttpContextBase httpContext)
             {
                 var isAuthorized = base.AuthorizeCore(httpContext);

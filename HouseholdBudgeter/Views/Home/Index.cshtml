@@ -2,65 +2,70 @@
     ViewBag.Title = "Home Page";
     Layout = null;
 }
-<style>
-    .jumbotron {
-        margin-top: 100px;
-        margin-right: 200px;
-        margin-left: 200px;
-        background-color: white;
-    }
-         body {
-            background-position: center;
-            background-image: linear-gradient(to bottom, rgba(0,0,0,0.6) 0%,rgba(0,0,0,0.6) 100%), url('../../images/2391983-American-coins-background-texture-or-concept-Stock-Photo.jpg');
-            background-size: 100%;
-            background-repeat: no-repeat;   
-        }
-</style>
-
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="description" content="">
-    <meta name="author" content="">
-    @Styles.Render("~/Content/css")
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@ViewBag.Title - My ASP.NET Application</title>
+    <link href="//cdn.datatables.net/1.10.11/css/jquery.dataTables.min.css" rel="stylesheet" />
     @Styles.Render("~/Template/css")
+    @Styles.Render("~/Content/css")
     @Scripts.Render("~/bundles/modernizr")
+    <style>
+        .form-control, input.btn {
+            min-width: 100%;
+        }
+
+        body {
+            background-position: center;
+            background-image: url('../../images/dollar-499481_1920.jpg');
+            background-size: 100%;
+            background-repeat: no-repeat;
+        }
+
+        .container {
+            animation-fill-mode: forwards;
+            margin: 0 auto;
+            margin-top: 100px;
+            max-width: 800px;
+            background-color: rgba(255, 255, 255, 0.9);
+            border: 2px solid #444;
+            border-radius: 10px;
+        }
+        p, h3, h4 {
+            text-align: center;
+        }
+    </style>
 </head>
 <body>
-    <nav class="navbar navbar-default navbar-static-top" role="navigation" style="margin-top: 0">
-        <div class="navbar-header">
-            @Html.Partial("_LoginPartial")
-            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="navbar-collapse">
-                <span class="sr-only">Toggle navigation</span>
-                <span class="icon-bar"></span>
-                <span class="icon-bar"></span>
-                <span class="icon-bar"></span>
-            </button>
-            <a class="navbar-brand" href=@Url.Action("Login", "Account")>Money Manager</a>
-        </div>
-  </nav>
-   
-        <div class="container">
-            <div class="jumbotron">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-12">
+                        <h3>
+                            <strong>Welcome to the Money Manager.</strong><br />
+                        </h3>
                 <p class="lead">
                     The Money Manager, is a financial portal, built using Microsoft MVC, Entity Framework, Code-First database creation, LINQ, and SQL.
                     It is a Web-based software application designed for creating and managing budgets for
                     household finances and the balancing of bank accounts.
                     It also functions as an online service that may be used in multiple households/families.
-
-                    This Money Manager is similar in nature to many such commercial-grade products
-                    (i.e. AceMonkey, BudgetPulse, Moneydance, Pocketsmith, QuickBooks, EveryDollar, etc.),
-                    which most employers are familiar.
                 </p>
-               </div>
-           </div>
+        <div class="row">
+            <div class="col-md-12">
+                <div class="box-header with-border">
+                    <h3 class="box-title">Live Demo</h3>
+                </div>
+                <div class="box-body">
+                    <h4><a href="@Url.Action("Login", "Account")">Try the Money Manager</a> to experience for yourself how it can organize your finances.</h4>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+    </div>
     @Scripts.Render("~/bundles/jquery")
     @Scripts.Render("~/bundles/bootstrap")
     @Scripts.Render("~/Template/bootstrap")
-    @RenderSection("scripts", required: false)
-   </body>
+</body>
 </html>
-

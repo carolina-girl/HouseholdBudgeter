@@ -496,7 +496,6 @@
     <Content Include="Content\bootstrap-theme.min.css" />
     <Content Include="Content\bootstrap.css" />
     <Content Include="Content\bootstrap.min.css" />
-    <Content Include="Content\mab.css" />
     <Content Include="Content\zocial.css" />
     <Content Include="css\font-awesome.css" />
     <Content Include="css\font-awesome.min.css" />
@@ -827,6 +826,8 @@
     <Content Include="Scripts\jquery-3.1.1.min.map" />
     <Content Include="Views\Manage\EditProfile.cshtml" />
     <Content Include="Views\Account\JoinHousehold.cshtml" />
+    <Content Include="Views\Households\Errors.cshtml" />
+    <Content Include="Views\Account\Info.cshtml" />
   </ItemGroup>
   <ItemGroup />
   <ItemGroup>

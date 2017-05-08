@@ -97,9 +97,7 @@
         </div>
     </div>
 </div>
-
 <!--Recent Transaction Panel-->
-<div class="row">
     <div class="col-lg-6">
         <div class="panel panel-default">
             <div class="panel-heading">
@@ -107,15 +105,6 @@
                 <div class="panel-body">
                     <table class="table table-bordered">
                         <ul class="list-unstyled">
-                            <li class="text-muted">
-                                <strong><i class="fa fa-user"></i> UserName </strong>
-                                <p>
-                                    <span>
-                                        Deposit/Withdraw
-                                        | $ 00.00 | Bank Account Type | Category Type | Description | Date
-                                    </span>
-                                </p>
-                            </li>
                             @foreach (var tran in Model.Transactions)
                             {
                                 <li>
@@ -157,7 +146,6 @@
                 </div>
             </div>
         </div>
-
         <!-- Accounts/Balances panel/.row -->
         <div class="row">
             <div class="col-lg-12">
@@ -189,10 +177,7 @@
                                             </td>
                                             <td>
                                                 <a href="@Url.Action("Edit", "BankAccounts", new { id = item.Id })"><i class="fa fa-pencil btn btn-xs btn-warning"></i></a>
-                                                <span class="delete-section">
-                                                    <a class="delete-link" href="@Url.Action("Delete", new {id = item.Id})"><i class="fa fa-close btn btn-xs btn-danger"></i></a>
-                                                    <span class="btn btn-danger btn-xs delete-confirm" style="display:none" data-delete-id="@item.Id">Confirm Delete</span>
-                                                </span>
+                                                <a href="@Url.Action("Delete", "BankAccounts", new {id = item.Id})"><i class="fa fa-close btn btn-xs btn-danger"></i></a>
                                             </td>
                                         </tr>
                                     }
@@ -204,15 +189,12 @@
             </div>
         </div>
     </div>
-
     <!-- Chart Panel -->
-
     <div class="col-lg-6">
         <div class="panel panel-default">
             <div class="panel-heading">
                 <h2><i class="fa fa-columns"></i> Budget Balance </h2>
                 <div class="panel-body">
-                    <table class="table table-bordered">
                         <div class="form-group">
                             @using (Html.BeginForm("UpdateChart", "Home", FormMethod.Post))
                             {
@@ -268,47 +250,20 @@
                                 </tbody>
                             </table>
                         </div>
-                    </table>
-                </div>
+                    </div>
                 <!-- /.panel-body -->
-            </div>
+             </div>
             <!-- /.panel-heading -->
         </div>
         <!-- /.panel-panel-default -->
-    </div>
-    <!-- /.col-lg-6 -->
-    <!-- /#page-wrapper -->
-    <!-- Modal Create Budget -->
-    <div class="modal fade" id="createB" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="container" style="padding:20px;">
-                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-                    @Html.Action("_CreateBankAccount", "BankAccounts")
-                    <button type="button" class="btn btn-default pull-right" data-dismiss="modal">Close</button>
-                </div>
-            </div><!-- /.modal-content -->
-        </div><!-- /.modal-dialog -->
-    </div><!-- /.modal -->
-    <!-- Modal Create Transaction -->
-    <div class="modal fade" id="createT" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="container" style="padding:20px;">
-                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-                    @Html.Action("_CreateTrans", "Transactions")
-                    <button type="button" class="btn btn-default pull-right" data-dismiss="modal">Close</button>
-                </div>
-            </div><!-- /.modal-content -->
-        </div><!-- /.modal-dialog -->
-    </div><!-- /.modal -->
+   </div>
     @section Scripts{
 
-        @*<style>
+        <style>
                 #datatable > tbody > tr > th, #datatable > thead > tr > th  {
                     text-align: center;
                 }
-            </style>*@
+            </style>
 
         <script type="text/javascript">
             $(function () {

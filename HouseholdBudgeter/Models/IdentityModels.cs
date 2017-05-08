@@ -18,6 +18,7 @@ namespace HouseholdBudgeter.Models
 
         public string FirstName { get; set; }
         public string LastName { get; set; }
+        //attach custom claim to the cookie for HouseholdId
         public int? HouseholdId { get; set; }
 
         public virtual ICollection<Transaction> Transactions { get; set; }
@@ -28,6 +29,8 @@ namespace HouseholdBudgeter.Models
             // Note the authenticationType must match the one defined in CookieAuthenticationOptions.AuthenticationType
             var userIdentity = await manager.CreateIdentityAsync(this, DefaultAuthenticationTypes.ApplicationCookie);
             // Add custom user claims here
+            //assures that the HouseholdId claim is attached to each user principal//helper extension reads this
+            userIdentity.AddClaim(new Claim("HouseholdId", HouseholdId.ToString()));
             return userIdentity;
         }
     }
@@ -47,7 +50,7 @@ namespace HouseholdBudgeter.Models
         public virtual DbSet<BankAccount> BankAccounts { get; set; }
         public virtual DbSet<Household> Households { get; set; }
         public virtual DbSet<Transaction> Transactions { get; set; }
-        public virtual DbSet<BudgetCategory> BudegetCategory { get; set; }
+        public virtual DbSet<BudgetCategory> BudgetCategory { get; set; }
         public virtual DbSet<Budget> Budgets { get; set; }
         public virtual DbSet<BudgetItem> BudgetItems { get; set; }
         public virtual DbSet<SendGridCredential> SendGridCredentials { get; set; }

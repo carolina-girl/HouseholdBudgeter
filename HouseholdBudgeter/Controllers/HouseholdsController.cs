@@ -7,6 +7,8 @@ using HouseholdBudgeter.Models;
 using Microsoft.AspNet.Identity;
 using static HouseholdBudgeter.Helpers.AuthorizeHousehold;
 using HouseholdBudgeter.Helpers;
+using System.Threading.Tasks;
+using Microsoft.AspNet.Identity.EntityFramework;
 
 namespace HouseholdBudgeter.Controllers
 {
@@ -18,14 +20,16 @@ namespace HouseholdBudgeter.Controllers
 
         public ActionResult Index()
         {
-            var UserId = User.Identity.GetUserId();
-            var user = db.Users.Find(UserId);
+            //get user and household by id
+            var user = db.Users.Find(User.Identity.GetUserId());
+
             Household household = db.Households.Find(user.HouseholdId);
+
             if (household == null)
             {
                 return RedirectToAction("Create", "Households");
             }
-
+            //list this users households
             return View(db.Households.Find(user.HouseholdId));
         }
 
@@ -59,21 +63,16 @@ namespace HouseholdBudgeter.Controllers
         {
             if (ModelState.IsValid)
             {
-                //previously users could create a matching name and be added to existing household
-                //now, new house is created
+                // get user and create new household if this user doesnt have one, save changes
                 var user = db.Users.Find(User.Identity.GetUserId());
 
                 if (user.HouseholdId == null)
                 {
                     Household household2 = household;
-                    db.Households.Add(household2 = new Household
-                    {
-                        Name = household.Name
-                    });
+                    db.Households.Add(household2 = new Household{ Name = household.Name });
                     db.SaveChanges();
-
                     user.HouseholdId = household2.Id;
-
+                    //go ahead and give new household two accounts
                     household2.BankAccounts.Add(new BankAccount
                     {
                         Name = "Checkings",
@@ -92,9 +91,7 @@ namespace HouseholdBudgeter.Controllers
                         ReconcileBalance = 0,
                         WarningBalance = 0
                     });
-
                     db.SaveChanges();
-
                     return RedirectToAction("Index", new { id = household2.Id });
                 }
                 else
@@ -104,6 +101,7 @@ namespace HouseholdBudgeter.Controllers
             }
             return View(household);
         }
+
 
         // GET: Households/Edit/5
         public ActionResult Edit(int? id)
@@ -151,19 +149,19 @@ namespace HouseholdBudgeter.Controllers
             return View(household);
         }
 
-
+        
         [AuthorizeHouseholdRequired]
         public async System.Threading.Tasks.Task<ActionResult> Leave()
         {
+            //get user, authenticate, find household, and remove user from this household, save
+            //call the refresh authentication method
             var user = db.Users.Find(User.Identity.GetUserId());
             await ControllerContext.HttpContext.RefreshAuthentication(user);
             Household household = db.Households.Find(user.HouseholdId);
-
-            //set user's house to null
+            //set user's household to null
             //remove the user from the household list
             user.HouseholdId = null;
             household.Members.Remove(user);
-
             db.SaveChanges();
             return RedirectToAction("Create", "Households");
         }
@@ -173,22 +171,27 @@ namespace HouseholdBudgeter.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult DeleteConfirmed(int id)
         {
+            //get user and bankaccounts from db and household, remove household
             var user = db.Users.Find(User.Identity.GetUserId());
             BankAccount bankaccount = db.BankAccounts.FirstOrDefault(x => x.Id == id);
-
             Household household = db.Households.Find(id);
-
             if (!household.Members.Contains(user))
             {
                 return RedirectToAction("Unauthorized", "Error");
             }
-
             db.Households.Remove(household);
             db.SaveChanges();
             return RedirectToAction("Index");
         }
 
-        protected override void Dispose(bool disposing)
+        // GET: Households/Errors
+        public ActionResult Errors(string errorMessage)
+        {
+            ViewBag.ErrorMessage = errorMessage;
+            return View();
+        }
+    
+    protected override void Dispose(bool disposing)
         {
             if (disposing)
             {

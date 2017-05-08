@@ -4,7 +4,6 @@
     ViewBag.Title = "Index";
 }
 
-
 <div class="row">
     <div class="col-lg-12">
         <div class="panel panel-default">
@@ -27,6 +26,8 @@
                                 </th>
                                 <th></th>
                             </tr>
+                            </thead>
+                        <tbody>
                                 <tr>
                                     <td>
                                         @Model.Name
@@ -43,13 +44,13 @@
                                         <a data-toggle="modal" href="#leaveHousehold" class="btn btn-danger"><i class="fa fa-chain"></i> Leave Household</a>
                                     </td>
                                 </tr>
+                            </tbody>
                     </table>
                 </div>
             </div>
         </div>
     </div>
 </div>
-
 <div class="row">
     <div class="col-lg-12">
         <div class="panel panel-default">
@@ -96,7 +97,6 @@
         </div>
     </div>
 </div>
-
 <!-- Modal -->
 <div class="modal fade" id="leaveHousehold" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
     <div class="modal-dialog">
@@ -113,10 +113,9 @@
                     <div class="panel-body">
                         Are you sure you want to leave <mark>@Model.Name</mark>?
                         Once you leave, you will lose access to all accounts.
-                    @*</div>*@
+                    </div>
                     <form method="Post" action="@Url.Action("Leave")">
                         <input type="submit" class="btn btn-danger pull-right" />
-
                         <input type="button" class="btn btn-default pull-right" data-dismiss="modal" value="Close" />
                     </form>
                 </div>
@@ -124,5 +123,5 @@
         </div>
     </div>
 </div>
-    </div>
+  
 

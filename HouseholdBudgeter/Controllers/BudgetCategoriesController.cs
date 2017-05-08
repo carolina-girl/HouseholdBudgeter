@@ -16,8 +16,9 @@ namespace HouseholdBudgeter.Controllers
         // GET: BudgetCategories
         public ActionResult Index(int? id)
         {
-            var UserId = User.Identity.GetUserId();
-            var user = db.Users.Find(UserId);
+            //get user, household of this user
+            var user = db.Users.Find(User.Identity.GetUserId());
+
             Household household = db.Households.Find(user.HouseholdId);
 
             if (household == null)
@@ -25,24 +26,23 @@ namespace HouseholdBudgeter.Controllers
                 return RedirectToAction("Create", "Households");
             }
 
-            return View(db.BudegetCategory);
+            return View(db.BudgetCategory);
         }
 
         // GET: BudgetCategories/Details/5
         public ActionResult Details(int? id)
         {
-            //heirarchy where we find the user
+            //get user, category, household
             var user = db.Users.Find(User.Identity.GetUserId());
-            BudgetCategory category = db.BudegetCategory.FirstOrDefault(b => b.Id == id);
 
-            //then the category's household owner
+            BudgetCategory category = db.BudgetCategory.FirstOrDefault(b => b.Id == id);
+
             Household household = db.Households.FirstOrDefault(h => h.Id == category.Id);
 
             if (id == null)
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-
             if (category == null)
             {
                 return HttpNotFound();
@@ -65,7 +65,7 @@ namespace HouseholdBudgeter.Controllers
         {
             if (ModelState.IsValid)
             {
-                db.BudegetCategory.Add(category);
+                db.BudgetCategory.Add(category);
                 db.SaveChanges();
                 return RedirectToAction("Index");
             }
@@ -76,18 +76,17 @@ namespace HouseholdBudgeter.Controllers
         // GET: BudgetCategories/Edit/5
         public ActionResult Edit(int? id)
         {
-            //heirarchy where we find the user
+            //get use, category, household owner of category
             var user = db.Users.Find(User.Identity.GetUserId());
-            BudgetCategory category = db.BudegetCategory.FirstOrDefault(b => b.Id == id);
 
-            //then the category's household owner
+            BudgetCategory category = db.BudgetCategory.FirstOrDefault(b => b.Id == id);
+
             Household household = db.Households.FirstOrDefault(h => h.Id == category.Id);
 
             if (id == null)
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-
             if (category == null)
             {
                 return HttpNotFound();
@@ -114,18 +113,17 @@ namespace HouseholdBudgeter.Controllers
         // GET: BudgetCategories/Delete/5$
         public ActionResult Delete(int? id)
         {
-            //heirarchy where we find the user
+            //get user, category, household owner
             var user = db.Users.Find(User.Identity.GetUserId());
-            BudgetCategory category = db.BudegetCategory.FirstOrDefault(b => b.Id == id);
 
-            //then the category's household owner
+            BudgetCategory category = db.BudgetCategory.FirstOrDefault(b => b.Id == id);
+
             Household household = db.Households.FirstOrDefault(h => h.Id == category.Id);
 
             if (id == null)
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-
             if (category == null)
             {
                 return HttpNotFound();
@@ -138,14 +136,14 @@ namespace HouseholdBudgeter.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult DeleteConfirmed(int id)
         {
-            //heirarchy where we find the user
+            //get user, category, household owner
             var user = db.Users.Find(User.Identity.GetUserId());
-            BudgetCategory category = db.BudegetCategory.FirstOrDefault(b => b.Id == id);
 
-            //then the category's household owner
+            BudgetCategory category = db.BudgetCategory.FirstOrDefault(b => b.Id == id);
+
             Household household = db.Households.FirstOrDefault(h => h.Id == category.Id);
 
-            db.BudegetCategory.Remove(category);
+            db.BudgetCategory.Remove(category);
             db.SaveChanges();
             return RedirectToAction("Index");
         }

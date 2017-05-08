@@ -21,16 +21,18 @@ namespace HouseholdBudgeter.Controllers
     {
         private ApplicationDbContext db = new ApplicationDbContext();
 
+
         // GET: HouseholdInvitations
         [Authorize]
         public ActionResult Index()
         {
-            var UserId = User.Identity.GetUserId();
-            var user = db.Users.Find(UserId);
+            //get user and invitations of this household from db
+            var user = db.Users.Find(User.Identity.GetUserId());
 
             var invitations = db.Invitations.Include(i => i.Households).Where(u => user.HouseholdId == u.HouseholdId).ToList();
-
+            //check to see that this user has a household, and list the invitations from it
             Household household = db.Households.Find(user.HouseholdId);
+
             if (household == null)
             {
                 return RedirectToAction("Create", "Households");
@@ -41,12 +43,12 @@ namespace HouseholdBudgeter.Controllers
 
         public PartialViewResult _CreateInv()
         {
+            //get user and household, create select list of this users households
             var user = db.Users.Find(User.Identity.GetUserId());
 
             var userHousehold = db.Households.AsNoTracking().Where(u => user.HouseholdId == u.Id).ToList();
 
             ViewBag.HouseholdId = new SelectList(userHousehold, "Id", "Name");
-
             return PartialView();
         }
 
@@ -60,7 +62,6 @@ namespace HouseholdBudgeter.Controllers
             var userHousehold = db.Households.AsNoTracking().Where(u => user.HouseholdId == u.Id).ToList();
 
             ViewBag.HouseholdId = new SelectList(userHousehold, "Id", "Name");
-
             return PartialView();
         }
 
@@ -75,23 +76,41 @@ namespace HouseholdBudgeter.Controllers
             if (ModelState.IsValid)
             {
                 int? householdId = User.Identity.GetHouseholdId();
-                string userId = User.Identity.GetUserId();
-                var user = db.Users.Find(userId);
+
+                var user = db.Users.Find(User.Identity.GetUserId());
+
+                var existingUser = db.Users.Where(u => u.Email == invitation.ToEmail).FirstOrDefault();
+
+                Household household = db.Households.FirstOrDefault(h => h.Id == householdId);
+
                 HouseholdInvitation invitations = new HouseholdInvitation();
+
                 invitation.JoinCode = Guid.NewGuid();
                 invitation.ToEmail = invitation.ToEmail;
                 invitation.HouseholdId = invitation.HouseholdId;
                 db.Invitations.Add(invitation);
                 db.SaveChanges();
-
+    
                 var es = new EmailService();
                 var msg = new IdentityMessage();
-                msg.Destination = invitation.ToEmail;
-                msg.Subject = user.FirstName + "" + user.LastName + " has invited you to join their Money Manager household.";
-                msg.Body = user.FirstName + "" + user.LastName + " has invited you to join their household in the Money Manager! To join, go to mburns-budgeter.azurewebsites.net to register as a new user, and enter the following invitation code: " + invitation.JoinCode;
-                await es.SendAsync(msg);
-                TempData["Message"] = "Your invitation has been sent!";
-
+                if (existingUser != null)
+                {
+                    var callbackUrlForExitingUser = Url.Action("JoinHousehold", "Account", new { inviteHouseholdId = invitation.HouseholdId }, protocol: Request.Url.Scheme);
+                    msg.Destination = invitation.ToEmail;
+                    msg.Subject = user.FirstName + "" + user.LastName + " has invited you to join their Money Manager household.";
+                    msg.Body = user.FirstName + "" + user.LastName + " invites you to join the " + household.Name + " household on the Money Manager household-budgeter application. Click <a href=\"" + callbackUrlForExitingUser + "\" target=\"_blank\">here</a> to join.";
+                    await es.SendAsync(msg);
+                    TempData["Message"] = "Your invitation has been sent!";
+                }
+                else
+                {
+                    var callbackUrl = Url.Action("Register", "Account", new { inviteHouseholdId = invitation.HouseholdId, invitationId = invitation.Id, guid = invitation.JoinCode }, protocol: Request.Url.Scheme);
+                    msg.Destination = invitation.ToEmail;
+                    msg.Subject = user.FirstName + "" + user.LastName + " has invited you to join their Money Manager household.";
+                    msg.Body = user.FirstName + "" + user.LastName + " invites you to join the " + household.Name + " household on the Money Manager household-budgeter application. Click <a href=\"" + callbackUrl + "\" target=\"_blank\">here</a> to join. Enter the code " + invitation.JoinCode + ".";
+                    await es.SendAsync(msg);
+                    TempData["Message"] = "Your invitation has been sent!";
+                }
                 return RedirectToAction("Index", (new
                 {
                     id = user.HouseholdId
@@ -107,8 +126,11 @@ namespace HouseholdBudgeter.Controllers
         [Authorize]
         public ActionResult Delete(int? id)
         {
+            //get user, invitation, and household from db
             var user = db.Users.Find(User.Identity.GetUserId());
+
             HouseholdInvitation invitation = db.Invitations.FirstOrDefault(x => x.Id == id);
+
             Household household = db.Households.FirstOrDefault(x => x.Id == invitation.HouseholdId);
 
             if (!household.Members.Contains(user))
@@ -119,8 +141,7 @@ namespace HouseholdBudgeter.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-
-           // HouseholdInvitation invitation = db.Invitations.Find(id);
+           //HouseholdInvitation invitation = db.Invitations.Find(id);
             if (invitation == null)
             {
                 return HttpNotFound();
@@ -134,8 +155,11 @@ namespace HouseholdBudgeter.Controllers
         [Authorize]
         public ActionResult DeleteConfirmed(int id)
         {
+            //get user, invitation, and household from db
             var user = db.Users.Find(User.Identity.GetUserId());
+
             HouseholdInvitation invitation = db.Invitations.FirstOrDefault(x => x.Id == id);
+
             Household household = db.Households.FirstOrDefault(x => x.Id == invitation.HouseholdId);
 
             if (!household.Members.Contains(user))

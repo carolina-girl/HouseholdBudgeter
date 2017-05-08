@@ -6,8 +6,6 @@ using System.Web.Mvc;
 
 namespace HouseholdBudgeter.Controllers
 {
-    [Authorize]
-    [RequireHttps]
     public class HomeController : Controller
     {
 
@@ -31,36 +29,25 @@ namespace HouseholdBudgeter.Controllers
 
         public ActionResult Dashboard(int? id, int? low)
         {
-            //object of DashboardViewModel
+            //object of model, get user, all users of household
             DashboardViewModel model = new DashboardViewModel();
 
-            //get user Id
             var user = db.Users.Find(User.Identity.GetUserId());
 
-            //get users of Household
             model.Households = db.Users.FirstOrDefault(u => u.UserName == User.Identity.Name).Households;
 
             if (model.Households == null)
             {
                 return RedirectToAction("Create", "Households");
             }
-
-            //get in descending order transactions
+            //get in descending order, last 6 transactions of this households accounts
             model.Transactions = db.Transactions.Where(a => a.BankAccounts.HouseholdId == user.HouseholdId).OrderByDescending(a => a.Id).Take(6).ToList();
             //get all account for this household
             model.BankAccounts = db.BankAccounts.Where(a => a.HouseholdId == model.Households.Id).ToList();
-
             //get List of existing budgets in this household
             var getBudget = db.Budgets.Where(a => user.HouseholdId == a.HouseHoldId).ToList();
-
-            //if (model.Households.Budgets.Count == 0)
-            //{
-            //    return RedirectToAction("Index", "Budgets");
-            //}
-
-            //Get currentbudget for this
+            //Get currentbudget for this household
             var CurrentBudget = db.Budgets.FirstOrDefault(a => a.HouseHoldId == model.Households.Id);
-
             if (id == null)
             {
                 //Viewbag to get list of current existing budget
@@ -78,14 +65,10 @@ namespace HouseholdBudgeter.Controllers
                 model.GetBudgetId = (int)id;
                 //get budget assign to id
                 model.Budgets = db.Budgets.First(a => a.Id == id);
-
             }
-
             var currentDate = DateTime.Now;
-
             model.begin = new DateTime(currentDate.Year, currentDate.Month, 1);
             model.end = currentDate;
-
             return View(model);
         }
 

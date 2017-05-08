@@ -20,6 +20,7 @@ namespace HouseholdBudgeter.Models
         }
         public int Id { get; set; }
         public string Name { get; set; }
+        public string JoinCode { get; set; }
 
         public virtual ICollection<ApplicationUser> Members { get; set; }
         public virtual ICollection<BankAccount> BankAccounts { get; set; }

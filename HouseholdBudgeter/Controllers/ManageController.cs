@@ -244,24 +244,41 @@ namespace HouseholdBudgeter.Controllers
             AddErrors(result);
             return View(model);
         }
-
-        // GET: /EditProfile
-        [HttpGet]
+        // GET: /Manage/EditProfile
         [Authorize]
         public ActionResult EditProfile()
         {
-            return View();
-        }
+           // var userId = User.Identity.GetUserId();
 
-        // POST: /EditProfile
-        public ActionResult EditProfile(string Email)
-        {
-            var name = new EditProfileViewModel();
+            var model = new EditProfileViewModel();
+            //could retrieve name based on userId
             var user = db.Users.Find(User.Identity.GetUserId());
 
-            name.FirstName = user.FirstName;
-            name.LastName = user.LastName;
-            name.Email = user.Email;
+            var fname = user.FirstName;
+            var lname = user.LastName;
+            var usermail = user.Email;
+            return View(model);
+        }
+
+        //
+        // POST: /Manage/EditProfile
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<ActionResult> EditProfile(EditProfileViewModel model)
+        {
+            if (!ModelState.IsValid)
+            {
+                return View(model);
+            }
+            // Find the user, update the fields with the new ones
+            ApplicationUser user = UserManager.FindById(User.Identity.GetUserId());
+
+            user.FirstName = model.FirstName;
+            user.LastName = model.LastName;
+            user.Email = model.Email;
+            user.UserName = model.Email;
+
+            IdentityResult result = await UserManager.UpdateAsync(user);
 
             return RedirectToAction("Dashboard", "Home");
         }

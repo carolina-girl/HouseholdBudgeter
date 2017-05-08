@@ -9,6 +9,8 @@ using Microsoft.Owin.Security;
 using HouseholdBudgeter.Models;
 using System.Web.UI.WebControls;
 using System.Data.Entity;
+using Microsoft.AspNet.Identity.EntityFramework;
+using HouseholdBudgeter.Helpers;
 
 namespace HouseholdBudgeter.Controllers
 {
@@ -55,30 +57,22 @@ namespace HouseholdBudgeter.Controllers
             }
         }
 
-
-        [Authorize]
+        [AllowAnonymous]
         //Get: /Account/JoinHousehold
         public ActionResult JoinHousehold(int? inviteHouseholdId, string HouseholdName)
         {
-
             var user = db.Users.Find(User.Identity.GetUserId());
-
             Household Household = db.Households.FirstOrDefault(i => i.Id == inviteHouseholdId);
-
-            //model.HouseholdName = Household.Name;
             model.Email = user.Email;
             model.FirstName = user.FirstName;
             model.LastName = user.LastName;
             model.Password = user.PasswordHash;
             model.ConfirmPassword = user.PasswordHash;
-
             if (model.HouseholdId == null)
             {
                 model.HouseholdId = inviteHouseholdId;
             }
             db.SaveChanges();
-            
-
             return View(model);
         }
 
@@ -89,32 +83,21 @@ namespace HouseholdBudgeter.Controllers
         public ActionResult JoinHousehold(RegisterViewModel model, int? HouseholdId, string Members)
         {
             ApplicationDbContext db = new ApplicationDbContext();
-
-            //the get action, send to the view,
-            //the view form-group sends to the posts
-            //the hidden for name must match to be a paramater
-
             Household Household = db.Households.FirstOrDefault(i => i.Id == HouseholdId);
-
             var updatedUser = db.Users.Find(User.Identity.GetUserId());
-
             if (ModelState.IsValid)
-            {
-                Household.Members.Add(updatedUser);
-
+            {  
+                Household.Members.Add(updatedUser);          
                 updatedUser.FirstName = model.FirstName;
                 updatedUser.LastName = model.LastName;
                 updatedUser.Email = model.Email;
                 updatedUser.UserName = model.Email;
                 updatedUser.HouseholdId = model.HouseholdId;
+               
                 db.Entry(updatedUser).State = EntityState.Modified;
-
                 db.SaveChanges();
                 return RedirectToAction("Index", "Households");
             }
-
-
-
             // If we got this far, something failed, redisplay form
             return View(model);
         }
@@ -135,13 +118,19 @@ namespace HouseholdBudgeter.Controllers
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> Login(LoginViewModel model, string returnUrl)
         {
-            model.Password = new ApplicationDbContext().Login.FirstOrDefault(l => l.UserName == model.Email).Password;
-            model.RememberMe = false;
             if (!ModelState.IsValid)
             {
                 return View(model);
             }
-
+            var user = await UserManager.FindByNameAsync(model.Email);
+            if (user != null)
+            {
+                if (!await UserManager.IsEmailConfirmedAsync(user.Id))
+                {
+                    ViewBag.errorMessage = "You must have a confirmed email to log on.";
+                    return View("Error");
+                }
+            }
             // This doesn't count login failures towards account lockout
             // To enable password failures to trigger account lockout, change to shouldLockout: true
             var result = await SignInManager.PasswordSignInAsync(model.Email, model.Password, model.RememberMe, shouldLockout: false);
@@ -164,7 +153,6 @@ namespace HouseholdBudgeter.Controllers
         [AllowAnonymous]
         public async Task<ActionResult> GuestLogin(string returnUrl, string type)
         {
-
             string Email = "";
             string Password = "";
 
@@ -291,19 +279,29 @@ namespace HouseholdBudgeter.Controllers
         {
             if (ModelState.IsValid)
             {
-                var user = new ApplicationUser { UserName = model.Email, Email = model.Email, FirstName = model.FirstName, LastName = model.LastName };
+                var user = new ApplicationUser
+                {
+                    UserName = model.Email,
+                    FirstName = model.FirstName,
+                    LastName = model.LastName,
+                    Email = model.Email,
+                    HouseholdId = model.HouseholdId,
+                };
+
                 var result = await UserManager.CreateAsync(user, model.Password);
                 if (result.Succeeded)
                 {
-                    await SignInManager.SignInAsync(user, isPersistent:false, rememberBrowser:false);
-                    
+                    string callbackurl = await SendEmailConfirmationTokenAsync(user.Id, "Confirm your account");
+                    await SignInManager.SignInAsync(user, isPersistent: false, rememberBrowser: false);
+
                     // For more information on how to enable account confirmation and password reset please visit http://go.microsoft.com/fwlink/?LinkID=320771
                     // Send an email with this link
-                     string code = await UserManager.GenerateEmailConfirmationTokenAsync(user.Id);
-                     var callbackUrl = Url.Action("ConfirmEmail", "Account", new { userId = user.Id, code = code }, protocol: Request.Url.Scheme);
-                     await UserManager.SendEmailAsync(user.Id, "Confirm your account", "Please confirm your account by clicking <a href=\"" + callbackUrl + "\">here</a>");
-
-                    return RedirectToAction("JoinHousehold", "Account");
+                    //string code = await UserManager.GenerateEmailConfirmationTokenAsync(user.Id);
+                    //var callbackUrl = Url.Action("ConfirmEmail", "Account", new { userId = user.Id, code = code }, protocol: Request.Url.Scheme);
+                    //await UserManager.SendEmailAsync(user.Id, "Confirm your account", "Please confirm your account by clicking <a href=\"" + callbackUrl + "\">here</a>");
+        
+                    ViewBag.Message = "Check your email and confirm your account, you must be confirmed before you can log in.";
+                    return View("Info");
                 }
                 AddErrors(result);
             }
@@ -652,6 +650,15 @@ namespace HouseholdBudgeter.Controllers
                 context.HttpContext.GetOwinContext().Authentication.Challenge(properties, LoginProvider);
             }
         }
+
+            private async Task<string> SendEmailConfirmationTokenAsync(string userId, string subject)
+            {
+                string code = await UserManager.GenerateEmailConfirmationTokenAsync(userId);
+                var callbackUrl = Url.Action("ConfirmEmail", "Account", new { userId = userId, code = code }, protocol: Request.Url.Scheme);
+                await UserManager.SendEmailAsync(userId, subject, "Please confirm your account with Money Manager by clicking <a href=\"" + callbackUrl + "\">here</a>");
+
+                return callbackUrl;
+            }
         #endregion
     }
 }

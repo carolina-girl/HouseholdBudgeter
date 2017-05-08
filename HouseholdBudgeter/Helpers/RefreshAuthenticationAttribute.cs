@@ -9,6 +9,7 @@ using System.Web.Mvc;
 
 namespace HouseholdBudgeter.Helpers
 {
+    //silently log the user out and then back in to refresh cookie and stop access to household once leaves
     public static class RefreshAuthenticationAttribute
     {
         public static async Task RefreshAuthentication(this HttpContextBase context, ApplicationUser user)

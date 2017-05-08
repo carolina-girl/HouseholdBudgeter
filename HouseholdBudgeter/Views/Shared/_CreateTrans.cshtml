@@ -1,7 +1,7 @@
 ﻿@model HouseholdBudgeter.Models.Transaction
 
 @{
-    ViewBag.Title = "Create";
+    ViewBag.Title = "_Create";
 }
 
 <div class="row">
@@ -12,29 +12,34 @@
             </div>
             <div class="panel-body">
                 @using (Html.BeginForm("Create", "Transactions"))
-                  {
+                {
                     @Html.AntiForgeryToken()
+
                     <div class="form-horizontal">
+                        <hr />
                         @Html.ValidationSummary(true, "", new { @class = "text-danger" })
                         <div class="form-group">
-                            @Html.LabelFor(model => model.BankAccountsId, "Bank Account", htmlAttributes: new { @class = "control-label col-sm-2" })
-                            <div class="col-sm-12">
-                                @Html.DropDownList("BankAccountsId", null, htmlAttributes: new { @class = "form-control" })
+                            @Html.LabelFor(model => model.BankAccountsId, "Bank Account", htmlAttributes: new { @class = "control-label col-md-2" })
+                            <div class="col-md-10">
+                                <div class="input-group">
+                                    @Html.DropDownList("BankAccountsId", null, htmlAttributes: new { @class = "form-control" })
+                                </div>
                                 @Html.ValidationMessageFor(model => model.BankAccountsId, "", new { @class = "text-danger" })
                             </div>
                         </div>
 
-
                         <div class="form-group">
-                            @Html.LabelFor(model => model.Description, htmlAttributes: new { @class = "control-label col-sm-2" })
-                            <div class="col-sm-12">
-                                @Html.TextBoxFor(model => model.Description, new { htmlAttributes = new { @class = "form-control" } })
+                            @Html.LabelFor(model => model.Description, htmlAttributes: new { @class = "control-label col-md-2" })
+                            <div class="col-md-10">
+                                <div class="input-group">
+                                    @Html.TextAreaFor(model => model.Description, new { htmlAttributes = new { @class = "form-control" } })
+                                </div>
                                 @Html.ValidationMessageFor(model => model.Description, "", new { @class = "text-danger" })
                             </div>
                         </div>
 
                         <div class="form-group">
-                            <div class="col-sm-2 offset-12 text-center">
+                            <div class="col-sm-2 col-sm-offset-4 text-center">
                                 @Html.RadioButton("Types", false) <text class="text-danger"><b>Withdraw</b></text>
                             </div>
                             <div class="col-sm-2 text-center">
@@ -43,23 +48,9 @@
                             @Html.ValidationMessageFor(model => model.Types, "", new { @class = "text-danger" })
                         </div>
 
-                        @*<div class="form-group">
-                                @Html.LabelFor(model => model.Category, htmlAttributes: new { @class = "control-label col-md-2" })
-                                <div class="col-sm-12">
-                                    <div class="btn-group" data-toggle="buttons">
-                                        <label class="btn btn-primary active">
-                                            @Html.RadioButton("Types", "Withdraw", true, new { id = "IsWithdrawal" }) Withdraw
-                                        </label>
-                                        <label class="btn btn-primary">
-                                            @Html.RadioButton("Types", "Deposit", new { id = "IsDeposit" }) Deposit
-                                        </label>
-                                    </div>
-                                </div>
-                            </div>*@
-
                         <div class="form-group">
-                            @Html.LabelFor(model => model.Amount, htmlAttributes: new { @class = "control-label col-sm-2" })
-                            <div class="col-sm-12">
+                            @Html.LabelFor(model => model.Amount, htmlAttributes: new { @class = "control-label col-md-2" })
+                            <div class="col-md-10">
                                 <div class="input-group">
                                     <span class="input-group-addon">$</span>
                                     @Html.EditorFor(model => model.Amount, new { htmlAttributes = new { @class = "form-control", @placeholder = "Enter the amount you wish to save/spend." } })
@@ -68,9 +59,11 @@
                             </div>
                         </div>
                         <div class="form-group">
-                            @Html.LabelFor(model => model.CategoryId, "Category", htmlAttributes: new { @class = "control-label col-sm-2" })
-                            <div class="col-sm-12">
-                                @Html.DropDownList("CategoryId", null, htmlAttributes: new { @class = "form-control" })
+                            @Html.LabelFor(model => model.CategoryId, "Category", htmlAttributes: new { @class = "control-label col-md-2" })
+                            <div class="col-md-10">
+                                <div class="input-group">
+                                    @Html.DropDownList("CategoryId", null, htmlAttributes: new { @class = "form-control" })
+                                </div>
                                 @Html.ValidationMessageFor(model => model.CategoryId, "", new { @class = "text-danger" })
                             </div>
                         </div>
@@ -80,7 +73,7 @@
                             </div>
                         </div>
                     </div>
-                }
+                   }
                 </div>
             </div>
         </div>

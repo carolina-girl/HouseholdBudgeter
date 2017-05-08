@@ -90,6 +90,7 @@ namespace HouseholdBudgeter.Models
         public string HouseholdName { get; set; }
 
         public int? HouseholdId { get; set; }
+        public Guid JoinCode { get; set; }
 
         [Required]
         [StringLength(100, ErrorMessage = "The {0} must be at least {2} characters long.", MinimumLength = 6)]

@@ -92,10 +92,7 @@
                                     </td>
                                     <td>
                                         <a href="@Url.Action("Edit", new { id = item.Id })"><i class="fa fa-pencil btn btn-xs btn-warning"></i></a>
-                                        <span class="delete-section">
-                                            <a class="delete-link" href="@Url.Action("Delete", new {id = item.Id})"><i class="fa fa-close btn btn-xs btn-danger"></i></a>
-                                            <span class="btn btn-danger btn-xs delete-confirm" style="display:none" data-delete-id="@item.Id">Confirm Delete</span>
-                                        </span>
+                                        <a href="@Url.Action("Delete", new {id = item.Id})"><i class="fa fa-close btn btn-xs btn-danger"></i></a>
                                     </td>
                                 </tr>
                                  }
@@ -109,7 +106,6 @@
         </div>
     </div>
 </div>
-
 <!-- Modal -->
 <div class="modal fade" id="create" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
     <div class="modal-dialog">

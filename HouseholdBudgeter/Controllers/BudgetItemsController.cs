@@ -17,36 +17,31 @@ namespace HouseholdBudgeter.Controllers
         // GET: BudgetItems
         public ActionResult Index()
         {
-            var UserId = User.Identity.GetUserId();
-            var user = db.Users.Find(UserId);
+            //get user, budgetItem w/ household of this budget,budget,category.....get this users household
+            var user = db.Users.Find(User.Identity.GetUserId());
+
             var budgetItems = db.BudgetItems.Include(h => h.Budget.Household).Include(b => b.Budget).Include(b => b.Category);
 
+
             Household household = db.Households.Find(user.HouseholdId);
-
-
             if (household == null)
             {
                 return RedirectToAction("Create", "Households");
             }
-
             ViewBag.HouseholdName = household.Name;
-
             return View(budgetItems);
         }
 
         // GET: BudgetItems/Details/5
         public ActionResult Details(int? id)
         {
-            //heirarchy where we find the user
+            //get user, budgetItems, budget for this item, household for this budget
             var user = db.Users.Find(User.Identity.GetUserId());
 
-            //then identify the user's budgetitems
             BudgetItem budgetItem = db.BudgetItems.FirstOrDefault(b => b.Id == id);
 
-            //then the budgetitem's budget owner
             Budget budget = db.Budgets.FirstOrDefault(b => b.Id == budgetItem.Id);
 
-            //then the budget's household owner
             Household household = db.Households.FirstOrDefault(h => h.Id == budget.Id);
 
             if (!household.Members.Contains(user))
@@ -67,12 +62,13 @@ namespace HouseholdBudgeter.Controllers
         // GET: BudgetItems/Create
         public PartialViewResult Create()
         {
+            //get user, this users household and budget, select list this users household budget, budgetCategory
             var user = db.Users.Find(User.Identity.GetUserId());
 
             var getBudget = db.Budgets.Where(u => user.HouseholdId == u.HouseHoldId).ToList();
 
             ViewBag.BudgetId = new SelectList(getBudget, "Id", "Name");
-            ViewBag.CategoryId = new SelectList(db.BudegetCategory, "Id", "Name");
+            ViewBag.CategoryId = new SelectList(db.BudgetCategory, "Id", "Name");
             return PartialView();
         }
 
@@ -91,20 +87,18 @@ namespace HouseholdBudgeter.Controllers
             }
 
             ViewBag.BudgetId = new SelectList(db.Budgets, "Id", "Name", budgetItem.BudgetId);
-            ViewBag.CategoryId = new SelectList(db.BudegetCategory, "Id", "Name", budgetItem.CategoryId);
+            ViewBag.CategoryId = new SelectList(db.BudgetCategory, "Id", "Name", budgetItem.CategoryId);
             return View(budgetItem);
         }
 
         // GET: BudgetItems/Edit/5
         public ActionResult Edit(int? id)
         {
-            //heirarchy where we find the user
+            //get user, budgetItems, household for this budgetItem
             var user = db.Users.Find(User.Identity.GetUserId());
 
-            //then identify the user's budgetitems
             BudgetItem budgetItem = db.BudgetItems.FirstOrDefault(b => b.Id == id);
 
-            //then the budget's household owner
             Household household = db.Households.FirstOrDefault(h => h.Id == budgetItem.Id);
 
             if (id == null)
@@ -115,11 +109,10 @@ namespace HouseholdBudgeter.Controllers
             {
                 return HttpNotFound();
             }
-
+            //select list this users households budget budgetItem and budgetCategory
             var getBudget = db.Budgets.Where(u => u.HouseHoldId == user.HouseholdId).ToList();
-
             ViewBag.BudgetId = new SelectList(getBudget, "Id", "Name", budgetItem.BudgetId);
-            ViewBag.CategoryId = new SelectList(db.BudegetCategory, "Id", "Name", budgetItem.CategoryId);
+            ViewBag.CategoryId = new SelectList(db.BudgetCategory, "Id", "Name", budgetItem.CategoryId);
             return View(budgetItem);
         }
 
@@ -137,16 +130,20 @@ namespace HouseholdBudgeter.Controllers
                 return RedirectToAction("Index");
             }
             ViewBag.BudgetId = new SelectList(db.Budgets, "Id", "Name", budgetItem.BudgetId);
-            ViewBag.CategoryId = new SelectList(db.BudegetCategory, "Id", "Name", budgetItem.CategoryId);
+            ViewBag.CategoryId = new SelectList(db.BudgetCategory, "Id", "Name", budgetItem.CategoryId);
             return View(budgetItem);
         }
 
         // GET: BudgetItems/Delete/5
         public ActionResult Delete(int? id)
         {
+            //get user, budgetItem and household of this budget
             var user = db.Users.Find(User.Identity.GetUserId());
+
             BudgetItem budgetItem = db.BudgetItems.FirstOrDefault(b => b.Id == id);
+
             Budget budget = db.Budgets.FirstOrDefault(b => b.Id == budgetItem.BudgetId);
+
             Household household = db.Households.FirstOrDefault(h => h.Id == budget.HouseHoldId);
 
             if (id == null)
@@ -165,23 +162,18 @@ namespace HouseholdBudgeter.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult DeleteConfirmed(int id)
         {
-            //heirarchy where we find the user
+            //get user, budgetItems, budget, household
             var user = db.Users.Find(User.Identity.GetUserId());
 
-            //then identify the user's budgetitems
             BudgetItem budgetItem = db.BudgetItems.FirstOrDefault(b => b.Id == id);
 
-            //then the budgetitem's budget owner
             Budget budget = db.Budgets.FirstOrDefault(b => b.Id == budgetItem.Id);
 
-            //then the budget's household owner
             Household household = db.Households.FirstOrDefault(h => h.Id == budget.Id);
-
             //if (!household.Members.Contains(user))
             //{
             //    return RedirectToAction("Unauthorized", "Error");
             //}
-
             db.BudgetItems.Remove(budgetItem);
             db.SaveChanges();
             return RedirectToAction("Index");
